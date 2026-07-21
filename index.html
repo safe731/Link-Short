@@ -6,16 +6,20 @@
   <title>Link Shortener & Developer Web Tools Platform</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
+  <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      background-color: #030712;
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
   <!-- TOP NAVIGATION BAR -->
   <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur sticky top-0 z-40">
@@ -36,7 +40,7 @@
           <i class="fa-solid fa-coins text-amber-400"></i>
           <span class="text-sm font-semibold text-slate-200"><span id="user-tokens-count">0</span> Tokens</span>
           <a href="https://wa.me/8801831818274?text=I%20want%20to%20buy%20tokens" target="_blank" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-2 py-0.5 rounded-md font-medium transition">
-            <i class="fa-brands fa-whatsapp mr-1"></i>Get Tokens
+            <i class="fa-brands fa-whatsapp mr-1"></i>Buy Tokens
           </a>
         </div>
 
@@ -204,7 +208,7 @@
         </div>
       </div>
 
-      <!-- LINKS LIST TABLE / CONTAINER -->
+      <!-- LINKS LIST CONTAINER -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
         <div class="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <!-- Filter Tabs -->
@@ -218,7 +222,6 @@
         </div>
 
         <div id="dashboard-links-list" class="divide-y divide-slate-800/60 min-h-[200px]">
-          <!-- Loaded dynamically via JS -->
           <div class="p-8 text-center text-slate-500 text-sm">Loading links...</div>
         </div>
       </div>
@@ -308,13 +311,12 @@
 
   </main>
 
+  <!-- FIREBASE ENGINE & SCRIPT -->
   <script type="module">
-    // Firebase Modular SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, set, get, update, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Firebase Config
     const firebaseConfig = {
             apiKey: "AIzaSyDzrJEtCzXP2N7lms1JwlGElcZSQzgasms",
             authDomain: "sky-tools-aa38e.firebaseapp.com",
@@ -325,8 +327,6 @@
             measurementId: "G-7LR4NG8J6W"
         };
 
-    
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
@@ -336,7 +336,7 @@
     let userLinks = [];
     let activeFilter = 'all';
 
-    // ROUTER / LINK RESOLVER ON PAGE LOAD
+    // ROUTER & LINK RESOLVER
     async function checkQueryParams() {
       const params = new URLSearchParams(window.location.search);
       const shortId = params.get('s');
@@ -345,17 +345,15 @@
       const unlockId = params.get('unlock');
 
       if (shortId) {
-        // Short URL Redirect
         const snapshot = await get(ref(db, `links/${shortId}`));
         if (snapshot.exists()) {
           const item = snapshot.val();
           await update(ref(db, `links/${shortId}`), { clicks: (item.clicks || 0) + 1 });
           window.location.href = item.targetUrl;
         } else {
-          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl">404: Short link not found!</div>`;
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl">404: Link not found!</div>`;
         }
       } else if (siteId) {
-        // Hosted HTML Render
         const snapshot = await get(ref(db, `links/${siteId}`));
         if (snapshot.exists()) {
           const item = snapshot.val();
@@ -367,7 +365,6 @@
           document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl">404: Hosted HTML page not found!</div>`;
         }
       } else if (multiId) {
-        // 3-Page Monetized Link Flow
         const snapshot = await get(ref(db, `links/${multiId}`));
         if (snapshot.exists()) {
           const item = snapshot.val();
@@ -375,7 +372,6 @@
           renderMultiStepPage(item);
         }
       } else if (unlockId) {
-        // Sub4Sub Gate Flow
         const snapshot = await get(ref(db, `links/${unlockId}`));
         if (snapshot.exists()) {
           const item = snapshot.val();
@@ -425,12 +421,10 @@
         <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
           <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
             <h1 class="text-2xl font-bold text-red-500"><i class="fa-brands fa-youtube mr-2"></i>Complete Steps to Unlock</h1>
-            <p class="text-slate-400 text-xs">Subscribe to the YouTube channel to reveal your download / target link.</p>
-            
+            <p class="text-slate-400 text-xs">Subscribe to the YouTube channel to reveal your target link.</p>
             <a href="${item.ytChannel}" target="_blank" onclick="enableUnlock()" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition">
               <i class="fa-brands fa-youtube"></i> 1. Subscribe on YouTube
             </a>
-
             <button id="unlock-final-btn" disabled class="w-full bg-slate-800 text-slate-500 py-3 rounded-xl font-bold cursor-not-allowed">
               🔒 Complete Step Above First
             </button>
@@ -451,7 +445,6 @@
       };
     }
 
-    // Run router check on start
     checkQueryParams();
 
     window.navigate = function(view) {
@@ -493,13 +486,11 @@
         document.getElementById('nav-dashboard-btn').classList.remove('hidden');
         document.getElementById('nav-dashboard-btn').classList.add('flex');
 
-        // Fetch User Tokens & Init Data
         const userRef = ref(db, `users/${user.uid}`);
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
           userTokens = snapshot.val().tokens || 0;
         } else {
-          // Grant 100 Signup Tokens
           userTokens = 100;
           await set(userRef, { tokens: 100, email: user.email });
         }
@@ -599,11 +590,9 @@
       ['all', 'short', 'html', 'multipage', 'unlock'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (btn) {
-          if (t === type) {
-            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white";
-          } else {
-            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700";
-          }
+          btn.className = t === type 
+            ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white" 
+            : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700";
         }
       });
       renderFilteredDashboard();
@@ -693,7 +682,7 @@
       }
     };
 
-    // LINK CREATION HANDLERS
+    // GENERATORS
     window.generateHtmlHost = async function() {
       if(!currentUser) return navigate('auth');
       if(userTokens < 1) return showToast("Not enough tokens!", true);
@@ -712,7 +701,6 @@
         createdAt: Date.now()
       });
 
-      // Deduct 1 Token
       userTokens -= 1;
       await update(ref(db, `users/${currentUser.uid}`), { tokens: userTokens });
       document.getElementById('user-tokens-count').innerText = userTokens;
