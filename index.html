@@ -18,39 +18,41 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
   <!-- TOP NAVIGATION BAR -->
-  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur sticky top-0 z-40">
+  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('home')">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
-          <i class="fa-solid fa-link"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-lg text-white leading-none">WebTools</h1>
-          <span class="text-xs text-blue-400 font-medium">Developer & Creator Suite</span>
-        </div>
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+        <i class="fa-solid fa-cloud text-blue-500 text-2xl"></i>
+        <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 tracking-tight">Link Tools</span>
       </div>
 
-      <div class="flex items-center gap-3">
-        <!-- Tokens Display -->
-        <div id="nav-tokens" class="hidden items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-xl">
-          <i class="fa-solid fa-coins text-amber-400"></i>
-          <span class="text-sm font-semibold text-slate-200"><span id="user-tokens-count">0</span> Tokens</span>
-          <a href="https://wa.me/8801831818274?text=I%20want%20to%20buy%20tokens" target="_blank" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-2 py-0.5 rounded-md font-medium transition">
-            <i class="fa-brands fa-whatsapp mr-1"></i>Get Tokens
-          </a>
+      <!-- Right Side Controls -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Dashboard Button -->
+        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden px-3.5 py-1.5 rounded-lg text-sm font-bold items-center gap-2 transition-all bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+          <i class="fa-solid fa-table-cells-large"></i>
+          <span class="hidden sm:inline">Dashboard</span>
+        </button>
+
+        <!-- Tokens Count Pill -->
+        <div id="nav-tokens" class="hidden items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-sm font-bold shadow-inner">
+          <i class="fa-solid fa-coins text-yellow-400"></i>
+          <span><span id="user-tokens-count">0</span> Tokens</span>
         </div>
 
-        <!-- Dashboard Btn -->
-        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-xl text-sm font-medium transition">
-          <i class="fa-solid fa-gauge-high"></i> Dashboard
-        </button>
+        <!-- WhatsApp Buy Tokens -->
+        <a href="https://wa.me/qr/6VYJUNPUGY6QM1" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-1.5">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span class="hidden sm:inline">Get Tokens</span>
+        </a>
 
-        <!-- Auth Button -->
-        <button id="nav-login-btn" onclick="navigate('auth')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-xl text-sm font-semibold transition">
-          Sign In
+        <!-- Auth Buttons -->
+        <button id="nav-login-btn" onclick="navigate('auth')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-95 text-white px-5 py-2 rounded-lg font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Login / Register</span>
         </button>
-        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-sm font-medium transition">
-          <i class="fa-solid fa-right-from-bracket"></i>
+        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden text-slate-400 hover:text-red-400 p-2 rounded-lg hover:bg-slate-800 transition-colors">
+          <i class="fa-solid fa-right-from-bracket text-lg"></i>
         </button>
       </div>
     </div>
@@ -174,53 +176,98 @@
     </section>
 
     <!-- VIEW: LINK MANAGEMENT DASHBOARD -->
-    <section id="view-dashboard" class="hidden space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <section id="view-dashboard" class="hidden space-y-8 animate-fade-in pb-12">
+      <!-- Dashboard Top Header Card -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/80 backdrop-blur-md p-6 rounded-3xl border border-slate-700/80 shadow-xl">
         <div>
-          <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-chart-line text-indigo-400"></i>
-            Link Management Dashboard
-          </h2>
-          <p class="text-slate-400 text-sm">Manage all your hosted HTML sites, short links, and monetization gates.</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <i class="fa-solid fa-table-cells-large text-indigo-400 text-2xl sm:text-3xl"></i>
+            <span>Link Management Dashboard</span>
+          </h1>
+          <p class="text-slate-400 text-sm mt-1">
+            Manage, track performance, copy, and organize all your created short links & hosted pages.
+          </p>
         </div>
-        <button onclick="navigate('home')" class="self-start md:self-auto bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm px-4 py-2 rounded-xl border border-slate-700 transition">
-          + Create New Link
-        </button>
-      </div>
 
-      <!-- STATS OVERVIEW CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-          <div class="text-xs text-slate-400 font-medium">Total Active Links</div>
-          <div id="stat-total-links" class="text-3xl font-extrabold text-white mt-1">0</div>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-          <div class="text-xs text-slate-400 font-medium">Total Clicks Received</div>
-          <div id="stat-total-clicks" class="text-3xl font-extrabold text-emerald-400 mt-1">0</div>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-          <div class="text-xs text-slate-400 font-medium">Available Token Balance</div>
-          <div id="stat-token-balance" class="text-3xl font-extrabold text-amber-400 mt-1">0</div>
+        <div class="flex items-center gap-3">
+          <button onclick="loadDashboardLinks()" class="bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl transition-colors border border-slate-600" title="Refresh Data">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <div class="bg-gradient-to-r from-indigo-900/60 to-purple-900/60 border border-indigo-500/40 px-5 py-2.5 rounded-2xl flex items-center gap-3">
+            <i class="fa-solid fa-coins text-yellow-400 text-2xl"></i>
+            <div>
+              <div class="text-xs text-indigo-300 font-medium">Available Tokens</div>
+              <div class="text-lg font-black text-white" id="stat-token-balance">0</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- LINKS LIST TABLE / CONTAINER -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-        <div class="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <!-- Filter Tabs -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
-            <button onclick="filterDashboard('all')" id="tab-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">All Links</button>
-            <button onclick="filterDashboard('short')" id="tab-short" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Short Links</button>
-            <button onclick="filterDashboard('html')" id="tab-html" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">HTML Hosted</button>
-            <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">3-Page</button>
-            <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Sub4Sub</button>
+      <!-- Stats Summary Cards (4 Columns) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
+            <i class="fa-solid fa-link text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-short-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Short Links</div>
           </div>
         </div>
 
-        <div id="dashboard-links-list" class="divide-y divide-slate-800/60 min-h-[200px]">
-          <!-- Loaded dynamically via JS -->
-          <div class="p-8 text-center text-slate-500 text-sm">Loading links...</div>
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-blue-500/20 text-blue-400 rounded-xl">
+            <i class="fa-solid fa-code text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-html-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Hosted HTML</div>
+          </div>
         </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-pink-500/20 text-pink-400 rounded-xl">
+            <i class="fa-solid fa-layer-group text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-multi-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Monetized 3-Page</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <i class="fa-solid fa-arrow-pointer text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-total-clicks" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Total Clicks/Views</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Filter Bar -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none">
+        <button onclick="filterDashboard('all')" id="tab-all" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+          All Items (<span id="count-tab-all">0</span>)
+        </button>
+        <button onclick="filterDashboard('short')" id="tab-short" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          URL Shortener (<span id="count-tab-short">0</span>)
+        </button>
+        <button onclick="filterDashboard('html')" id="tab-html" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          HTML Sites (<span id="count-tab-html">0</span>)
+        </button>
+        <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          3-Page Monetized (<span id="count-tab-multi">0</span>)
+        </button>
+        <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          Sub4Sub Gates (<span id="count-tab-unlock">0</span>)
+        </button>
+      </div>
+
+      <!-- Main Items Listing Container -->
+      <div id="dashboard-links-list" class="space-y-6 min-h-[200px]">
+        <div class="p-8 text-center text-slate-500 text-sm">Loading links...</div>
       </div>
     </section>
 
@@ -599,9 +646,9 @@
       const container = document.getElementById('dashboard-links-list');
       if (!currentUser) {
         container.innerHTML = `
-          <div class="p-8 text-center text-slate-400">
-            <p>Please Sign In to view your Link Management Dashboard.</p>
-            <button onclick="navigate('auth')" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold">Sign In Now</button>
+          <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-8 text-center text-slate-400 space-y-3">
+            <p class="text-base font-semibold">Please Sign In to view your Link Management Dashboard.</p>
+            <button onclick="navigate('auth')" class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-lg transition">Sign In / Register</button>
           </div>
         `;
         return;
@@ -614,6 +661,10 @@
         const snapshot = await get(linksRef);
         userLinks = [];
         let totalClicks = 0;
+        let shortCount = 0;
+        let htmlCount = 0;
+        let multiCount = 0;
+        let unlockCount = 0;
 
         if (snapshot.exists()) {
           const allData = snapshot.val();
@@ -622,13 +673,25 @@
             if (item.userId === currentUser.uid) {
               item.id = key;
               userLinks.push(item);
-              totalClicks += (item.clicks || 0);
+              totalClicks += (item.clicks || item.views || item.unlocks || 0);
+              if (item.type === 'short') shortCount++;
+              else if (item.type === 'html') htmlCount++;
+              else if (item.type === 'multipage') multiCount++;
+              else if (item.type === 'unlock') unlockCount++;
             }
           });
         }
 
-        document.getElementById('stat-total-links').innerText = userLinks.length;
-        document.getElementById('stat-total-clicks').innerText = totalClicks;
+        if (document.getElementById('stat-short-count')) document.getElementById('stat-short-count').innerText = shortCount;
+        if (document.getElementById('stat-html-count')) document.getElementById('stat-html-count').innerText = htmlCount;
+        if (document.getElementById('stat-multi-count')) document.getElementById('stat-multi-count').innerText = multiCount;
+        if (document.getElementById('stat-total-clicks')) document.getElementById('stat-total-clicks').innerText = totalClicks;
+
+        if (document.getElementById('count-tab-all')) document.getElementById('count-tab-all').innerText = userLinks.length;
+        if (document.getElementById('count-tab-short')) document.getElementById('count-tab-short').innerText = shortCount;
+        if (document.getElementById('count-tab-html')) document.getElementById('count-tab-html').innerText = htmlCount;
+        if (document.getElementById('count-tab-multi')) document.getElementById('count-tab-multi').innerText = multiCount;
+        if (document.getElementById('count-tab-unlock')) document.getElementById('count-tab-unlock').innerText = unlockCount;
 
         renderFilteredDashboard();
       } catch(err) {
@@ -642,9 +705,9 @@
         const btn = document.getElementById(`tab-${t}`);
         if (btn) {
           if (t === type) {
-            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white";
+            btn.className = "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
           } else {
-            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            btn.className = "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800";
           }
         }
       });
@@ -659,7 +722,12 @@
       }
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-500 text-sm">No links found under this category.</div>`;
+        container.innerHTML = `
+          <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-12 text-center text-slate-500 text-sm">
+            <i class="fa-solid fa-folder-open text-4xl mb-3 block text-slate-600"></i>
+            No links found in this category. Create a new link to get started!
+          </div>
+        `;
         return;
       }
 
@@ -667,50 +735,68 @@
 
       container.innerHTML = filtered.map(item => {
         let fullLink = "";
-        let badgeColor = "bg-blue-500/10 text-blue-400 border-blue-500/20";
-        let typeLabel = "Short Link";
+        let borderHover = "hover:border-purple-500/40";
+        let badgeBg = "bg-purple-500/20 text-purple-300 border-purple-500/30";
+        let iconHtml = `<i class="fa-solid fa-link text-purple-400 text-lg"></i>`;
+        let typeLabel = "Short URL";
 
         if (item.type === 'html') {
           fullLink = `${baseUrl}?site=${item.id}`;
-          typeLabel = "HTML Page";
-          badgeColor = "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+          typeLabel = "HTML Site";
+          borderHover = "hover:border-blue-500/40";
+          badgeBg = "bg-blue-500/20 text-blue-300 border-blue-500/30";
+          iconHtml = `<i class="fa-solid fa-code text-blue-400 text-lg"></i>`;
         } else if (item.type === 'multipage') {
           fullLink = `${baseUrl}?m=${item.id}`;
-          typeLabel = "3-Page";
-          badgeColor = "bg-purple-500/10 text-purple-400 border-purple-500/20";
+          typeLabel = "Monetized 3-Page";
+          borderHover = "hover:border-pink-500/40";
+          badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30";
+          iconHtml = `<i class="fa-solid fa-layer-group text-pink-400 text-lg"></i>`;
         } else if (item.type === 'unlock') {
           fullLink = `${baseUrl}?unlock=${item.id}`;
           typeLabel = "Sub4Sub Gate";
-          badgeColor = "bg-red-500/10 text-red-400 border-red-500/20";
+          borderHover = "hover:border-emerald-500/40";
+          badgeBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+          iconHtml = `<i class="fa-solid fa-unlock text-emerald-400 text-lg"></i>`;
         } else {
           fullLink = `${baseUrl}?s=${item.id}`;
         }
 
         return `
-          <div class="p-4 hover:bg-slate-800/40 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="space-y-1 min-w-0 flex-1">
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${typeLabel}</span>
-                <span class="text-xs text-slate-400">${item.title || item.alias || item.id}</span>
+          <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 ${borderHover} transition-colors shadow-md">
+            <div class="min-w-0 flex-1 space-y-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0">
+                  ${iconHtml}
+                </div>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeBg}">${typeLabel}</span>
+                <span class="text-xs text-slate-400 font-mono font-medium">${item.title || item.alias || item.id}</span>
               </div>
-              <div class="text-sm font-medium text-white truncate max-w-md">
-                <a href="${fullLink}" target="_blank" class="hover:underline text-blue-400">${fullLink}</a>
+              <div class="text-sm font-semibold text-white truncate max-w-xl">
+                <a href="${fullLink}" target="_blank" class="hover:underline text-indigo-300">${fullLink}</a>
               </div>
               <div class="text-xs text-slate-500 truncate">
-                Target: ${item.targetUrl || item.target || 'Hosted Page'}
+                Destination: ${item.targetUrl || item.target || 'Hosted Page Content'}
               </div>
             </div>
 
-            <div class="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-              <div class="text-right">
-                <div class="text-xs font-bold text-emerald-400"><i class="fa-solid fa-chart-simple mr-1"></i>${item.clicks || 0} Clicks</div>
+            <div class="flex items-center gap-3 shrink-0 justify-between md:justify-end border-t md:border-t-0 border-slate-700/60 pt-3 md:pt-0">
+              <div class="text-left md:text-right">
+                <div class="text-xs text-slate-400">Clicks / Views</div>
+                <div class="text-sm font-black text-emerald-400 flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-pointer text-xs"></i>
+                  ${item.clicks || item.views || item.unlocks || 0}
+                </div>
               </div>
               <div class="flex items-center gap-2">
-                <button onclick="copyToClipboard('${fullLink}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs transition">
+                <button onclick="copyToClipboard('${fullLink}')" class="p-2.5 bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 transition-colors" title="Copy Link">
                   <i class="fa-solid fa-copy"></i>
                 </button>
-                <button onclick="deleteLink('${item.id}')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs transition">
-                  <i class="fa-solid fa-trash"></i>
+                <a href="${fullLink}" target="_blank" class="p-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors" title="Open Link">
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+                <button onclick="deleteLink('${item.id}')" class="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl border border-red-500/20 transition-colors" title="Delete Link">
+                  <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
             </div>
