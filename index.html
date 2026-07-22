@@ -361,8 +361,10 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, set, get, update, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Firebase Config (Connects to Realtime Database)
-    const firebaseConfig = {
+    // ==========================================
+        // 1. FIREBASE CONFIGURATION
+        // ==========================================
+        const firebaseConfig = {
             apiKey: "AIzaSyDzrJEtCzXP2N7lms1JwlGElcZSQzgasms",
             authDomain: "sky-tools-aa38e.firebaseapp.com",
             projectId: "sky-tools-aa38e",
@@ -371,6 +373,7 @@
             appId: "1:433524203749:web:f88d7901e6cd12b0a8f40c",
             measurementId: "G-7LR4NG8J6W"
         };
+    
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -435,40 +438,76 @@
       const totalSteps = 3;
 
       function renderStep(step) {
+        let sec = item.timer || 10;
+
         document.body.innerHTML = `
-          <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-            <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
-              <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                <span>Monetized Link</span>
-                <span>Step ${step} of ${totalSteps}</span>
+          <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center shadow-2xl border border-slate-800 space-y-6">
+              
+              <!-- Top Icon -->
+              <div class="inline-flex p-3 rounded-2xl bg-pink-500/10 text-pink-400 border border-pink-500/20 mb-1">
+                <i class="fa-solid fa-layer-group text-3xl"></i>
               </div>
-              <h1 class="text-2xl font-bold text-purple-400">Step ${step} of 3: Please Wait</h1>
-              <p class="text-slate-400 text-sm">Your destination link is being prepared...</p>
-              <div id="countdown" class="text-5xl font-extrabold text-white my-4">${item.timer || 10}</div>
-              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-500">
-                [ Sponsored Ad Space #${step} ]
+
+              <!-- Header -->
+              <div>
+                <h2 class="text-3xl font-extrabold text-white">
+                  Step <span class="text-pink-400">${step}</span> of 3
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">
+                  Please wait a moment to reach your target destination...
+                </p>
               </div>
-              <button id="next-btn" disabled class="w-full bg-slate-800 text-slate-500 py-3 rounded-xl font-bold cursor-not-allowed">
-                Please Wait...
+
+              <!-- Sponsored Ad Box -->
+              <div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-inner flex flex-col items-center justify-center min-h-[140px] text-slate-500 text-xs">
+                <div class="text-slate-400 font-bold mb-1">Sponsored Advertisement</div>
+                <p class="text-slate-600 max-w-xs text-[11px]">
+                  Supporting our creator link platform. Link unlocks automatically when the timer finishes.
+                </p>
+              </div>
+
+              <!-- Countdown Timer -->
+              <div id="countdown" class="text-6xl font-black text-pink-400 my-4 drop-shadow-md font-mono">
+                ${sec}
+              </div>
+
+              <!-- Next Button -->
+              <button id="next-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-spinner fa-spin text-pink-400"></i>
+                <span>Please Wait... (<span id="btn-sec">${sec}</span>s)</span>
               </button>
+
+              <p class="text-xs text-slate-500 mt-2">
+                <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                  Monetize your links with Link Tools
+                </a>
+              </p>
+
             </div>
           </div>
         `;
 
-        let sec = item.timer || 10;
         const timer = setInterval(() => {
           sec--;
           const cnt = document.getElementById('countdown');
+          const btnSec = document.getElementById('btn-sec');
           const btn = document.getElementById('next-btn');
-          if(cnt) cnt.innerText = sec;
-          if(sec <= 0) {
+
+          if (cnt) cnt.innerText = sec;
+          if (btnSec) btnSec.innerText = sec;
+
+          if (sec <= 0) {
             clearInterval(timer);
-            if(btn) {
+            if (btn) {
               btn.disabled = false;
-              btn.className = "w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-bold cursor-pointer transition shadow-lg shadow-purple-600/30";
-              btn.innerText = step < totalSteps ? `Continue to Step ${step + 1} â†’` : "Go to Destination Link â†’";
+              btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 cursor-pointer shadow-pink-500/25 animate-bounce";
+              btn.innerHTML = step < totalSteps 
+                ? `<span>Next Page</span> <i class="fa-solid fa-arrow-right"></i>`
+                : `<span>Get Target Link</span> <i class="fa-solid fa-up-right-from-square"></i>`;
+
               btn.onclick = () => {
-                if(step < totalSteps) {
+                if (step < totalSteps) {
                   renderStep(step + 1);
                 } else {
                   window.location.href = item.targetUrl;
@@ -486,58 +525,114 @@
       let ytCompleted = false;
       let igCompleted = !item.igProfile;
 
-      function updateButtonState() {
-        const btn = document.getElementById('unlock-final-btn');
-        if(!btn) return;
-        if(ytCompleted && igCompleted) {
-          btn.disabled = false;
-          btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold transition cursor-pointer shadow-lg shadow-emerald-600/30";
-          btn.innerText = "ðŸ”“ Unlock Target Link Now!";
-          btn.onclick = () => window.location.href = item.targetUrl;
+      function checkAllCompleted() {
+        if (ytCompleted && igCompleted) {
+          const iconBox = document.getElementById('unlock-icon-box');
+          if (iconBox) {
+            iconBox.innerHTML = `<i class="fa-solid fa-lock-open text-3xl"></i>`;
+          }
+          const btn = document.getElementById('unlock-final-btn');
+          if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 cursor-pointer animate-bounce shadow-emerald-500/25";
+            btn.innerHTML = `<i class="fa-solid fa-unlock"></i> <span>Unlock Target Destination</span>`;
+            btn.onclick = () => window.location.href = item.targetUrl;
+          }
         }
       }
 
       document.body.innerHTML = `
-        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-          <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
-            <h1 class="text-2xl font-bold text-red-500"><i class="fa-brands fa-youtube mr-2"></i>Complete Steps to Unlock</h1>
-            <p class="text-slate-400 text-xs">Complete the required actions below to unlock your destination link.</p>
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 py-12">
+          <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl border border-slate-800">
             
-            <div class="space-y-3">
-              <a href="${item.ytChannel}" target="_blank" onclick="completeYt()" id="yt-btn" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition">
-                <i class="fa-brands fa-youtube"></i> 1. Subscribe on YouTube
-              </a>
+            <div id="unlock-icon-box" class="inline-flex p-4 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
+              <i class="fa-solid fa-lock text-3xl"></i>
+            </div>
+
+            <div>
+              <h1 class="text-3xl font-extrabold text-white">Complete Steps to Unlock</h1>
+              <p class="text-slate-400 text-sm mt-1">
+                Click each step below, wait 7 seconds on the page, and the final link will unlock automatically!
+              </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <button id="yt-btn" onclick="startYtStep('${item.ytChannel}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                <span>Step 1: Subscribe on YouTube</span>
+                <i class="fa-solid fa-up-right-from-square"></i>
+              </button>
 
               ${item.igProfile ? `
-                <a href="${item.igProfile}" target="_blank" onclick="completeIg()" id="ig-btn" class="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition">
-                  <i class="fa-brands fa-instagram"></i> 2. Follow on Instagram
-                </a>
+                <button id="ig-btn" onclick="startIgStep('${item.igProfile}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                  <span>Step 2: Follow on Instagram</span>
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </button>
               ` : ''}
             </div>
 
-            <button id="unlock-final-btn" disabled class="w-full bg-slate-800 text-slate-500 py-3 rounded-xl font-bold cursor-not-allowed">
-              ðŸ”’ Complete Step Above First
-            </button>
+            <div class="pt-4 border-t border-slate-800">
+              <button id="unlock-final-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-lock"></i>
+                <span>Locked (Complete Steps Above)</span>
+              </button>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-2">
+              <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                Create your own Unlock Gate with Link Tools
+              </a>
+            </p>
+
           </div>
         </div>
       `;
 
-      window.completeYt = function() {
-        setTimeout(() => {
-          ytCompleted = true;
-          const btn = document.getElementById('yt-btn');
-          if(btn) btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> YouTube Subscribed âœ“`;
-          updateButtonState();
-        }, 2000);
+      window.startYtStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('yt-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            ytCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 1 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
       };
 
-      window.completeIg = function() {
-        setTimeout(() => {
-          igCompleted = true;
-          const btn = document.getElementById('ig-btn');
-          if(btn) btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> Instagram Followed âœ“`;
-          updateButtonState();
-        }, 2000);
+      window.startIgStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('ig-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            igCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 2 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
       };
     }
 
