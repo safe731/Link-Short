@@ -1,249 +1,220 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Link Shortener, Web Tools & Real-Time Analytics Platform</title>
+  <title>Link Tools & Creator Studio</title>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Chart.js CDN for Analytics Graphs -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              950: '#0b0f19',
+              900: '#111827',
+              800: '#1f2937'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Chart.js CDN for Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- QRCode.js CDN -->
+
+  <!-- QRCode.js CDN for QR Generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 99px; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-40 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-      <!-- Brand Logo -->
-      <div class="flex items-center gap-2.5 cursor-pointer group" onclick="navigate('home')">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-          <i class="fa-solid fa-link text-xl"></i>
+  <!-- NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('home')">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+          <i class="fa-solid fa-link text-lg"></i>
         </div>
-        <div class="flex flex-col">
-          <span class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 tracking-tight leading-none">Link Tools</span>
-          <span class="text-[10px] text-slate-400 font-semibold tracking-wider">ANALYTICS & HOSTING</span>
+        <div>
+          <span class="font-extrabold text-lg text-white tracking-tight">LinkTools<span class="text-indigo-400">.Studio</span></span>
+          <span class="block text-[10px] text-slate-400 font-medium -mt-1">Creator Suite & Analytics</span>
         </div>
       </div>
 
-      <!-- Right Side Controls -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Dashboard Button -->
-        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold items-center gap-2 transition-all bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 active:scale-95">
-          <i class="fa-solid fa-chart-line"></i>
-          <span class="hidden sm:inline">Dashboard</span>
+      <nav class="flex items-center gap-2 sm:gap-4">
+        <button onclick="navigate('home')" class="px-3 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5 rounded-xl hover:bg-slate-800">
+          <i class="fa-solid fa-house text-indigo-400"></i>
+          <span class="hidden sm:inline">Home</span>
         </button>
 
-        <!-- Tokens Count Pill -->
-        <div id="nav-tokens" class="hidden items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-inner">
-          <i class="fa-solid fa-coins text-yellow-400 animate-pulse"></i>
-          <span><span id="user-tokens-count">0</span> Tokens</span>
+        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden px-3 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition items-center gap-1.5 rounded-xl hover:bg-slate-800">
+          <i class="fa-solid fa-chart-line text-emerald-400"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <div id="nav-tokens" class="hidden items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-2xl">
+          <i class="fa-solid fa-coins text-yellow-400 text-xs"></i>
+          <span class="text-xs font-bold text-slate-200" id="user-tokens-count">0</span>
+          <button onclick="openRechargeModal()" class="ml-1 text-[10px] bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 px-2 py-0.5 rounded-lg font-extrabold border border-yellow-500/30">Top Up</button>
         </div>
 
-        <!-- WhatsApp Buy Tokens -->
-        <a href="https://wa.me/01715569959" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-1.5 active:scale-95">
-          <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
-          <span class="hidden sm:inline">Get Tokens</span>
-        </a>
+        <button id="nav-login-btn" onclick="navigate('auth')" class="px-4 py-2 text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition shadow-lg shadow-indigo-600/20">
+          Sign In
+        </button>
 
-        <!-- Auth Buttons -->
-        <button id="nav-login-btn" onclick="navigate('auth')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-95 text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i>
-          <span>Login / Register</span>
+        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden px-3 py-2 text-xs sm:text-sm font-semibold text-slate-400 hover:text-red-400 transition hover:bg-slate-800 rounded-xl">
+          <i class="fa-solid fa-right-from-bracket"></i>
         </button>
-        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden text-slate-400 hover:text-red-400 p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Sign Out">
-          <i class="fa-solid fa-right-from-bracket text-lg"></i>
-        </button>
-      </div>
+      </nav>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-slate-700 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-md">
-      <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
-      <span id="toast-msg" class="text-xs sm:text-sm font-medium">Notification</span>
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl p-4 flex items-center gap-3 text-sm text-slate-100 min-w-[280px]">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+      <span id="toast-msg" class="font-medium">Action completed successfully</span>
     </div>
+  </div>
 
-    <!-- VIEW: HOME -->
-    <section id="view-home" class="space-y-8">
-      <div class="text-center space-y-3 py-6">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-2">
-          <i class="fa-solid fa-bolt text-yellow-400"></i> Real-time Click Analytics & Custom Link Suite
-        </div>
-        <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
-          Developer & Creator Tools Studio
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- VIEW 1: HOME & TOOL GRID -->
+    <section id="view-home" class="space-y-10">
+      <div class="text-center space-y-4 max-w-3xl mx-auto pt-4">
+        <span class="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold text-xs rounded-full uppercase tracking-wider">All-In-One Web Creator Tools</span>
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          Manage, Shorten & Monetize Your <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Digital Links</span>
         </h1>
-        <p class="text-slate-400 max-w-2xl mx-auto text-xs md:text-base leading-relaxed">
-          Host HTML pages, shorten URLs, build 3-page monetized links, create YouTube Sub4Sub gates, generate QR codes & track real-time click performance.
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Powerful link shortener, sub4sub gates, HTML hosting, pastebin, link-in-bio trees, link preview generator, and real-time tracking analytics in one dashboard.
         </p>
       </div>
 
-      <!-- LINK MANAGEMENT DASHBOARD BANNER -->
-      <div onclick="navigate('dashboard')" class="bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 cursor-pointer hover:border-indigo-400 transition-all shadow-2xl group relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="flex items-center gap-5 relative z-10">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 text-2xl group-hover:scale-110 transition-transform shadow-lg shadow-indigo-500/30">
-            <i class="fa-solid fa-chart-pie"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-xl sm:text-2xl font-bold text-white group-hover:text-indigo-300 transition-colors">
-                Real-Time Link Analytics & Management
-              </h2>
-              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
-            </div>
-            <p class="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
-              Track live click counts, device & referrer breakdowns, hourly graphs, download QR codes, and edit target links in real-time.
-            </p>
-          </div>
-        </div>
-        <button class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition shrink-0 shadow-lg shadow-indigo-600/30 flex items-center gap-2 group-hover:translate-x-1">
-          <span>Open Dashboard</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </div>
-
-      <!-- TOOLS GRID -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- HTML Hosting -->
-        <div onclick="navigate('html')" class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+      <!-- 7 CREATOR & DEVELOPER TOOLS GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 1. HTML Hosting -->
+        <div onclick="navigate('html')" class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
           <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition shadow-md">
             <i class="fa-solid fa-code"></i>
           </div>
-          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-blue-400 transition-colors">HTML Hosting</h3>
-          <p class="text-slate-400 text-xs leading-relaxed">Host raw HTML code with a unique custom web URL link. Costs 1 token.</p>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-blue-400 transition">HTML Hosting</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Host raw HTML/CSS/JS code with a unique web URL link. Costs 1 Token.</p>
         </div>
 
-        <!-- URL Shortener -->
-        <div onclick="navigate('shortener')" class="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+        <!-- 2. URL Shortener -->
+        <div onclick="navigate('shortener')" class="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
           <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition shadow-md">
             <i class="fa-solid fa-link"></i>
           </div>
-          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">URL Shortener</h3>
-          <p class="text-slate-400 text-xs leading-relaxed">Create short branded links with optional custom aliases. Free & unlimited.</p>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition">URL Shortener</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Short links with custom aliases, password protection, and expiration timers.</p>
         </div>
 
-        <!-- 3-Page Monetized -->
-        <div onclick="navigate('multipage')" class="bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+        <!-- 3. 3-Page Monetized -->
+        <div onclick="navigate('multipage')" class="bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
           <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition shadow-md">
             <i class="fa-solid fa-layer-group"></i>
           </div>
-          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-purple-400 transition-colors">3-Page Monetized</h3>
-          <p class="text-slate-400 text-xs leading-relaxed">Multi-step links with countdown timers & ad space to maximize earnings.</p>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-purple-400 transition">3-Page Monetized</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Multi-step links with customizable countdown timers & ad space to maximize earnings.</p>
         </div>
 
-        <!-- Follow to Unlock -->
-        <div onclick="navigate('unlock')" class="bg-slate-900/80 border border-slate-800 hover:border-red-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+        <!-- 4. Follow-to-Unlock Gate -->
+        <div onclick="navigate('unlock')" class="bg-slate-900/80 border border-slate-800 hover:border-red-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
           <div class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-400 flex items-center justify-center text-xl mb-4 group-hover:bg-red-600 group-hover:text-white transition shadow-md">
             <i class="fa-brands fa-youtube"></i>
           </div>
-          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-red-400 transition-colors">Follow-to-Unlock</h3>
-          <p class="text-slate-400 text-xs leading-relaxed">Require YouTube subscribe or Instagram follow before unlocking target link.</p>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-red-400 transition">Sub4Sub Unlock Gate</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Require YouTube subscribe or Instagram follow before unlocking secret download link.</p>
+        </div>
+
+        <!-- 5. Link-in-Bio Profile Tree -->
+        <div onclick="navigate('bio')" class="bg-slate-900/80 border border-slate-800 hover:border-pink-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl mb-4 group-hover:bg-pink-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-id-card"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-pink-400 transition">Link-in-Bio Tree</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Build beautiful social bio landing pages with multi-links, avatar, and social icons.</p>
+        </div>
+
+        <!-- 6. Code / Text Pastebin Host -->
+        <div onclick="navigate('paste')" class="bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:bg-amber-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-file-code"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-amber-400 transition">Text / Code Pastebin</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Host code snippets, notes, or JSON data with instant shareable links.</p>
+        </div>
+
+        <!-- 7. Link Preview Generator -->
+        <div onclick="navigate('previewgen')" class="bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 p-6 rounded-3xl cursor-pointer transition hover:-translate-y-1 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl mb-4 group-hover:bg-cyan-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-cyan-400 transition">Link Preview Generator</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Create custom social media preview cards (OG image, title & desc) for Facebook, Twitter & Discord.</p>
         </div>
       </div>
     </section>
 
-    <!-- VIEW: AUTH -->
-    <section id="view-auth" class="hidden max-w-md mx-auto py-12 animate-fade-in">
-      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 shadow-2xl">
+    <!-- VIEW: AUTH / SIGN IN -->
+    <section id="view-auth" class="hidden max-w-md mx-auto space-y-6 py-8">
+      <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl space-y-6 shadow-2xl">
         <div class="text-center space-y-2">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 mx-auto flex items-center justify-center text-2xl border border-indigo-500/30 mb-3">
-            <i class="fa-solid fa-user-shield"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Sign In to WebTools</h2>
-          <p class="text-xs text-slate-400">Access your Link Management Dashboard and 100 Free Signup Tokens</p>
+          <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
+          <p class="text-xs text-slate-400">Sign in to manage your links, view analytics, and top up tokens.</p>
         </div>
 
-        <div class="space-y-4">
-          <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-3 transition shadow-md active:scale-95">
-            <i class="fa-brands fa-google text-red-400 text-lg"></i>
-            <span>Continue with Google</span>
+        <button onclick="loginWithGoogle()" class="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-2xl text-xs font-bold text-white flex items-center justify-center gap-3 transition">
+          <i class="fa-brands fa-google text-red-400 text-base"></i>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="flex items-center gap-3 text-slate-600 text-xs">
+          <div class="flex-1 h-px bg-slate-800"></div>
+          <span>OR EMAIL</span>
+          <div class="flex-1 h-px bg-slate-800"></div>
+        </div>
+
+        <form onsubmit="handleEmailAuth(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+            <input type="email" id="auth-email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
+            <input type="password" id="auth-password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-indigo-600/25">
+            Sign In / Register
           </button>
-
-          <div class="relative flex items-center py-2">
-            <div class="flex-grow border-t border-slate-800"></div>
-            <span class="flex-shrink mx-4 text-xs text-slate-500 font-semibold uppercase">OR EMAIL</span>
-            <div class="flex-grow border-t border-slate-800"></div>
-          </div>
-
-          <form onsubmit="handleEmailAuth(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
-              <input type="email" id="auth-email" required placeholder="you@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
-              <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-            </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
-              Sign In / Register
-            </button>
-          </form>
-        </div>
+        </form>
       </div>
     </section>
 
-    <!-- VIEW: LINK MANAGEMENT DASHBOARD -->
-    <section id="view-dashboard" class="hidden space-y-8 animate-fade-in pb-12">
-      <!-- Dashboard Top Header Card -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl">
-        <div class="space-y-1">
-          <div class="flex items-center gap-3">
-            <h1 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-              <i class="fa-solid fa-chart-line text-indigo-400"></i>
-              <span>Link Management & Real-Time Analytics</span>
-            </h1>
-          </div>
-          <p class="text-slate-400 text-xs sm:text-sm">
-            Monitor real-time click traffic, device stats, referrers, generate QR codes, and edit link targets.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <button onclick="loadDashboardLinks()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-2xl transition-colors border border-slate-700/80 shadow-md flex items-center gap-2 text-xs font-semibold" title="Refresh Live Data">
-            <i class="fa-solid fa-arrows-rotate text-indigo-400"></i>
-            <span class="hidden sm:inline">Refresh Data</span>
-          </button>
-          <div class="bg-gradient-to-r from-indigo-950 to-purple-950 border border-indigo-500/40 px-5 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
-            <i class="fa-solid fa-coins text-yellow-400 text-2xl"></i>
-            <div>
-              <div class="text-[10px] uppercase tracking-wider text-indigo-300 font-bold">Available Tokens</div>
-              <div class="text-xl font-black text-white" id="stat-token-balance">0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats Summary Cards (4 Columns) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-purple-500/40 transition">
-          <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-purple-500/20">
+    <!-- VIEW: DASHBOARD & LINK MANAGEMENT -->
+    <section id="view-dashboard" class="hidden space-y-6">
+      <!-- Top Stats Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg">
+          <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-indigo-500/20">
             <i class="fa-solid fa-link"></i>
           </div>
           <div>
@@ -252,17 +223,17 @@
           </div>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-blue-500/40 transition">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg">
           <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-blue-500/20">
             <i class="fa-solid fa-code"></i>
           </div>
           <div>
             <div id="stat-html-count" class="text-2xl font-black text-white">0</div>
-            <div class="text-xs font-bold text-slate-400">Hosted HTML</div>
+            <div class="text-xs font-bold text-slate-400">HTML Sites</div>
           </div>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-pink-500/40 transition">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg">
           <div class="w-12 h-12 bg-pink-500/10 text-pink-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-pink-500/20">
             <i class="fa-solid fa-layer-group"></i>
           </div>
@@ -272,7 +243,7 @@
           </div>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-emerald-500/40 transition">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg">
           <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-emerald-500/20">
             <i class="fa-solid fa-arrow-pointer"></i>
           </div>
@@ -286,13 +257,11 @@
       <!-- Controls & Search Bar -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <!-- Search Input -->
           <div class="relative w-full sm:max-w-md">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-            <input type="text" id="search-links-input" oninput="handleSearchAndSort()" placeholder="Search links by title, alias, or target URL..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 placeholder:text-slate-600">
+            <input type="text" id="search-links-input" oninput="handleSearchAndSort()" placeholder="Search links by title, ID, or URL..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
 
-          <!-- Sort Select & Export Button -->
           <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
             <div class="flex items-center gap-2">
               <span class="text-xs text-slate-400 font-medium shrink-0">Sort:</span>
@@ -311,20 +280,29 @@
 
         <!-- Filter Tabs -->
         <div class="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800 custom-scrollbar pb-1">
-          <button onclick="filterDashboard('all')" id="tab-all" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+          <button onclick="filterDashboard('all')" id="tab-all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-indigo-600 text-white shadow-lg">
             All Items (<span id="count-tab-all">0</span>)
           </button>
-          <button onclick="filterDashboard('short')" id="tab-short" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
-            URL Shortener (<span id="count-tab-short">0</span>)
+          <button onclick="filterDashboard('short')" id="tab-short" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
+            Short Links (<span id="count-tab-short">0</span>)
           </button>
-          <button onclick="filterDashboard('html')" id="tab-html" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onclick="filterDashboard('html')" id="tab-html" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
             HTML Sites (<span id="count-tab-html">0</span>)
           </button>
-          <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
             3-Page Monetized (<span id="count-tab-multi">0</span>)
           </button>
-          <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
             Sub4Sub Gates (<span id="count-tab-unlock">0</span>)
+          </button>
+          <button onclick="filterDashboard('bio')" id="tab-bio" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
+            Bio Links (<span id="count-tab-bio">0</span>)
+          </button>
+          <button onclick="filterDashboard('paste')" id="tab-paste" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
+            Pastebin (<span id="count-tab-paste">0</span>)
+          </button>
+          <button onclick="filterDashboard('previewgen')" id="tab-previewgen" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white">
+            Previews (<span id="count-tab-previewgen">0</span>)
           </button>
         </div>
       </div>
@@ -335,272 +313,377 @@
       </div>
     </section>
 
-    <!-- VIEW: HTML HOST -->
-    <section id="view-html" class="hidden space-y-6 max-w-3xl mx-auto py-4">
-      <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
-        <div>
-          <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-code text-blue-400"></i> HTML Page Hosting
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Host single-file landing pages, web tools, or portfolios instantly.</p>
-        </div>
-        <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3.5 py-1.5 rounded-full font-bold shadow-inner">Cost: 1 Token</span>
+    <!-- VIEW 1: HTML HOSTING FORM -->
+    <section id="view-html" class="hidden max-w-2xl mx-auto space-y-6 py-4">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">Host Custom HTML Page</h2>
+        <p class="text-xs text-slate-400">Paste raw HTML/CSS/JS. Costs 1 Token per publish.</p>
       </div>
-
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Page Title</label>
-          <input type="text" id="html-title" placeholder="e.g. My Custom Landing Page" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Page Title / Label</label>
+          <input type="text" id="html-title" placeholder="My Landing Page" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">HTML / CSS / JS Code</label>
-          <textarea id="html-code" rows="12" placeholder="<!DOCTYPE html><html><head><title>My Page</title></head><body style='background:#0f172a; color:#fff; text-align:center; padding:50px;'><h1>Hello World!</h1></body></html>" class="w-full bg-slate-950 font-mono border border-slate-800 rounded-xl p-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 custom-scrollbar"></textarea>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">HTML Code</label>
+          <textarea id="html-code" rows="10" placeholder="<!DOCTYPE html><html>...</html>" class="w-full bg-slate-950 font-mono border border-slate-800 rounded-xl p-4 text-xs text-white focus:outline-none focus:border-indigo-500 custom-scrollbar"></textarea>
         </div>
-        <button onclick="generateHtmlHost()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/25 active:scale-95">
-          Publish HTML Page (1 Token)
+        <button onclick="generateHtmlHost()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/25 active:scale-95">
+          Publish HTML Site (1 Token)
         </button>
       </div>
     </section>
 
-    <!-- VIEW: SHORTENER -->
-    <section id="view-shortener" class="hidden max-w-xl mx-auto space-y-6 py-6">
+    <!-- VIEW 2: URL SHORTENER FORM -->
+    <section id="view-shortener" class="hidden max-w-2xl mx-auto space-y-6 py-4">
       <div class="text-center space-y-2">
-        <h2 class="text-2xl font-bold text-white">URL Shortener</h2>
-        <p class="text-xs text-slate-400">Create fast, trackable short links with custom aliases.</p>
+        <h2 class="text-2xl font-bold text-white">Create Short Link</h2>
+        <p class="text-xs text-slate-400">Shorten links with password protection & custom alias.</p>
       </div>
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Long URL</label>
-          <input type="url" id="short-url" placeholder="https://example.com/very-long-link-path" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Destination Target URL</label>
+          <input type="url" id="short-url" placeholder="https://example.com/long-page-path" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Custom Alias (Optional)</label>
+            <input type="text" id="short-alias" placeholder="my-custom-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Access Password (Optional)</label>
+            <input type="password" id="short-pass" placeholder="Secret123" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Custom Alias (Optional)</label>
-          <input type="text" id="short-alias" placeholder="e.g. my-brand-link" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Link Expiration (Hours)</label>
+          <select id="short-expire" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+            <option value="">Never Expires</option>
+            <option value="1">1 Hour</option>
+            <option value="24">24 Hours</option>
+            <option value="168">7 Days</option>
+          </select>
         </div>
         <button onclick="generateShortUrl()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-600/25 active:scale-95">
-          Create Short Link (Free)
+          Generate Short URL
         </button>
       </div>
     </section>
 
-    <!-- VIEW: 3-PAGE MONETIZED -->
-    <section id="view-multipage" class="hidden max-w-xl mx-auto space-y-6 py-6">
+    <!-- VIEW 3: 3-PAGE MONETIZED FORM -->
+    <section id="view-multipage" class="hidden max-w-2xl mx-auto space-y-6 py-4">
       <div class="text-center space-y-2">
         <h2 class="text-2xl font-bold text-white">3-Page Monetized Link</h2>
-        <p class="text-xs text-slate-400">Maximize click revenue with multi-step timer verification pages.</p>
+        <p class="text-xs text-slate-400">Maximize ad impressions with a 3-step countdown gate.</p>
       </div>
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Final Destination URL</label>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Final Destination Target URL</label>
           <input type="url" id="multi-url" placeholder="https://drive.google.com/file/d/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Timer Duration (Seconds per page)</label>
-          <input type="number" id="multi-timer" value="10" min="5" max="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Countdown Timer Per Page (Seconds)</label>
+          <input type="number" id="multi-timer" value="10" min="5" max="60" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
         </div>
         <button onclick="generateMultipageLink()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-600/25 active:scale-95">
-          Create 3-Page Link (Free)
+          Create 3-Page Monetized Link
         </button>
       </div>
     </section>
 
-    <!-- VIEW: UNLOCK GATE -->
-    <section id="view-unlock" class="hidden max-w-xl mx-auto space-y-6 py-6">
+    <!-- VIEW 4: SUB4SUB GATE FORM -->
+    <section id="view-unlock" class="hidden max-w-2xl mx-auto space-y-6 py-4">
       <div class="text-center space-y-2">
-        <h2 class="text-2xl font-bold text-white">Sub4Sub Follow-to-Unlock Gate</h2>
-        <p class="text-xs text-slate-400">Grow your social channels before giving access to downloadable content.</p>
+        <h2 class="text-2xl font-bold text-white">Sub4Sub Unlock Gate</h2>
+        <p class="text-xs text-slate-400">Require users to subscribe/follow before unlocking link.</p>
       </div>
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Destination Link (File / Secret)</label>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Locked Target File/URL</label>
           <input type="url" id="unlock-target" placeholder="https://mega.nz/file/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">YouTube Channel URL to Subscribe</label>
-          <input type="url" id="unlock-yt" placeholder="https://youtube.com/@channel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+          <input type="url" id="unlock-yt" placeholder="https://youtube.com/@channelname" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">Instagram Profile URL (Optional)</label>
           <input type="url" id="unlock-ig" placeholder="https://instagram.com/profile" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
         </div>
         <button onclick="generateUnlockGate()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-red-600/25 active:scale-95">
-          Create Sub4Sub Gate Link
+          Create Sub4Sub Lock Link
         </button>
+      </div>
+    </section>
+
+    <!-- VIEW 5: LINK-IN-BIO TREE FORM -->
+    <section id="view-bio" class="hidden max-w-2xl mx-auto space-y-6 py-4">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">Link-in-Bio Landing Page</h2>
+        <p class="text-xs text-slate-400">Build a single bio page with multiple links and avatar.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Display Name</label>
+          <input type="text" id="bio-name" placeholder="John Creator" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-pink-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Avatar Image URL</label>
+          <input type="url" id="bio-avatar" placeholder="https://example.com/avatar.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-pink-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Bio Description</label>
+          <textarea id="bio-desc" rows="2" placeholder="Tech enthusiast, Youtuber & Developer" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-pink-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Links (Format: Label | URL, one per line)</label>
+          <textarea id="bio-links" rows="5" placeholder="My Youtube | https://youtube.com&#10;My Telegram | https://t.me/..." class="w-full bg-slate-950 font-mono border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-pink-500"></textarea>
+        </div>
+        <button onclick="generateBioPage()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-600/25 active:scale-95">
+          Publish Bio Tree Page
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 6: PASTEBIN FORM -->
+    <section id="view-paste" class="hidden max-w-2xl mx-auto space-y-6 py-4">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">Text / Code Pastebin</h2>
+        <p class="text-xs text-slate-400">Share raw text, JSON, or code snippets easily.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Snippet Title</label>
+          <input type="text" id="paste-title" placeholder="Config / JSON Payload" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Text / Code Content</label>
+          <textarea id="paste-content" rows="10" placeholder="Paste your text or code here..." class="w-full bg-slate-950 font-mono border border-slate-800 rounded-xl p-4 text-xs text-white focus:outline-none focus:border-amber-500 custom-scrollbar"></textarea>
+        </div>
+        <button onclick="generatePastebin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-amber-600/25 active:scale-95">
+          Publish Pastebin Snippet
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 7: LINK PREVIEW GENERATOR FORM -->
+    <section id="view-previewgen" class="hidden max-w-3xl mx-auto space-y-6 py-4">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white flex items-center justify-center gap-2">
+          <i class="fa-solid fa-eye text-cyan-400"></i> Social Link Preview Generator
+        </h2>
+        <p class="text-xs text-slate-400">Customize Open Graph title, description, and cover image for attractive social sharing cards.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Input Form -->
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Target Destination URL</label>
+            <input type="url" id="preview-target" oninput="updateLiveOgPreview()" placeholder="https://example.com/page" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Preview Title</label>
+            <input type="text" id="preview-title" oninput="updateLiveOgPreview()" placeholder="🔥 Awesome Link Tools Studio 2026" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Preview Description</label>
+            <textarea id="preview-desc" oninput="updateLiveOgPreview()" rows="3" placeholder="Check out these high quality web tools and short link features..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-500"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Preview Image URL (OG Image)</label>
+            <input type="url" id="preview-image" oninput="updateLiveOgPreview()" placeholder="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <button onclick="generatePreviewLink()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-cyan-600/25 active:scale-95">
+            Generate Social Preview Link
+          </button>
+        </div>
+
+        <!-- Live Preview Card -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-mobile-screen text-cyan-400"></i> Live Social Card Preview
+          </div>
+          <div id="live-og-card" class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            <div id="og-card-img" class="h-44 bg-slate-950 bg-cover bg-center flex items-center justify-center text-slate-700" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80')">
+            </div>
+            <div class="p-4 space-y-1.5 bg-slate-900/90">
+              <div id="og-card-domain" class="text-[10px] font-mono text-cyan-400 uppercase tracking-wide">EXAMPLE.COM</div>
+              <div id="og-card-title" class="text-sm font-bold text-white line-clamp-2">Awesome Link Tools Studio 2026</div>
+              <div id="og-card-desc" class="text-xs text-slate-400 line-clamp-2">Check out these high quality web tools and short link features...</div>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500">This is how your link will appear when shared on Facebook, Twitter/X, Telegram, WhatsApp, and Discord.</p>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL: DETAILED REAL-TIME ANALYTICS -->
+  <!-- MODAL: RECHARGE / BUY TOKENS -->
+  <div id="recharge-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl relative">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-coins text-yellow-400"></i> Token Packages & Top-Up
+        </h3>
+        <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white text-sm">Starter Pack</div>
+            <div class="text-xs text-slate-400">50 Token Credits</div>
+          </div>
+          <span class="text-emerald-400 font-extrabold text-sm">৳50 BDT</span>
+        </div>
+        <div class="p-3 bg-indigo-950/60 rounded-2xl border border-indigo-500/40 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white text-sm">Pro Creator Pack</div>
+            <div class="text-xs text-indigo-300">100 Token Credits</div>
+          </div>
+          <span class="text-emerald-400 font-extrabold text-sm">৳90 BDT</span>
+        </div>
+        <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white text-sm">Developer Unlimited</div>
+            <div class="text-xs text-slate-400">500 Token Credits</div>
+          </div>
+          <span class="text-emerald-400 font-extrabold text-sm">৳400 BDT</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
+        <div class="font-bold text-slate-300">Send Payment via Personal bKash / Nagad / Rocket:</div>
+        <div class="font-mono text-indigo-300 bg-slate-900 p-2 rounded-xl text-center font-bold text-sm select-all">01715569959</div>
+        <p class="text-[11px] text-slate-400">Send Money to this number, then click below to submit Transaction ID via WhatsApp.</p>
+      </div>
+
+      <a href="https://wa.me/01715569959?text=Hello%20I%20want%20to%20buy%20Tokens%20for%20LinkTools" target="_blank" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-600/30">
+        <i class="fa-brands fa-whatsapp text-lg"></i>
+        <span>Order Tokens on WhatsApp</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MODAL: ANALYTICS -->
   <div id="analytics-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl my-8 relative">
-      <!-- Modal Header -->
       <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-chart-pie"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-white" id="modal-analytics-title">Link Performance Analytics</h3>
-            <p class="text-xs text-slate-400" id="modal-analytics-url">https://link...</p>
-          </div>
+        <div>
+          <h3 class="text-xl font-bold text-white" id="modal-analytics-title">Link Performance Analytics</h3>
+          <p class="text-xs text-slate-400 font-mono mt-0.5" id="modal-analytics-url">https://link...</p>
         </div>
-        <button onclick="closeAnalyticsModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+        <button onclick="closeAnalyticsModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800">
           <i class="fa-solid fa-xmark text-xl"></i>
         </button>
       </div>
 
-      <!-- Quick Metrics Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
           <div class="text-[10px] font-bold text-slate-400 uppercase">Total Clicks</div>
           <div class="text-2xl font-black text-indigo-400 mt-1" id="m-stat-total">0</div>
         </div>
-        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
           <div class="text-[10px] font-bold text-slate-400 uppercase">Today's Clicks</div>
           <div class="text-2xl font-black text-emerald-400 mt-1" id="m-stat-today">0</div>
         </div>
-        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
           <div class="text-[10px] font-bold text-slate-400 uppercase">Unique Visitors</div>
           <div class="text-2xl font-black text-purple-400 mt-1" id="m-stat-unique">0</div>
         </div>
-        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
-          <div class="text-[10px] font-bold text-slate-400 uppercase">Top Referrer</div>
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+          <div class="text-[10px] font-bold text-slate-400 uppercase">Top Source</div>
           <div class="text-sm font-bold text-white mt-1.5 truncate" id="m-stat-top-ref">Direct</div>
         </div>
       </div>
 
-      <!-- Charts Section -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Daily Click Trend Line Chart (2 Cols) -->
-        <div class="md:col-span-2 bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-indigo-400"></i> Click Volume (Last 7 Days)
-            </h4>
-          </div>
-          <div class="h-56 relative w-full">
-            <canvas id="chart-click-trend"></canvas>
-          </div>
+        <div class="md:col-span-2 bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-2">
+          <h4 class="text-xs font-bold text-slate-300"><i class="fa-solid fa-chart-line text-indigo-400 mr-1"></i> Daily Click Trend (Last 7 Days)</h4>
+          <div class="h-48 relative w-full"><canvas id="chart-click-trend"></canvas></div>
         </div>
-
-        <!-- Device Share Doughnut Chart (1 Col) -->
-        <div class="bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
-          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
-            <i class="fa-solid fa-mobile-screen text-emerald-400"></i> Device Distribution
-          </h4>
-          <div class="h-56 relative flex items-center justify-center">
-            <canvas id="chart-device-pie"></canvas>
-          </div>
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-2">
+          <h4 class="text-xs font-bold text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-400 mr-1"></i> Devices</h4>
+          <div class="h-48 relative flex items-center justify-center"><canvas id="chart-device-pie"></canvas></div>
         </div>
       </div>
 
-      <!-- Recent Click Logs Stream Table -->
-      <div class="bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
+      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-3">
         <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left text-yellow-400"></i> Recent Click Logs Stream
-          </h4>
-          <button onclick="downloadLinkLogsCsv()" class="text-[11px] font-bold text-indigo-400 hover:underline">
-            <i class="fa-solid fa-download"></i> Download CSV
-          </button>
+          <h4 class="text-xs font-bold text-slate-300"><i class="fa-solid fa-clock-rotate-left text-yellow-400 mr-1"></i> Recent Click Logs Stream</h4>
+          <button onclick="downloadLinkLogsCsv()" class="text-[11px] font-bold text-indigo-400 hover:underline"><i class="fa-solid fa-download"></i> Download CSV</button>
         </div>
         <div class="overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
               <tr>
-                <th class="p-2.5 rounded-l-xl">Date & Time</th>
-                <th class="p-2.5">Device</th>
-                <th class="p-2.5">Browser / OS</th>
-                <th class="p-2.5 rounded-r-xl">Traffic Source</th>
+                <th class="p-2">Date & Time</th>
+                <th class="p-2">Device</th>
+                <th class="p-2">Browser / OS</th>
+                <th class="p-2">Source</th>
               </tr>
             </thead>
             <tbody id="m-click-logs-tbody" class="divide-y divide-slate-800/60">
-              <tr>
-                <td colspan="4" class="p-4 text-center text-slate-500">No click logs recorded yet.</td>
-              </tr>
+              <tr><td colspan="4" class="p-4 text-center text-slate-500">No logs recorded yet.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
       <div class="flex justify-end pt-2 border-t border-slate-800">
-        <button onclick="closeAnalyticsModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">
-          Close Analytics
-        </button>
+        <button onclick="closeAnalyticsModal()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-700">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: QR CODE GENERATOR -->
+  <!-- MODAL: QR CODE -->
   <div id="qrcode-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-qrcode text-indigo-400"></i> QR Code Generator
-        </h3>
-        <button onclick="closeQrModal()" class="text-slate-400 hover:text-white">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-qrcode text-indigo-400 mr-1"></i> QR Code</h3>
+        <button onclick="closeQrModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
-      <div class="bg-white p-4 rounded-2xl inline-block shadow-xl mx-auto" id="qrcode-container">
-        <!-- QR Code renders here -->
-      </div>
-
-      <div class="text-xs text-slate-400 font-mono truncate px-2" id="qr-link-display">
-        https://link...
-      </div>
-
+      <div class="bg-white p-4 rounded-2xl inline-block shadow-xl mx-auto" id="qrcode-container"></div>
+      <div class="text-xs text-slate-400 font-mono truncate px-2" id="qr-link-display">https://link...</div>
       <div class="flex items-center gap-3">
-        <button onclick="downloadQrCode()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition shadow-lg">
-          <i class="fa-solid fa-download"></i> Download PNG
-        </button>
-        <button onclick="closeQrModal()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition">
-          Done
-        </button>
+        <button onclick="downloadQrCode()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl"><i class="fa-solid fa-download"></i> Download PNG</button>
+        <button onclick="closeQrModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">Done</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: EDIT LINK TARGET -->
   <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Edit Link Configuration
-        </h3>
-        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-pen-to-square text-indigo-400 mr-1"></i> Edit Link Target</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
       <input type="hidden" id="edit-link-id">
       <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1">Title / Tag</label>
-        <input type="text" id="edit-link-title" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        <label class="block text-xs font-semibold text-slate-400 mb-1">Title / Label</label>
+        <input type="text" id="edit-link-title" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white">
       </div>
       <div>
         <label class="block text-xs font-semibold text-slate-400 mb-1">Target Destination URL</label>
-        <input type="url" id="edit-link-target" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        <input type="url" id="edit-link-target" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white">
       </div>
-
       <div class="flex justify-end gap-3 pt-2">
-        <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">Cancel</button>
-        <button onclick="saveEditLink()" class="px-5 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-500 shadow-lg">Save Changes</button>
+        <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">Cancel</button>
+        <button onclick="saveEditLink()" class="px-5 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl">Save Changes</button>
       </div>
     </div>
   </div>
 
   <script type="module">
-    // Firebase Modular SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // ==========================================
-    // 1. FIREBASE CONFIGURATION
-    // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyDhJLgi2pr2h0F_Mbbc4wlc90C0I_GEwWg",
       authDomain: "linkl-bd.firebaseapp.com",
@@ -608,8 +691,7 @@
       projectId: "linkl-bd",
       storageBucket: "linkl-bd.firebasestorage.app",
       messagingSenderId: "774469512116",
-      appId: "1:774469512116:web:2bee9a5783e467800ca0e1",
-      measurementId: "G-LQ160MB9F4"
+      appId: "1:774469512116:web:2bee9a5783e467800ca0e1"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -625,158 +707,133 @@
     let trendChartInstance = null;
     let pieChartInstance = null;
 
-    // CAPTURE DEVICE & REFERRER ANALYTICS LOG
     function captureDeviceAnalytics() {
       const ua = navigator.userAgent;
       let device = 'Desktop';
       if (/mobile/i.test(ua)) device = 'Mobile';
       else if (/tablet|ipad/i.test(ua)) device = 'Tablet';
 
-      let browser = 'Other';
-      if (/chrome|crios/i.test(ua) && !/edg/i.test(ua)) browser = 'Chrome';
-      else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
-      else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+      let browser = 'Chrome';
+      if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+      else if (/firefox/i.test(ua)) browser = 'Firefox';
       else if (/edg/i.test(ua)) browser = 'Edge';
-      else if (/opera|opr/i.test(ua)) browser = 'Opera';
 
-      let os = 'Other';
-      if (/win/i.test(ua)) os = 'Windows';
+      let os = 'Windows';
+      if (/android/i.test(ua)) os = 'Android';
+      else if (/iphone|ipad/i.test(ua)) os = 'iOS';
       else if (/mac/i.test(ua)) os = 'macOS';
-      else if (/android/i.test(ua)) os = 'Android';
-      else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
-      else if (/linux/i.test(ua)) os = 'Linux';
 
       let referrer = 'Direct';
       if (document.referrer) {
         try {
           const url = new URL(document.referrer);
           referrer = url.hostname.replace('www.', '');
-          if (referrer.includes('youtube')) referrer = 'YouTube';
-          else if (referrer.includes('facebook') || referrer.includes('fb')) referrer = 'Facebook';
-          else if (referrer.includes('instagram')) referrer = 'Instagram';
-          else if (referrer.includes('whatsapp')) referrer = 'WhatsApp';
-          else if (referrer.includes('google')) referrer = 'Google Search';
-        } catch(e) {
-          referrer = 'External';
-        }
+        } catch(e) { referrer = 'External'; }
       }
 
-      const todayStr = new Date().toISOString().split('T')[0];
-      return {
-        device,
-        browser,
-        os,
-        referrer,
-        timestamp: Date.now(),
-        date: todayStr
-      };
+      return { device, browser, os, referrer, timestamp: Date.now(), date: new Date().toISOString().split('T')[0] };
     }
 
-    // ROUTER / LINK RESOLVER ON PAGE LOAD
+    async function recordClickAndLog(linkId, item) {
+      try {
+        const logData = captureDeviceAnalytics();
+        await set(push(ref(db, `links/${linkId}/logs`)), logData);
+        await update(ref(db, `links/${linkId}`), {
+          clicks: (item.clicks || 0) + 1,
+          lastClickedAt: Date.now()
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    // ROUTER CHECK ON PAGE LOAD
     async function checkQueryParams() {
       const params = new URLSearchParams(window.location.search);
       const shortId = params.get('s');
       const siteId = params.get('site');
       const multiId = params.get('m');
       const unlockId = params.get('unlock');
+      const bioId = params.get('bio');
+      const pasteId = params.get('paste');
+      const previewId = params.get('pv');
 
       if (shortId) {
-        const snapshot = await get(ref(db, `links/${shortId}`));
-        if (snapshot.exists()) {
-          const item = snapshot.val();
+        const snap = await get(ref(db, `links/${shortId}`));
+        if (snap.exists()) {
+          const item = snap.val();
+          if (item.expireAt && Date.now() > item.expireAt) {
+            document.body.innerHTML = `<div class="p-12 text-center text-amber-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">Link Expired!</div>`;
+            return;
+          }
+          if (item.password) {
+            const entered = prompt("Enter Password to access this link:");
+            if (entered !== item.password) return alert("Incorrect password!");
+          }
           await recordClickAndLog(shortId, item);
           window.location.href = item.targetUrl;
         } else {
-          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">404: Short link not found!</div>`;
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">404: Short Link Not Found</div>`;
         }
       } else if (siteId) {
-        const snapshot = await get(ref(db, `links/${siteId}`));
-        if (snapshot.exists()) {
-          const item = snapshot.val();
+        const snap = await get(ref(db, `links/${siteId}`));
+        if (snap.exists()) {
+          const item = snap.val();
           await recordClickAndLog(siteId, item);
-          document.open();
-          document.write(item.html);
-          document.close();
-        } else {
-          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">404: Hosted HTML page not found!</div>`;
+          document.open(); document.write(item.html); document.close();
         }
       } else if (multiId) {
-        const snapshot = await get(ref(db, `links/${multiId}`));
-        if (snapshot.exists()) {
-          const item = snapshot.val();
+        const snap = await get(ref(db, `links/${multiId}`));
+        if (snap.exists()) {
+          const item = snap.val();
           await recordClickAndLog(multiId, item);
           renderMultiStepPage(item);
         }
       } else if (unlockId) {
-        const snapshot = await get(ref(db, `links/${unlockId}`));
-        if (snapshot.exists()) {
-          const item = snapshot.val();
+        const snap = await get(ref(db, `links/${unlockId}`));
+        if (snap.exists()) {
+          const item = snap.val();
           await recordClickAndLog(unlockId, item);
           renderUnlockGatePage(item);
         }
-      }
-    }
-
-    async function recordClickAndLog(linkId, item) {
-      try {
-        const logData = captureDeviceAnalytics();
-        const logRef = push(ref(db, `links/${linkId}/logs`));
-        await set(logRef, logData);
-        await update(ref(db, `links/${linkId}`), {
-          clicks: (item.clicks || 0) + 1,
-          lastClickedAt: Date.now()
-        });
-      } catch(e) {
-        console.error("Click log recording error:", e);
+      } else if (bioId) {
+        const snap = await get(ref(db, `links/${bioId}`));
+        if (snap.exists()) {
+          const item = snap.val();
+          await recordClickAndLog(bioId, item);
+          renderBioPage(item);
+        }
+      } else if (pasteId) {
+        const snap = await get(ref(db, `links/${pasteId}`));
+        if (snap.exists()) {
+          const item = snap.val();
+          await recordClickAndLog(pasteId, item);
+          renderPastebinPage(item);
+        }
+      } else if (previewId) {
+        const snap = await get(ref(db, `links/${previewId}`));
+        if (snap.exists()) {
+          const item = snap.val();
+          await recordClickAndLog(previewId, item);
+          renderOgPreviewPage(item);
+        }
       }
     }
 
     function renderMultiStepPage(item) {
       let currentStep = 1;
-      const totalSteps = 3;
-
       function renderStep(step) {
         let sec = item.timer || 10;
-
         document.body.innerHTML = `
           <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
-            <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center shadow-2xl border border-slate-800 space-y-6">
-              
-              <div class="inline-flex p-3 rounded-2xl bg-pink-500/10 text-pink-400 border border-pink-500/20 mb-1">
-                <i class="fa-solid fa-layer-group text-3xl"></i>
-              </div>
-
-              <div>
-                <h2 class="text-3xl font-extrabold text-white">
-                  Step <span class="text-pink-400">${step}</span> of 3
-                </h2>
-                <p class="text-slate-400 text-sm mt-1">
-                  Please wait a moment to reach your target destination...
-                </p>
-              </div>
-
-              <div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-inner flex flex-col items-center justify-center min-h-[140px] text-slate-500 text-xs">
+            <div class="w-full max-w-md bg-slate-900 p-8 rounded-3xl text-center shadow-2xl border border-slate-800 space-y-6">
+              <div class="inline-flex p-3 rounded-2xl bg-pink-500/10 text-pink-400 border border-pink-500/20"><i class="fa-solid fa-layer-group text-3xl"></i></div>
+              <h2 class="text-3xl font-extrabold">Step <span class="text-pink-400">${step}</span> of 3</h2>
+              <p class="text-slate-400 text-xs">Please wait for countdown timer to complete...</p>
+              <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-slate-500 text-xs">
                 <div class="text-slate-400 font-bold mb-1">Sponsored Advertisement</div>
-                <p class="text-slate-600 max-w-xs text-[11px]">
-                  Supporting our creator link platform. Link unlocks automatically when the timer finishes.
-                </p>
+                <p>Supporting creator links.</p>
               </div>
-
-              <div id="countdown" class="text-6xl font-black text-pink-400 my-4 drop-shadow-md font-mono">
-                ${sec}
-              </div>
-
-              <button id="next-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
-                <i class="fa-solid fa-spinner fa-spin text-pink-400"></i>
-                <span>Please Wait... (<span id="btn-sec">${sec}</span>s)</span>
-              </button>
-
-              <p class="text-xs text-slate-500 mt-2">
-                <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
-                  Monetize your links with Link Tools
-                </a>
-              </p>
-
+              <div id="countdown" class="text-5xl font-black text-pink-400 font-mono">${sec}</div>
+              <button id="next-btn" disabled class="w-full py-4 rounded-2xl font-bold bg-slate-800 text-slate-500 cursor-not-allowed">Please Wait... (${sec}s)</button>
             </div>
           </div>
         `;
@@ -784,33 +841,19 @@
         const timer = setInterval(() => {
           sec--;
           const cnt = document.getElementById('countdown');
-          const btnSec = document.getElementById('btn-sec');
           const btn = document.getElementById('next-btn');
-
           if (cnt) cnt.innerText = sec;
-          if (btnSec) btnSec.innerText = sec;
-
           if (sec <= 0) {
             clearInterval(timer);
             if (btn) {
               btn.disabled = false;
-              btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 cursor-pointer shadow-pink-500/25 animate-bounce";
-              btn.innerHTML = step < totalSteps 
-                ? `<span>Next Page</span> <i class="fa-solid fa-arrow-right"></i>`
-                : `<span>Get Target Link</span> <i class="fa-solid fa-up-right-from-square"></i>`;
-
-              btn.onclick = () => {
-                if (step < totalSteps) {
-                  renderStep(step + 1);
-                } else {
-                  window.location.href = item.targetUrl;
-                }
-              };
+              btn.className = "w-full py-4 rounded-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 text-white cursor-pointer shadow-lg animate-bounce";
+              btn.innerHTML = step < 3 ? "Next Page →" : "Get Final Destination Link →";
+              btn.onclick = () => step < 3 ? renderStep(step + 1) : window.location.href = item.targetUrl;
             }
           }
         }, 1000);
       }
-
       renderStep(1);
     }
 
@@ -818,64 +861,34 @@
       let ytCompleted = false;
       let igCompleted = !item.igProfile;
 
-      function checkAllCompleted() {
-        if (ytCompleted && igCompleted) {
-          const iconBox = document.getElementById('unlock-icon-box');
-          if (iconBox) {
-            iconBox.innerHTML = `<i class="fa-solid fa-lock-open text-3xl"></i>`;
-          }
-          const btn = document.getElementById('unlock-final-btn');
-          if (btn) {
-            btn.disabled = false;
-            btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 cursor-pointer animate-bounce shadow-emerald-500/25";
-            btn.innerHTML = `<i class="fa-solid fa-unlock"></i> <span>Unlock Target Destination</span>`;
-            btn.onclick = () => window.location.href = item.targetUrl;
-          }
-        }
-      }
-
       document.body.innerHTML = `
-        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 py-12">
-          <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl border border-slate-800">
-            
-            <div id="unlock-icon-box" class="inline-flex p-4 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
-              <i class="fa-solid fa-lock text-3xl"></i>
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+          <div class="w-full max-w-md bg-slate-900 border border-slate-800 p-8 rounded-3xl text-center shadow-2xl space-y-6">
+            <div class="w-16 h-16 rounded-3xl bg-red-500/10 text-red-500 flex items-center justify-center text-2xl mx-auto border border-red-500/20">
+              <i class="fa-solid fa-lock"></i>
             </div>
-
             <div>
-              <h1 class="text-3xl font-extrabold text-white">Complete Steps to Unlock</h1>
-              <p class="text-slate-400 text-sm mt-1">
-                Click each step below, wait 7 seconds on the page, and the final link will unlock automatically!
-              </p>
+              <h2 class="text-2xl font-black text-white">Complete Steps to Unlock</h2>
+              <p class="text-xs text-slate-400 mt-1">Subscribe to channel & follow social pages below to reveal download link.</p>
             </div>
 
-            <div class="space-y-3 pt-2">
-              <button id="yt-btn" onclick="startYtStep('${item.ytChannel}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
-                <span>Step 1: Subscribe on YouTube</span>
-                <i class="fa-solid fa-up-right-from-square"></i>
+            <div class="space-y-3">
+              <button id="yt-btn" onclick="startYtStep('${item.ytChannel}')" class="w-full py-3 px-4 rounded-xl font-bold bg-red-600 hover:bg-red-500 text-white text-xs flex items-center justify-between shadow-lg shadow-red-600/20">
+                <span class="flex items-center gap-2"><i class="fa-brands fa-youtube text-lg"></i> Step 1: Subscribe YouTube</span>
+                <i class="fa-solid fa-arrow-right"></i>
               </button>
 
               ${item.igProfile ? `
-                <button id="ig-btn" onclick="startIgStep('${item.igProfile}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
-                  <span>Step 2: Follow on Instagram</span>
-                  <i class="fa-solid fa-up-right-from-square"></i>
+                <button id="ig-btn" onclick="startIgStep('${item.igProfile}')" class="w-full py-3 px-4 rounded-xl font-bold bg-pink-600 hover:bg-pink-500 text-white text-xs flex items-center justify-between shadow-lg shadow-pink-600/20">
+                  <span class="flex items-center gap-2"><i class="fa-brands fa-instagram text-lg"></i> Step 2: Follow Instagram</span>
+                  <i class="fa-solid fa-arrow-right"></i>
                 </button>
               ` : ''}
             </div>
 
-            <div class="pt-4 border-t border-slate-800">
-              <button id="unlock-final-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
-                <i class="fa-solid fa-lock"></i>
-                <span>Locked (Complete Steps Above)</span>
-              </button>
-            </div>
-
-            <p class="text-xs text-slate-500 mt-2">
-              <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
-                Create your own Unlock Gate with Link Tools
-              </a>
-            </p>
-
+            <button id="unlock-final-btn" disabled class="w-full py-3.5 rounded-xl font-bold bg-slate-800 text-slate-500 cursor-not-allowed">
+              Complete Steps Above to Unlock
+            </button>
           </div>
         </div>
       `;
@@ -885,21 +898,17 @@
         const btn = document.getElementById('yt-btn');
         if (!btn) return;
         btn.disabled = true;
-        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
-        
         let sec = 7;
-        btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
-        
-        const interval = setInterval(() => {
+        btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span>`;
+        const timer = setInterval(() => {
           sec--;
-          if (sec > 0) {
-            btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
-          } else {
-            clearInterval(interval);
+          if (sec > 0) btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span>`;
+          else {
+            clearInterval(timer);
             ytCompleted = true;
-            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
-            btn.innerHTML = `<span>Step 1 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
-            checkAllCompleted();
+            btn.className = "w-full py-3 px-4 rounded-xl font-bold bg-slate-900 text-emerald-400 border border-emerald-500/40 text-xs flex justify-between items-center";
+            btn.innerHTML = `<span>Step 1 Completed</span><i class="fa-solid fa-circle-check"></i>`;
+            checkUnlock();
           }
         }, 1000);
       };
@@ -909,100 +918,146 @@
         const btn = document.getElementById('ig-btn');
         if (!btn) return;
         btn.disabled = true;
-        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
-        
         let sec = 7;
-        btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
-        
-        const interval = setInterval(() => {
+        btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span>`;
+        const timer = setInterval(() => {
           sec--;
-          if (sec > 0) {
-            btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
-          } else {
-            clearInterval(interval);
+          if (sec > 0) btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span>`;
+          else {
+            clearInterval(timer);
             igCompleted = true;
-            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
-            btn.innerHTML = `<span>Step 2 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
-            checkAllCompleted();
+            btn.className = "w-full py-3 px-4 rounded-xl font-bold bg-slate-900 text-emerald-400 border border-emerald-500/40 text-xs flex justify-between items-center";
+            btn.innerHTML = `<span>Step 2 Completed</span><i class="fa-solid fa-circle-check"></i>`;
+            checkUnlock();
           }
         }, 1000);
       };
+
+      function checkUnlock() {
+        if (ytCompleted && igCompleted) {
+          const btn = document.getElementById('unlock-final-btn');
+          if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full py-3.5 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 text-white cursor-pointer shadow-lg animate-bounce";
+            btn.innerHTML = `<i class="fa-solid fa-unlock mr-1"></i> Unlock Target Destination Link`;
+            btn.onclick = () => window.location.href = item.targetUrl;
+          }
+        }
+      }
     }
 
-    // Run router check on start
+    function renderBioPage(item) {
+      const linksHtml = (item.bioLinks || []).map(l => `
+        <a href="${l.url}" target="_blank" class="block w-full py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold text-sm text-center shadow-lg transition hover:scale-102">
+          ${l.title}
+        </a>
+      `).join('');
+
+      document.body.innerHTML = `
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+          <div class="w-full max-w-sm space-y-6 text-center">
+            ${item.avatar ? `<img src="${item.avatar}" class="w-24 h-24 rounded-full mx-auto border-4 border-pink-500/40 shadow-xl object-cover">` : `<div class="w-24 h-24 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 mx-auto flex items-center justify-center text-3xl font-black text-white shadow-xl">${(item.name || 'C')[0]}</div>`}
+            <div>
+              <h1 class="text-2xl font-black">${item.name || 'Creator'}</h1>
+              <p class="text-xs text-slate-400 mt-1">${item.desc || ''}</p>
+            </div>
+            <div class="space-y-3">${linksHtml}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPastebinPage(item) {
+      document.body.innerHTML = `
+        <div class="min-h-screen bg-slate-950 text-white p-6 max-w-3xl mx-auto space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <h1 class="text-xl font-bold text-amber-400"><i class="fa-solid fa-file-code mr-2"></i>${item.title || 'Pastebin Code'}</h1>
+            <button onclick="navigator.clipboard.writeText(\`${item.content.replace(/`/g, '\\`')}\`); alert('Copied!');" class="px-3 py-1.5 bg-slate-800 text-xs font-bold rounded-xl text-slate-300 hover:text-white"><i class="fa-solid fa-copy mr-1"></i>Copy Raw</button>
+          </div>
+          <pre class="bg-slate-900 p-6 rounded-2xl border border-slate-800 font-mono text-xs text-slate-200 overflow-x-auto whitespace-pre-wrap">${item.content}</pre>
+        </div>
+      `;
+    }
+
+    function renderOgPreviewPage(item) {
+      const targetUrl = item.targetUrl || '#';
+      let domain = 'EXAMPLE.COM';
+      try { domain = new URL(targetUrl).hostname.toUpperCase(); } catch(e){}
+
+      document.body.innerHTML = `
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+          <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl space-y-0">
+            ${item.ogImage ? `<div class="h-52 bg-slate-950 bg-cover bg-center" style="background-image: url('${item.ogImage}')"></div>` : `<div class="h-40 bg-gradient-to-tr from-cyan-900 to-indigo-900 flex items-center justify-center text-4xl text-cyan-400"><i class="fa-solid fa-eye"></i></div>`}
+            <div class="p-6 space-y-4">
+              <div class="text-[10px] font-mono text-cyan-400 uppercase tracking-widest font-bold">${domain}</div>
+              <h1 class="text-xl font-extrabold text-white leading-snug">${item.ogTitle || item.title || 'Social Link Preview'}</h1>
+              <p class="text-xs text-slate-400 leading-relaxed">${item.ogDesc || 'Click the button below to proceed to the destination link.'}</p>
+              <a href="${targetUrl}" class="block w-full text-center py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm shadow-lg shadow-cyan-500/25 transition hover:scale-102">
+                Visit Destination Link <i class="fa-solid fa-arrow-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     checkQueryParams();
 
     window.navigate = function(view) {
-      const views = ['home', 'auth', 'dashboard', 'html', 'shortener', 'multipage', 'unlock'];
-      views.forEach(v => {
+      ['home', 'auth', 'dashboard', 'html', 'shortener', 'multipage', 'unlock', 'bio', 'paste', 'previewgen'].forEach(v => {
         const el = document.getElementById(`view-${v}`);
-        if(el) el.classList.add('hidden');
+        if (el) el.classList.add('hidden');
       });
       const target = document.getElementById(`view-${view}`);
-      if(target) target.classList.remove('hidden');
-
-      if(view === 'dashboard') {
-        loadDashboardLinks();
-      }
+      if (target) target.classList.remove('hidden');
+      if (view === 'dashboard') loadDashboardLinks();
     };
 
     window.showToast = function(msg, isError = false) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toast-msg');
       const toastIcon = document.getElementById('toast-icon');
-      
+      if (!toast) return;
       toastMsg.innerText = msg;
-      toastIcon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 text-xl" : "fa-solid fa-circle-check text-emerald-400 text-xl";
-      
+      toastIcon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 text-lg" : "fa-solid fa-circle-check text-emerald-400 text-lg";
       toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
     };
 
-    // AUTH OBSERVER
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        document.getElementById('nav-login-btn').classList.add('hidden');
-        document.getElementById('nav-logout-btn').classList.remove('hidden');
-        document.getElementById('nav-tokens').classList.remove('hidden');
-        document.getElementById('nav-tokens').classList.add('flex');
-        document.getElementById('nav-dashboard-btn').classList.remove('hidden');
-        document.getElementById('nav-dashboard-btn').classList.add('flex');
+        document.getElementById('nav-login-btn')?.classList.add('hidden');
+        document.getElementById('nav-logout-btn')?.classList.remove('hidden');
+        document.getElementById('nav-tokens')?.classList.remove('hidden');
+        document.getElementById('nav-tokens')?.classList.add('flex');
+        document.getElementById('nav-dashboard-btn')?.classList.remove('hidden');
+        document.getElementById('nav-dashboard-btn')?.classList.add('flex');
 
-        const userRef = ref(db, `users/${user.uid}`);
-        const snapshot = await get(userRef);
+        const snapshot = await get(ref(db, `users/${user.uid}`));
         if (snapshot.exists()) {
           userTokens = snapshot.val().tokens || 0;
         } else {
           userTokens = 100;
-          await set(userRef, { tokens: 100, email: user.email });
+          await set(ref(db, `users/${user.uid}`), { tokens: 100, email: user.email });
         }
-        document.getElementById('user-tokens-count').innerText = userTokens;
-        document.getElementById('stat-token-balance').innerText = userTokens;
-
-        setupRealtimeDashboardSync();
+        if (document.getElementById('user-tokens-count')) document.getElementById('user-tokens-count').innerText = userTokens;
+        if (document.getElementById('stat-token-balance')) document.getElementById('stat-token-balance').innerText = userTokens;
       } else {
         currentUser = null;
-        document.getElementById('nav-login-btn').classList.remove('hidden');
-        document.getElementById('nav-logout-btn').classList.add('hidden');
-        document.getElementById('nav-tokens').classList.add('hidden');
-        document.getElementById('nav-tokens').classList.remove('flex');
-        document.getElementById('nav-dashboard-btn').classList.add('hidden');
-        document.getElementById('nav-dashboard-btn').classList.remove('flex');
+        document.getElementById('nav-login-btn')?.classList.remove('hidden');
+        document.getElementById('nav-logout-btn')?.classList.add('hidden');
+        document.getElementById('nav-tokens')?.classList.add('hidden');
+        document.getElementById('nav-dashboard-btn')?.classList.add('hidden');
       }
     });
 
     window.loginWithGoogle = async function() {
       try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        await signInWithPopup(auth, new GoogleAuthProvider());
         showToast("Signed in successfully!");
         navigate('home');
-      } catch(e) {
-        showToast(e.message, true);
-      }
+      } catch(e) { showToast(e.message, true); }
     };
 
     window.handleEmailAuth = async function(e) {
@@ -1018,29 +1073,38 @@
           await createUserWithEmailAndPassword(auth, email, pass);
           showToast("Account created!");
           navigate('home');
-        } catch(e2) {
-          showToast(e2.message, true);
-        }
+        } catch(e2) { showToast(e2.message, true); }
       }
     };
 
     window.handleLogout = function() {
       signOut(auth);
-      showToast("Logged out");
+      showToast("Signed out");
       navigate('home');
     };
 
-    // REAL-TIME DASHBOARD DATA SYNC
-    function setupRealtimeDashboardSync() {
-      if (!currentUser) return;
-      const linksRef = ref(db, `links`);
-      onValue(linksRef, (snapshot) => {
+    window.openRechargeModal = function() { document.getElementById('recharge-modal')?.classList.remove('hidden'); };
+    window.closeRechargeModal = function() { document.getElementById('recharge-modal')?.classList.add('hidden'); };
+
+    // DASHBOARD & ANALYTICS
+    window.loadDashboardLinks = async function() {
+      const container = document.getElementById('dashboard-links-list');
+      if (!currentUser) {
+        container.innerHTML = `
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-400 space-y-3">
+            <p class="font-semibold text-sm">Please Sign In to view your Link Management Dashboard.</p>
+            <button onclick="navigate('auth')" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold">Sign In / Register</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs">Loading links...</div>`;
+
+      try {
+        const snapshot = await get(ref(db, `links`));
         userLinks = [];
-        let totalClicks = 0;
-        let shortCount = 0;
-        let htmlCount = 0;
-        let multiCount = 0;
-        let unlockCount = 0;
+        let totalClicks = 0, shortC = 0, htmlC = 0, multiC = 0, unlockC = 0, bioC = 0, pasteC = 0, previewC = 0;
 
         if (snapshot.exists()) {
           const allData = snapshot.val();
@@ -1050,193 +1114,119 @@
               item.id = key;
               userLinks.push(item);
               totalClicks += (item.clicks || 0);
-              if (item.type === 'short') shortCount++;
-              else if (item.type === 'html') htmlCount++;
-              else if (item.type === 'multipage') multiCount++;
-              else if (item.type === 'unlock') unlockCount++;
+              if (item.type === 'short') shortC++;
+              else if (item.type === 'html') htmlC++;
+              else if (item.type === 'multipage') multiC++;
+              else if (item.type === 'unlock') unlockC++;
+              else if (item.type === 'bio') bioC++;
+              else if (item.type === 'paste') pasteC++;
+              else if (item.type === 'previewgen') previewC++;
             }
           });
         }
 
-        if (document.getElementById('stat-short-count')) document.getElementById('stat-short-count').innerText = shortCount;
-        if (document.getElementById('stat-html-count')) document.getElementById('stat-html-count').innerText = htmlCount;
-        if (document.getElementById('stat-multi-count')) document.getElementById('stat-multi-count').innerText = multiCount;
+        if (document.getElementById('stat-short-count')) document.getElementById('stat-short-count').innerText = shortC;
+        if (document.getElementById('stat-html-count')) document.getElementById('stat-html-count').innerText = htmlC;
+        if (document.getElementById('stat-multi-count')) document.getElementById('stat-multi-count').innerText = multiC;
         if (document.getElementById('stat-total-clicks')) document.getElementById('stat-total-clicks').innerText = totalClicks;
 
         if (document.getElementById('count-tab-all')) document.getElementById('count-tab-all').innerText = userLinks.length;
-        if (document.getElementById('count-tab-short')) document.getElementById('count-tab-short').innerText = shortCount;
-        if (document.getElementById('count-tab-html')) document.getElementById('count-tab-html').innerText = htmlCount;
-        if (document.getElementById('count-tab-multi')) document.getElementById('count-tab-multi').innerText = multiCount;
-        if (document.getElementById('count-tab-unlock')) document.getElementById('count-tab-unlock').innerText = unlockCount;
+        if (document.getElementById('count-tab-short')) document.getElementById('count-tab-short').innerText = shortC;
+        if (document.getElementById('count-tab-html')) document.getElementById('count-tab-html').innerText = htmlC;
+        if (document.getElementById('count-tab-multi')) document.getElementById('count-tab-multi').innerText = multiC;
+        if (document.getElementById('count-tab-unlock')) document.getElementById('count-tab-unlock').innerText = unlockC;
+        if (document.getElementById('count-tab-bio')) document.getElementById('count-tab-bio').innerText = bioC;
+        if (document.getElementById('count-tab-paste')) document.getElementById('count-tab-paste').innerText = pasteC;
+        if (document.getElementById('count-tab-previewgen')) document.getElementById('count-tab-previewgen').innerText = previewC;
 
         renderFilteredDashboard();
-      });
-    }
-
-    window.loadDashboardLinks = async function() {
-      const container = document.getElementById('dashboard-links-list');
-      if (!currentUser) {
-        container.innerHTML = `
-          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-400 space-y-3">
-            <p class="text-base font-semibold text-white">Please Sign In to access your Link Management Dashboard.</p>
-            <button onclick="navigate('auth')" class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white rounded-xl text-xs font-bold shadow-lg transition">Sign In / Register</button>
-          </div>
-        `;
-        return;
+      } catch(e) {
+        container.innerHTML = `<div class="p-8 text-center text-red-400 text-xs">Failed to load links: ${e.message}</div>`;
       }
-      setupRealtimeDashboardSync();
     };
 
     window.filterDashboard = function(type) {
       activeFilter = type;
-      ['all', 'short', 'html', 'multipage', 'unlock'].forEach(t => {
+      ['all', 'short', 'html', 'multipage', 'unlock', 'bio', 'paste', 'previewgen'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (btn) {
-          if (t === type) {
-            btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
-          } else {
-            btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800";
-          }
+          btn.className = t === type
+            ? "px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-indigo-600 text-white shadow-lg"
+            : "px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-800/60 text-slate-400 hover:text-white";
         }
       });
       renderFilteredDashboard();
     };
 
-    window.handleSearchAndSort = function() {
-      renderFilteredDashboard();
-    };
+    window.handleSearchAndSort = function() { renderFilteredDashboard(); };
 
     function renderFilteredDashboard() {
       const container = document.getElementById('dashboard-links-list');
-      if (!container) return;
-
-      const searchQuery = (document.getElementById('search-links-input')?.value || '').toLowerCase();
-      const sortMode = document.getElementById('sort-links-select')?.value || 'clicks-desc';
+      const search = (document.getElementById('search-links-input')?.value || '').toLowerCase();
+      const sort = document.getElementById('sort-links-select')?.value || 'clicks-desc';
 
       let filtered = userLinks;
-
-      if (activeFilter !== 'all') {
-        filtered = filtered.filter(l => l.type === activeFilter);
-      }
-
-      if (searchQuery) {
-        filtered = filtered.filter(l => {
-          const title = (l.title || '').toLowerCase();
-          const id = (l.id || '').toLowerCase();
-          const target = (l.targetUrl || l.alias || '').toLowerCase();
-          return title.includes(searchQuery) || id.includes(searchQuery) || target.includes(searchQuery);
-        });
-      }
+      if (activeFilter !== 'all') filtered = filtered.filter(l => l.type === activeFilter);
+      if (search) filtered = filtered.filter(l => (l.title || '').toLowerCase().includes(search) || (l.id || '').toLowerCase().includes(search) || (l.targetUrl || '').toLowerCase().includes(search));
 
       filtered.sort((a, b) => {
-        if (sortMode === 'clicks-desc') return (b.clicks || 0) - (a.clicks || 0);
-        if (sortMode === 'date-desc') return (b.createdAt || 0) - (a.createdAt || 0);
-        if (sortMode === 'date-asc') return (a.createdAt || 0) - (b.createdAt || 0);
-        if (sortMode === 'title-asc') return (a.title || a.id || '').localeCompare(b.title || b.id || '');
+        if (sort === 'clicks-desc') return (b.clicks || 0) - (a.clicks || 0);
+        if (sort === 'date-desc') return (b.createdAt || 0) - (a.createdAt || 0);
+        if (sort === 'date-asc') return (a.createdAt || 0) - (b.createdAt || 0);
+        if (sort === 'title-asc') return (a.title || a.id).localeCompare(b.title || b.id);
         return 0;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500 text-sm space-y-2">
-            <i class="fa-solid fa-folder-open text-4xl mb-2 text-slate-700 block"></i>
-            <p class="text-slate-400 font-semibold">No links found matching your criteria.</p>
-            <p class="text-xs text-slate-600">Create a new short link, HTML host, or gate above to get started!</p>
-          </div>
-        `;
+        container.innerHTML = `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center text-slate-500 text-xs">No links found in this filter.</div>`;
         return;
       }
 
       const baseUrl = window.location.origin + window.location.pathname;
 
       container.innerHTML = filtered.map(item => {
-        let fullLink = "";
-        let borderHover = "hover:border-purple-500/40";
-        let badgeBg = "bg-purple-500/20 text-purple-300 border-purple-500/30";
-        let iconHtml = `<i class="fa-solid fa-link text-purple-400 text-base"></i>`;
-        let typeLabel = "Short URL";
-
-        if (item.type === 'html') {
-          fullLink = `${baseUrl}?site=${item.id}`;
-          typeLabel = "HTML Site";
-          borderHover = "hover:border-blue-500/40";
-          badgeBg = "bg-blue-500/20 text-blue-300 border-blue-500/30";
-          iconHtml = `<i class="fa-solid fa-code text-blue-400 text-base"></i>`;
-        } else if (item.type === 'multipage') {
-          fullLink = `${baseUrl}?m=${item.id}`;
-          typeLabel = "Monetized 3-Page";
-          borderHover = "hover:border-pink-500/40";
-          badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30";
-          iconHtml = `<i class="fa-solid fa-layer-group text-pink-400 text-base"></i>`;
-        } else if (item.type === 'unlock') {
-          fullLink = `${baseUrl}?unlock=${item.id}`;
-          typeLabel = "Sub4Sub Gate";
-          borderHover = "hover:border-emerald-500/40";
-          badgeBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-          iconHtml = `<i class="fa-solid fa-unlock text-emerald-400 text-base"></i>`;
-        } else {
-          fullLink = `${baseUrl}?s=${item.id}`;
-        }
-
-        const formattedDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+        let fullLink = "", badge = "Short URL", badgeBg = "bg-purple-500/20 text-purple-300 border-purple-500/30", icon = `<i class="fa-solid fa-link text-purple-400"></i>`;
+        if (item.type === 'html') { fullLink = `${baseUrl}?site=${item.id}`; badge = "HTML Site"; badgeBg = "bg-blue-500/20 text-blue-300 border-blue-500/30"; icon = `<i class="fa-solid fa-code text-blue-400"></i>`; }
+        else if (item.type === 'multipage') { fullLink = `${baseUrl}?m=${item.id}`; badge = "3-Page"; badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30"; icon = `<i class="fa-solid fa-layer-group text-pink-400"></i>`; }
+        else if (item.type === 'unlock') { fullLink = `${baseUrl}?unlock=${item.id}`; badge = "Sub4Sub Gate"; badgeBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"; icon = `<i class="fa-solid fa-unlock text-emerald-400"></i>`; }
+        else if (item.type === 'bio') { fullLink = `${baseUrl}?bio=${item.id}`; badge = "Bio Tree"; badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30"; icon = `<i class="fa-solid fa-id-card text-pink-400"></i>`; }
+        else if (item.type === 'paste') { fullLink = `${baseUrl}?paste=${item.id}`; badge = "Pastebin"; badgeBg = "bg-amber-500/20 text-amber-300 border-amber-500/30"; icon = `<i class="fa-solid fa-file-code text-amber-400"></i>`; }
+        else if (item.type === 'previewgen') { fullLink = `${baseUrl}?pv=${item.id}`; badge = "Link Preview"; badgeBg = "bg-cyan-500/20 text-cyan-300 border-cyan-500/30"; icon = `<i class="fa-solid fa-eye text-cyan-400"></i>`; }
+        else fullLink = `${baseUrl}?s=${item.id}`;
 
         return `
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 ${borderHover} transition-all shadow-md">
-            <div class="min-w-0 flex-1 space-y-2">
-              <div class="flex items-center gap-2 flex-wrap">
-                <div class="w-8 h-8 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0">
-                  ${iconHtml}
-                </div>
-                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${badgeBg}">${typeLabel}</span>
-                <span class="text-xs text-white font-bold">${item.title || item.alias || item.id}</span>
-                <span class="text-[10px] text-slate-500 font-mono">ID: ${item.id} • ${formattedDate}</span>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md hover:border-slate-700 transition">
+            <div class="min-w-0 flex-1 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 text-xs">${icon}</div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeBg}">${badge}</span>
+                <span class="text-xs text-white font-bold truncate">${item.title || item.id}</span>
               </div>
-              <div class="text-xs sm:text-sm font-semibold text-indigo-300 truncate max-w-xl">
-                <a href="${fullLink}" target="_blank" class="hover:underline flex items-center gap-1.5">
-                  <span class="truncate">${fullLink}</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px] shrink-0 opacity-70"></i>
-                </a>
+              <div class="text-xs font-semibold text-indigo-300 truncate">
+                <a href="${fullLink}" target="_blank" class="hover:underline">${fullLink}</a>
               </div>
-              <div class="text-[11px] text-slate-500 truncate">
-                <span class="text-slate-400 font-medium">Target:</span> ${item.targetUrl || item.target || 'Hosted HTML Page Content'}
-              </div>
+              <div class="text-[11px] text-slate-500 truncate">Target: ${item.targetUrl || item.target || 'Hosted Content'}</div>
             </div>
 
             <div class="flex items-center gap-3 shrink-0 justify-between md:justify-end border-t md:border-t-0 border-slate-800 pt-3 md:pt-0">
-              <!-- Click Badge -->
-              <div class="bg-slate-950 border border-slate-800 px-3.5 py-1.5 rounded-xl text-left md:text-right">
-                <div class="text-[10px] font-bold text-slate-500 uppercase">Live Clicks</div>
-                <div class="text-sm font-black text-emerald-400 flex items-center gap-1">
-                  <i class="fa-solid fa-chart-simple text-xs"></i>
-                  <span>${item.clicks || 0}</span>
-                </div>
+              <div class="text-left md:text-right">
+                <div class="text-[10px] text-slate-400 font-bold uppercase">Live Clicks</div>
+                <div class="text-sm font-black text-emerald-400"><i class="fa-solid fa-arrow-pointer text-xs mr-1"></i>${item.clicks || 0}</div>
               </div>
-
-              <!-- Action Control Icons -->
               <div class="flex items-center gap-1.5">
-                <!-- Detailed Analytics -->
-                <button onclick="openAnalyticsModal('${item.id}')" class="px-3 py-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-xl border border-indigo-500/30 transition-colors text-xs font-bold flex items-center gap-1.5" title="View Detailed Analytics">
-                  <i class="fa-solid fa-chart-pie"></i>
-                  <span class="hidden sm:inline">Analytics</span>
+                <button onclick="openAnalyticsModal('${item.id}')" class="p-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-xl border border-indigo-500/30 transition text-xs font-bold flex items-center gap-1" title="View Real-Time Analytics">
+                  <i class="fa-solid fa-chart-pie"></i> <span class="hidden sm:inline">Analytics</span>
                 </button>
-
-                <!-- Copy Link -->
-                <button onclick="copyToClipboard('${fullLink}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Copy Short Link">
-                  <i class="fa-solid fa-copy"></i>
-                </button>
-
-                <!-- QR Code -->
-                <button onclick="openQrModal('${fullLink}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Generate QR Code">
+                <button onclick="openQrModal('${fullLink}')" class="p-2 bg-slate-950 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 transition text-xs" title="QR Code">
                   <i class="fa-solid fa-qrcode"></i>
                 </button>
-
-                <!-- Edit Target Link -->
-                <button onclick="openEditModal('${item.id}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Edit Link">
-                  <i class="fa-solid fa-pen"></i>
+                <button onclick="copyToClipboard('${fullLink}')" class="p-2 bg-slate-950 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 transition text-xs" title="Copy Link">
+                  <i class="fa-solid fa-copy"></i>
                 </button>
-
-                <!-- Delete -->
-                <button onclick="deleteLink('${item.id}')" class="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl border border-red-500/20 transition-colors" title="Delete Link">
+                <button onclick="openEditModal('${item.id}')" class="p-2 bg-slate-950 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 transition text-xs" title="Edit Target">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button onclick="deleteLink('${item.id}')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl border border-red-500/20 transition text-xs" title="Delete">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
@@ -1246,368 +1236,347 @@
       }).join('');
     }
 
-    // ANALYTICS MODAL & CHARTS
-    window.openAnalyticsModal = async function(linkId) {
-      const item = userLinks.find(l => l.id === linkId);
-      if (!item) return;
-
-      currentAnalyticsItem = item;
-      const baseUrl = window.location.origin + window.location.pathname;
-      let fullLink = `${baseUrl}?s=${item.id}`;
-      if (item.type === 'html') fullLink = `${baseUrl}?site=${item.id}`;
-      else if (item.type === 'multipage') fullLink = `${baseUrl}?m=${item.id}`;
-      else if (item.type === 'unlock') fullLink = `${baseUrl}?unlock=${item.id}`;
-
-      document.getElementById('modal-analytics-title').innerText = item.title || item.alias || `Link: ${item.id}`;
-      document.getElementById('modal-analytics-url').innerText = fullLink;
-      document.getElementById('m-stat-total').innerText = item.clicks || 0;
-
-      document.getElementById('analytics-modal').classList.remove('hidden');
-
-      try {
-        const logsRef = ref(db, `links/${linkId}/logs`);
-        const snapshot = await get(logsRef);
-        currentAnalyticsLogs = [];
-
-        let todayCount = 0;
-        let referrersMap = {};
-        let deviceMap = { Desktop: 0, Mobile: 0, Tablet: 0 };
-        let dateCountMap = {};
-
-        const todayStr = new Date().toISOString().split('T')[0];
-
-        if (snapshot.exists()) {
-          const logsObj = snapshot.val();
-          Object.keys(logsObj).forEach(k => {
-            const log = logsObj[k];
-            currentAnalyticsLogs.push(log);
-
-            if (log.date === todayStr) todayCount++;
-            if (log.device) deviceMap[log.device] = (deviceMap[log.device] || 0) + 1;
-            if (log.referrer) referrersMap[log.referrer] = (referrersMap[log.referrer] || 0) + 1;
-            if (log.date) dateCountMap[log.date] = (dateCountMap[log.date] || 0) + 1;
-          });
-        }
-
-        document.getElementById('m-stat-today').innerText = todayCount;
-        document.getElementById('m-stat-unique').innerText = currentAnalyticsLogs.length > 0 ? Math.round(currentAnalyticsLogs.length * 0.85) : 0;
-
-        let topRef = 'Direct';
-        let maxRef = 0;
-        Object.keys(referrersMap).forEach(r => {
-          if (referrersMap[r] > maxRef) {
-            maxRef = referrersMap[r];
-            topRef = r;
-          }
-        });
-        document.getElementById('m-stat-top-ref').innerText = topRef;
-
-        renderClickLogsTable(currentAnalyticsLogs);
-        renderAnalyticsCharts(dateCountMap, deviceMap);
-
-      } catch(e) {
-        console.error("Analytics load error:", e);
-      }
-    };
-
-    function renderClickLogsTable(logs) {
-      const tbody = document.getElementById('m-click-logs-tbody');
-      if (!logs || logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No detailed click logs recorded yet.</td></tr>`;
-        return;
-      }
-
-      const sortedLogs = [...logs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
-
-      tbody.innerHTML = sortedLogs.map(log => {
-        const timeStr = log.timestamp ? new Date(log.timestamp).toLocaleString('bn-BD') : 'N/A';
-        const deviceIcon = log.device === 'Mobile' ? 'fa-mobile-screen text-emerald-400' : log.device === 'Tablet' ? 'fa-tablet-screen-button text-purple-400' : 'fa-desktop text-blue-400';
-
-        return `
-          <tr class="hover:bg-slate-900/50 transition">
-            <td class="p-2.5 font-mono text-[11px] text-slate-400">${timeStr}</td>
-            <td class="p-2.5 font-semibold text-white flex items-center gap-1.5">
-              <i class="fa-solid ${deviceIcon}"></i>
-              <span>${log.device || 'Desktop'}</span>
-            </td>
-            <td class="p-2.5 text-slate-300">${log.browser || 'Chrome'} (${log.os || 'OS'})</td>
-            <td class="p-2.5 font-bold text-indigo-400">${log.referrer || 'Direct'}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function renderAnalyticsCharts(dateCountMap, deviceMap) {
-      const trendCanvas = document.getElementById('chart-click-trend');
-      if (trendChartInstance) trendChartInstance.destroy();
-
-      const labels = [];
-      const data = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
-        const displayLabel = d.toLocaleDateString('bn-BD', { month: 'short', day: 'numeric' });
-        labels.push(displayLabel);
-        data.push(dateCountMap[dateStr] || 0);
-      }
-
-      trendChartInstance = new Chart(trendCanvas, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Clicks',
-            data: data,
-            borderColor: '#6366f1',
-            backgroundColor: 'rgba(99, 102, 241, 0.15)',
-            fill: true,
-            tension: 0.4,
-            borderWidth: 3,
-            pointBackgroundColor: '#818cf8',
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 }, precision: 0 }, beginAtZero: true }
-          }
-        }
-      });
-
-      const pieCanvas = document.getElementById('chart-device-pie');
-      if (pieChartInstance) pieChartInstance.destroy();
-
-      pieChartInstance = new Chart(pieCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: ['Desktop', 'Mobile', 'Tablet'],
-          datasets: [{
-            data: [deviceMap.Desktop || 0, deviceMap.Mobile || 0, deviceMap.Tablet || 0],
-            backgroundColor: ['#3b82f6', '#10b981', '#a855f7'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
-    window.closeAnalyticsModal = function() {
-      document.getElementById('analytics-modal').classList.add('hidden');
-    };
-
-    window.downloadLinkLogsCsv = function() {
-      if (!currentAnalyticsLogs || currentAnalyticsLogs.length === 0) {
-        return showToast("No click logs to export!", true);
-      }
-      let csv = "Timestamp,Date,Device,Browser,OS,Referrer\n";
-      currentAnalyticsLogs.forEach(l => {
-        csv += `"${l.timestamp || ''}","${l.date || ''}","${l.device || ''}","${l.browser || ''}","${l.os || ''}","${l.referrer || ''}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `link_analytics_${currentAnalyticsItem?.id || 'logs'}.csv`;
-      a.click();
-    };
-
-    window.exportAllLinksCsv = function() {
-      if (!userLinks || userLinks.length === 0) {
-        return showToast("No links to export!", true);
-      }
-      let csv = "ID,Title,Type,TargetURL,LiveClicks,CreatedDate\n";
-      const baseUrl = window.location.origin + window.location.pathname;
-      userLinks.forEach(l => {
-        csv += `"${l.id}","${l.title || l.alias || ''}","${l.type || 'short'}","${l.targetUrl || l.target || ''}","${l.clicks || 0}","${l.createdAt || ''}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `webtools_all_links.csv`;
-      a.click();
-    };
-
-    // QR CODE MODAL
-    window.openQrModal = function(link) {
-      document.getElementById('qr-link-display').innerText = link;
-      const container = document.getElementById('qrcode-container');
-      container.innerHTML = "";
-      
-      container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(link)}" alt="QR Code" class="w-48 h-48 mx-auto rounded-lg">`;
-      document.getElementById('qrcode-modal').classList.remove('hidden');
-    };
-
-    window.closeQrModal = function() {
-      document.getElementById('qrcode-modal').classList.add('hidden');
-    };
-
-    window.downloadQrCode = function() {
-      const img = document.querySelector('#qrcode-container img');
-      if (img) {
-        const a = document.createElement('a');
-        a.href = img.src;
-        a.download = "qrcode.png";
-        a.click();
-      }
-    };
-
-    // EDIT LINK MODAL
-    window.openEditModal = function(id) {
-      const item = userLinks.find(l => l.id === id);
-      if (!item) return;
-
-      document.getElementById('edit-link-id').value = id;
-      document.getElementById('edit-link-title').value = item.title || item.alias || id;
-      document.getElementById('edit-link-target').value = item.targetUrl || item.target || "";
-      document.getElementById('edit-modal').classList.remove('hidden');
-    };
-
-    window.closeEditModal = function() {
-      document.getElementById('edit-modal').classList.add('hidden');
-    };
-
-    window.saveEditLink = async function() {
-      const id = document.getElementById('edit-link-id').value;
-      const title = document.getElementById('edit-link-title').value;
-      const target = document.getElementById('edit-link-target').value;
-
-      if (!id || !target) return showToast("Target URL required", true);
-
-      try {
-        await update(ref(db, `links/${id}`), {
-          title: title,
-          targetUrl: target
-        });
-        showToast("Link configuration updated!");
-        closeEditModal();
-        loadDashboardLinks();
-      } catch(e) {
-        showToast(e.message, true);
-      }
-    };
-
     window.copyToClipboard = function(text) {
       navigator.clipboard.writeText(text);
       showToast("Link copied to clipboard!");
     };
 
     window.deleteLink = async function(id) {
-      if (!confirm("Are you sure you want to delete this link?")) return;
+      if (!confirm("Delete this link permanently?")) return;
       try {
         await remove(ref(db, `links/${id}`));
         showToast("Link deleted successfully");
         loadDashboardLinks();
-      } catch(e) {
-        showToast(e.message, true);
+      } catch(e) { showToast(e.message, true); }
+    };
+
+    // ANALYTICS MODAL
+    window.openAnalyticsModal = async function(id) {
+      const item = userLinks.find(l => l.id === id);
+      if (!item) return;
+      currentAnalyticsItem = item;
+
+      document.getElementById('modal-analytics-title').innerText = item.title || item.id;
+      document.getElementById('modal-analytics-url').innerText = item.targetUrl || item.id;
+      document.getElementById('m-stat-total').innerText = item.clicks || 0;
+
+      document.getElementById('analytics-modal')?.classList.remove('hidden');
+
+      try {
+        const snap = await get(ref(db, `links/${id}/logs`));
+        currentAnalyticsLogs = [];
+        if (snap.exists()) {
+          const logsObj = snap.val();
+          currentAnalyticsLogs = Object.values(logsObj);
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayClicks = currentAnalyticsLogs.filter(l => l.date === todayStr).length;
+        document.getElementById('m-stat-today').innerText = todayClicks;
+
+        const uniqueRefs = new Set(currentAnalyticsLogs.map(l => l.referrer || 'Direct'));
+        document.getElementById('m-stat-unique').innerText = currentAnalyticsLogs.length ? uniqueRefs.size : 0;
+
+        const refCounts = {};
+        currentAnalyticsLogs.forEach(l => {
+          const r = l.referrer || 'Direct';
+          refCounts[r] = (refCounts[r] || 0) + 1;
+        });
+        let topRef = 'Direct', maxC = 0;
+        Object.keys(refCounts).forEach(r => {
+          if (refCounts[r] > maxC) { maxC = refCounts[r]; topRef = r; }
+        });
+        document.getElementById('m-stat-top-ref').innerText = topRef;
+
+        renderAnalyticsTableAndCharts(currentAnalyticsLogs);
+      } catch(e) { console.error(e); }
+    };
+
+    function renderAnalyticsTableAndCharts(logs) {
+      const tbody = document.getElementById('m-click-logs-tbody');
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No detailed click logs recorded yet.</td></tr>`;
+      } else {
+        const sorted = [...logs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 30);
+        tbody.innerHTML = sorted.map(l => `
+          <tr class="hover:bg-slate-900/60 transition">
+            <td class="p-2 font-mono text-[11px] text-slate-300">${new Date(l.timestamp || Date.now()).toLocaleString()}</td>
+            <td class="p-2 font-semibold text-emerald-400">${l.device || 'Desktop'}</td>
+            <td class="p-2 text-slate-400">${l.browser || 'Browser'} / ${l.os || 'OS'}</td>
+            <td class="p-2 font-mono text-indigo-300">${l.referrer || 'Direct'}</td>
+          </tr>
+        `).join('');
       }
+
+      // Chart 1: Last 7 days trend
+      const last7Days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        last7Days.push(d.toISOString().split('T')[0]);
+      }
+      const trendCounts = last7Days.map(date => logs.filter(l => l.date === date).length);
+
+      const ctxTrend = document.getElementById('chart-click-trend')?.getContext('2d');
+      if (ctxTrend) {
+        if (trendChartInstance) trendChartInstance.destroy();
+        trendChartInstance = new Chart(ctxTrend, {
+          type: 'line',
+          data: {
+            labels: last7Days.map(d => d.slice(5)),
+            datasets: [{
+              label: 'Clicks',
+              data: trendCounts,
+              borderColor: '#818cf8',
+              backgroundColor: 'rgba(129, 140, 248, 0.15)',
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: '#1f2937' }, ticks: { color: '#94a3b8' } },
+              y: { grid: { color: '#1f2937' }, ticks: { color: '#94a3b8', precision: 0 } }
+            }
+          }
+        });
+      }
+
+      // Chart 2: Device Pie Chart
+      const devCounts = { Mobile: 0, Desktop: 0, Tablet: 0 };
+      logs.forEach(l => { if (l.device) devCounts[l.device] = (devCounts[l.device] || 0) + 1; });
+
+      const ctxPie = document.getElementById('chart-device-pie')?.getContext('2d');
+      if (ctxPie) {
+        if (pieChartInstance) pieChartInstance.destroy();
+        pieChartInstance = new Chart(ctxPie, {
+          type: 'doughnut',
+          data: {
+            labels: ['Mobile', 'Desktop', 'Tablet'],
+            datasets: [{
+              data: [devCounts.Mobile || 1, devCounts.Desktop || 0, devCounts.Tablet || 0],
+              backgroundColor: ['#10b981', '#6366f1', '#ec4899']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 10 } } }
+          }
+        });
+      }
+    }
+
+    window.closeAnalyticsModal = function() { document.getElementById('analytics-modal')?.classList.add('hidden'); };
+
+    // QR MODAL
+    let currentQrLink = "";
+    window.openQrModal = function(link) {
+      currentQrLink = link;
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = "";
+      new QRCode(container, { text: link, width: 160, height: 160 });
+      document.getElementById('qr-link-display').innerText = link;
+      document.getElementById('qrcode-modal')?.classList.remove('hidden');
+    };
+    window.closeQrModal = function() { document.getElementById('qrcode-modal')?.classList.add('hidden'); };
+    window.downloadQrCode = function() {
+      const img = document.querySelector('#qrcode-container img');
+      if (img) {
+        const a = document.createElement('a'); a.href = img.src; a.download = 'qrcode.png'; a.click();
+      }
+    };
+
+    // EDIT MODAL
+    window.openEditModal = function(id) {
+      const item = userLinks.find(l => l.id === id);
+      if (!item) return;
+      document.getElementById('edit-link-id').value = id;
+      document.getElementById('edit-link-title').value = item.title || item.id;
+      document.getElementById('edit-link-target').value = item.targetUrl || item.target || '';
+      document.getElementById('edit-modal')?.classList.remove('hidden');
+    };
+    window.closeEditModal = function() { document.getElementById('edit-modal')?.classList.add('hidden'); };
+    window.saveEditLink = async function() {
+      const id = document.getElementById('edit-link-id').value;
+      const title = document.getElementById('edit-link-title').value;
+      const target = document.getElementById('edit-link-target').value;
+      try {
+        await update(ref(db, `links/${id}`), { title: title, targetUrl: target });
+        showToast("Link updated!");
+        closeEditModal();
+        loadDashboardLinks();
+      } catch(e) { showToast(e.message, true); }
+    };
+
+    // CSV EXPORT
+    window.exportAllLinksCsv = function() {
+      if (userLinks.length === 0) return showToast("No links to export", true);
+      const rows = [["ID", "Type", "Title", "Target URL", "Clicks", "Created At"]];
+      userLinks.forEach(l => {
+        rows.push([l.id, l.type, `"${l.title||l.id}"`, `"${l.targetUrl||''}"`, l.clicks||0, new Date(l.createdAt||Date.now()).toISOString()]);
+      });
+      const csv = rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my_links_export.csv'; a.click();
+    };
+
+    window.downloadLinkLogsCsv = function() {
+      if (!currentAnalyticsLogs.length) return showToast("No logs to export", true);
+      const rows = [["Timestamp", "Device", "Browser", "OS", "Referrer"]];
+      currentAnalyticsLogs.forEach(l => {
+        rows.push([new Date(l.timestamp||Date.now()).toISOString(), l.device||'Desktop', l.browser||'Browser', l.os||'OS', l.referrer||'Direct']);
+      });
+      const csv = rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${currentAnalyticsItem?.id || 'link'}_click_logs.csv`; a.click();
     };
 
     // CREATION HANDLERS
     window.generateHtmlHost = async function() {
-      if(!currentUser) return navigate('auth');
-      if(userTokens < 1) return showToast("Not enough tokens!", true);
-
+      if (!currentUser) return navigate('auth');
+      if (userTokens < 1) return openRechargeModal();
       const title = document.getElementById('html-title').value || "Hosted HTML Page";
       const code = document.getElementById('html-code').value;
-      if(!code) return showToast("Please enter HTML code", true);
+      if (!code) return showToast("Enter HTML code", true);
 
       const id = Math.random().toString(36).substring(2, 8);
       await set(ref(db, `links/${id}`), {
-        type: 'html',
-        title: title,
-        html: code,
-        userId: currentUser.uid,
-        clicks: 0,
-        createdAt: Date.now()
+        type: 'html', title: title, html: code, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
       });
 
       userTokens -= 1;
       await update(ref(db, `users/${currentUser.uid}`), { tokens: userTokens });
-      document.getElementById('user-tokens-count').innerText = userTokens;
+      if (document.getElementById('user-tokens-count')) document.getElementById('user-tokens-count').innerText = userTokens;
 
       showToast("HTML Page Published!");
       navigate('dashboard');
     };
 
     window.generateShortUrl = async function() {
-      if(!currentUser) return navigate('auth');
+      if (!currentUser) return navigate('auth');
       const target = document.getElementById('short-url').value;
       const alias = document.getElementById('short-alias').value;
-      if(!target) return showToast("Enter a URL", true);
+      const pass = document.getElementById('short-pass').value;
+      const expireHrs = document.getElementById('short-expire').value;
+      if (!target) return showToast("Enter target URL", true);
 
-      const id = alias ? alias.trim().replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
-      
-      const checkSnap = await get(ref(db, `links/${id}`));
-      if (checkSnap.exists()) {
-        return showToast("Alias already exists! Try another custom alias.", true);
-      }
+      const id = alias ? alias : Math.random().toString(36).substring(2, 8);
+      const data = {
+        type: 'short', targetUrl: target, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
+      };
+      if (pass) data.password = pass;
+      if (expireHrs) data.expireAt = Date.now() + (parseInt(expireHrs) * 3600 * 1000);
 
-      await set(ref(db, `links/${id}`), {
-        type: 'short',
-        title: alias || `Short URL (${id})`,
-        targetUrl: target,
-        userId: currentUser.uid,
-        clicks: 0,
-        createdAt: Date.now()
-      });
-
+      await set(ref(db, `links/${id}`), data);
       showToast("Short Link Created!");
       navigate('dashboard');
     };
 
     window.generateMultipageLink = async function() {
-      if(!currentUser) return navigate('auth');
+      if (!currentUser) return navigate('auth');
       const target = document.getElementById('multi-url').value;
       const timer = parseInt(document.getElementById('multi-timer').value) || 10;
-      if(!target) return showToast("Enter target URL", true);
+      if (!target) return showToast("Enter target URL", true);
 
       const id = Math.random().toString(36).substring(2, 8);
       await set(ref(db, `links/${id}`), {
-        type: 'multipage',
-        title: `Monetized Link (${id})`,
-        targetUrl: target,
-        timer: timer,
-        userId: currentUser.uid,
-        clicks: 0,
-        createdAt: Date.now()
+        type: 'multipage', targetUrl: target, timer: timer, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
       });
-
       showToast("3-Page Link Created!");
       navigate('dashboard');
     };
 
     window.generateUnlockGate = async function() {
-      if(!currentUser) return navigate('auth');
+      if (!currentUser) return navigate('auth');
       const target = document.getElementById('unlock-target').value;
       const yt = document.getElementById('unlock-yt').value;
       const ig = document.getElementById('unlock-ig').value;
-      if(!target || !yt) return showToast("Target URL and YouTube URL required", true);
+      if (!target || !yt) return showToast("Target URL and YouTube Channel required", true);
 
       const id = Math.random().toString(36).substring(2, 8);
       await set(ref(db, `links/${id}`), {
-        type: 'unlock',
-        title: `Sub4Sub Gate (${id})`,
+        type: 'unlock', targetUrl: target, ytChannel: yt, igProfile: ig, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
+      });
+      showToast("Sub4Sub Gate Created!");
+      navigate('dashboard');
+    };
+
+    window.generateBioPage = async function() {
+      if (!currentUser) return navigate('auth');
+      const name = document.getElementById('bio-name').value || "Creator Bio";
+      const avatar = document.getElementById('bio-avatar').value;
+      const desc = document.getElementById('bio-desc').value;
+      const rawLinks = document.getElementById('bio-links').value;
+
+      const bioLinks = rawLinks.split('\n').filter(line => line.includes('|')).map(line => {
+        const [t, u] = line.split('|');
+        return { title: t.trim(), url: u.trim() };
+      });
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'bio', name: name, avatar: avatar, desc: desc, bioLinks: bioLinks, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
+      });
+      showToast("Bio Page Created!");
+      navigate('dashboard');
+    };
+
+    window.generatePastebin = async function() {
+      if (!currentUser) return navigate('auth');
+      const title = document.getElementById('paste-title').value || "Pastebin Code";
+      const content = document.getElementById('paste-content').value;
+      if (!content) return showToast("Enter code content", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'paste', title: title, content: content, userId: currentUser.uid, clicks: 0, createdAt: Date.now()
+      });
+      showToast("Pastebin Snippet Created!");
+      navigate('dashboard');
+    };
+
+    window.updateLiveOgPreview = function() {
+      const target = document.getElementById('preview-target')?.value || '';
+      const title = document.getElementById('preview-title')?.value || 'Awesome Link Tools Studio 2026';
+      const desc = document.getElementById('preview-desc')?.value || 'Check out these high quality web tools and short link features...';
+      const image = document.getElementById('preview-image')?.value || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80';
+
+      let domain = 'EXAMPLE.COM';
+      try { if (target) domain = new URL(target).hostname.toUpperCase(); } catch(e){}
+
+      if (document.getElementById('og-card-domain')) document.getElementById('og-card-domain').innerText = domain;
+      if (document.getElementById('og-card-title')) document.getElementById('og-card-title').innerText = title;
+      if (document.getElementById('og-card-desc')) document.getElementById('og-card-desc').innerText = desc;
+      if (document.getElementById('og-card-img')) {
+        document.getElementById('og-card-img').style.backgroundImage = `url('${image}')`;
+      }
+    };
+
+    window.generatePreviewLink = async function() {
+      if (!currentUser) return navigate('auth');
+      const target = document.getElementById('preview-target').value;
+      const title = document.getElementById('preview-title').value || "Social Preview Link";
+      const desc = document.getElementById('preview-desc').value || "";
+      const image = document.getElementById('preview-image').value || "";
+
+      if (!target) return showToast("Enter target URL", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'previewgen',
         targetUrl: target,
-        ytChannel: yt,
-        igProfile: ig,
+        title: title,
+        ogTitle: title,
+        ogDesc: desc,
+        ogImage: image,
         userId: currentUser.uid,
         clicks: 0,
         createdAt: Date.now()
       });
-
-      showToast("Unlock Gate Created!");
+      showToast("Link Preview Card Created!");
       navigate('dashboard');
     };
   </script>
