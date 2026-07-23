@@ -1,596 +1,823 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LinkCraft Studio - All-in-One Link & HTML Hosting Platform</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link L BD - All-In-One Web Tools & Analytics Platform</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Real-time Analytics Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .btn-gradient:hover {
+            opacity: 0.95;
+            transform: scale(1.02);
+        }
 
-  <!-- React 18 & ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-
-  <!-- Babel Standalone for JSX in browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- QRCode JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- Firebase Compatibility SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-    }
-  </style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body class="min-h-screen antialiased">
+<body class="flex flex-col min-h-screen">
 
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useMemo } = React;
-
-    // --- Firebase Setup (Offline/LocalStorage Auto-Fallback) ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDemoKeyOnlyForAppFallback000",
-      authDomain: "linkcraft-app.firebaseapp.com",
-      databaseURL: "https://linkcraft-app-default-rtdb.firebaseio.com",
-      projectId: "linkcraft-app",
-      storageBucket: "linkcraft-app.appspot.com",
-      messagingSenderId: "1000000000",
-      appId: "1:1000000000:web:abcdef123456"
-    };
-
-    let db = null;
-    let auth = null;
-    try {
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-      db = firebase.database();
-      auth = firebase.auth();
-    } catch (e) {
-      console.log("Firebase fallback to LocalStorage mode.");
-    }
-
-    // Storage Keys
-    const STORAGE_KEY_LINKS = 'linkcraft_user_links_v2';
-    const STORAGE_KEY_CLICKS = 'linkcraft_user_clicks_v2';
-    const STORAGE_KEY_TOKENS = 'linkcraft_tokens_v2';
-
-    const getLocalLinks = () => {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_LINKS);
-        return raw ? JSON.parse(raw) : [];
-      } catch (e) { return []; }
-    };
-
-    const saveLocalLinks = (links) => {
-      try {
-        localStorage.setItem(STORAGE_KEY_LINKS, JSON.stringify(links));
-      } catch (e) {}
-    };
-
-    const getLocalClicks = () => {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_CLICKS);
-        return raw ? JSON.parse(raw) : [];
-      } catch (e) { return []; }
-    };
-
-    const saveLocalClicks = (clicks) => {
-      try {
-        localStorage.setItem(STORAGE_KEY_CLICKS, JSON.stringify(clicks));
-      } catch (e) {}
-    };
-
-    const getLocalTokens = () => {
-      try {
-        const val = localStorage.getItem(STORAGE_KEY_TOKENS);
-        return val ? parseInt(val, 10) : 50;
-      } catch (e) { return 50; }
-    };
-
-    const saveLocalTokens = (tokens) => {
-      try {
-        localStorage.setItem(STORAGE_KEY_TOKENS, tokens.toString());
-      } catch (e) {}
-    };
-
-    const generateID = () => Math.random().toString(36).substring(2, 8);
-
-    const DEFAULT_INITIAL_LINKS = [
-      {
-        id: 'demo12',
-        type: 'html',
-        title: 'Portfolio Showcase Landing',
-        htmlContent: '<div style="padding: 40px; text-align: center; font-family: sans-serif;"><h1>🚀 Welcome to My Web Studio</h1><p>Hosted via LinkCraft Studio!</p></div>',
-        userId: 'demo',
-        createdAt: Date.now() - 86400000 * 2,
-        clicks: 42,
-        active: true
-      },
-      {
-        id: 'short1',
-        type: 'short',
-        title: 'Special Coupon Link',
-        originalUrl: 'https://google.com',
-        userId: 'demo',
-        createdAt: Date.now() - 86400000 * 5,
-        clicks: 128,
-        active: true
-      }
-    ];
-
-    // Main App Component
-    function App() {
-      const [routeType, setRouteType] = useState(null);
-      const [routeTargetId, setRouteTargetId] = useState(null);
-
-      const [activeTab, setActiveTab] = useState('tools'); // tools | mylinks | analytics
-      const [activeTool, setActiveTool] = useState('html'); // html | short | multipage | unlock
-      const [user, setUser] = useState(null);
-      const [tokens, setTokens] = useState(50);
-      const [userLinks, setUserLinks] = useState([]);
-      const [clickLogs, setClickLogs] = useState([]);
-
-      const [isAuthOpen, setIsAuthOpen] = useState(false);
-      const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
-      const [qrModalData, setQrModalData] = useState(null);
-      const [editingLink, setEditingLink] = useState(null);
-      const [analyticsSelectedLinkId, setAnalyticsSelectedLinkId] = useState(null);
-      const [toasts, setToasts] = useState([]);
-
-      const addToast = (message, type = 'info') => {
-        const id = Math.random().toString(36).substring(2, 9);
-        setToasts((prev) => [...prev, { id, message, type }]);
-        setTimeout(() => {
-          setToasts((prev) => prev.filter((t) => t.id !== id));
-        }, 4000);
-      };
-
-      useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('site')) {
-          setRouteType('site');
-          setRouteTargetId(params.get('site'));
-        } else if (params.has('s')) {
-          setRouteType('short');
-          setRouteTargetId(params.get('s'));
-        } else if (params.has('m')) {
-          setRouteType('multipage');
-          setRouteTargetId(params.get('m'));
-        } else if (params.has('unlock')) {
-          setRouteType('unlock');
-          setRouteTargetId(params.get('unlock'));
-        }
-      }, []);
-
-      useEffect(() => {
-        let loaded = getLocalLinks();
-        if (loaded.length === 0) {
-          loaded = DEFAULT_INITIAL_LINKS;
-          saveLocalLinks(loaded);
-        }
-        setUserLinks(loaded);
-        setClickLogs(getLocalClicks());
-        setTokens(getLocalTokens());
-      }, []);
-
-      const deductToken = async () => {
-        if (tokens <= 0) {
-          addToast('টোকেন শেষ হয়ে গেছে! অনুগ্রহ করে রিচার্জ করুন।', 'error');
-          setIsTokenModalOpen(true);
-          return false;
-        }
-        const newTokens = tokens - 1;
-        setTokens(newTokens);
-        saveLocalTokens(newTokens);
-        return true;
-      };
-
-      const getBaseUrl = () => window.location.origin + window.location.pathname;
-
-      const logClick = (linkId, linkType) => {
-        const devices = ['Desktop', 'Mobile', 'Tablet'];
-        const referrers = ['YouTube', 'Facebook', 'Direct', 'WhatsApp', 'Google'];
-        const countries = ['Bangladesh 🇧🇩', 'India 🇮🇳', 'USA 🇺🇸', 'UK 🇬🇧'];
-
-        const newClick = {
-          id: generateID(),
-          linkId,
-          linkType,
-          timestamp: Date.now(),
-          device: devices[Math.floor(Math.random() * devices.length)],
-          referrer: referrers[Math.floor(Math.random() * referrers.length)],
-          country: countries[Math.floor(Math.random() * countries.length)],
-        };
-
-        const updatedLogs = [newClick, ...clickLogs];
-        setClickLogs(updatedLogs);
-        saveLocalClicks(updatedLogs);
-
-        const updatedLinks = userLinks.map(l => l.id === linkId ? { ...l, clicks: (l.clicks || 0) + 1 } : l);
-        setUserLinks(updatedLinks);
-        saveLocalLinks(updatedLinks);
-      };
-
-      const handlePublishHtml = async (html, title) => {
-        if (!(await deductToken())) return null;
-        const id = generateID();
-        const newLink = {
-          id,
-          type: 'html',
-          title: title || 'HTML Hosted Page',
-          htmlContent: html,
-          userId: user ? user.uid : 'guest',
-          createdAt: Date.now(),
-          clicks: 0,
-          active: true
-        };
-        const updated = [newLink, ...userLinks];
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        addToast('HTML পৃষ্ঠা সফলভাবে প্রকাশিত হয়েছে!', 'success');
-        return `${getBaseUrl()}?site=${id}`;
-      };
-
-      const handleCreateShort = async (targetUrl, title, customAlias) => {
-        if (!(await deductToken())) return null;
-        const id = customAlias && customAlias.trim() !== '' ? customAlias.trim().toLowerCase() : generateID();
-        const newLink = {
-          id,
-          type: 'short',
-          title: title || 'Short Link',
-          originalUrl: targetUrl,
-          userId: user ? user.uid : 'guest',
-          createdAt: Date.now(),
-          clicks: 0,
-          active: true
-        };
-        const updated = [newLink, ...userLinks];
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        addToast('শর্ট লিঙ্ক তৈরি সম্পন্ন হয়েছে!', 'success');
-        return `${getBaseUrl()}?s=${id}`;
-      };
-
-      const handleCreateMultiPage = async (targetUrl, title) => {
-        if (!(await deductToken())) return null;
-        const id = generateID();
-        const newLink = {
-          id,
-          type: 'multipage',
-          title: title || 'Monetized 3-Page Link',
-          originalUrl: targetUrl,
-          userId: user ? user.uid : 'guest',
-          createdAt: Date.now(),
-          clicks: 0,
-          active: true
-        };
-        const updated = [newLink, ...userLinks];
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        addToast('৩-ধাপের মনিটাইজড লিঙ্ক তৈরি হয়েছে!', 'success');
-        return `${getBaseUrl()}?m=${id}`;
-      };
-
-      const handleCreateUnlock = async (targetUrl, title, steps) => {
-        if (!(await deductToken())) return null;
-        const id = generateID();
-        const newLink = {
-          id,
-          type: 'unlock',
-          title: title || 'Follow-to-Unlock Gate',
-          originalUrl: targetUrl,
-          requiredSteps: steps,
-          userId: user ? user.uid : 'guest',
-          createdAt: Date.now(),
-          clicks: 0,
-          active: true
-        };
-        const updated = [newLink, ...userLinks];
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        addToast('সুব৪সুব আনলক গেট লিঙ্ক তৈরি হয়েছে!', 'success');
-        return `${getBaseUrl()}?unlock=${id}`;
-      };
-
-      const handleToggleActive = (id) => {
-        const updated = userLinks.map(l => l.id === id ? { ...l, active: !l.active } : l);
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        addToast('লিঙ্কের স্ট্যাটাস পরিবর্তন হয়েছে', 'info');
-      };
-
-      const handleDeleteLink = (id) => {
-        if (confirm('আপনি কি সত্যিই এই লিঙ্কটি মুছে ফেলতে চান?')) {
-          const updated = userLinks.filter(l => l.id !== id);
-          setUserLinks(updated);
-          saveLocalLinks(updated);
-          addToast('লিঙ্কটি মুছে ফেলা হয়েছে', 'success');
-        }
-      };
-
-      const handleSaveEdit = (updatedLink) => {
-        const updated = userLinks.map(l => l.id === updatedLink.id ? updatedLink : l);
-        setUserLinks(updated);
-        saveLocalLinks(updated);
-        setEditingLink(null);
-        addToast('লিঙ্ক আপডেট সম্পন্ন হয়েছে!', 'success');
-      };
-
-      if (routeType && routeTargetId) {
-        const targetItem = userLinks.find(l => l.id === routeTargetId);
-        return (
-          <PublicOverlay 
-            routeType={routeType} 
-            targetId={routeTargetId} 
-            linkItem={targetItem} 
-            onLogClick={(id, type) => logClick(id, type)}
-            onGoHome={() => window.location.href = window.location.pathname}
-          />
-        );
-      }
-
-      return (
-        <div class="min-h-screen flex flex-col bg-slate-50">
-          <div class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
-            {toasts.map(t => (
-              <div key={t.id} class={`pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 ${
-                t.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
-                t.type === 'error' ? 'bg-rose-50 text-rose-800 border-rose-200' :
-                'bg-blue-50 text-blue-800 border-blue-200'
-              }`}>
-                <span>{t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : 'ℹ️'}</span>
-                <span>{t.message}</span>
-              </div>
-            ))}
-          </div>
-
-          <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-black text-xl shadow-md">⚡</div>
-                <div>
-                  <h1 class="font-extrabold text-lg text-slate-900 leading-tight">LinkCraft Studio</h1>
-                  <p class="text-xs text-slate-500 font-medium">All-in-One Link & Hosting Platform</p>
+    <!-- Navbar -->
+    <nav id="navbar" class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-0">
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="text-2xl font-black cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 tracking-tight flex items-center gap-2" onclick="showMainView('home')">
+                    <i class="fa-solid fa-bolt text-indigo-500"></i> Link L BD
                 </div>
-              </div>
-
-              <nav class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <button onClick={() => setActiveTab('tools')} class={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'tools' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'}`}>🛠️ টুলস</button>
-                <button onClick={() => setActiveTab('mylinks')} class={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'mylinks' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'}`}>🔗 মাই লিঙ্কস ({userLinks.length})</button>
-                <button onClick={() => setActiveTab('analytics')} class={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'analytics' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'}`}>📊 অ্যানালিটিক্স</button>
-              </nav>
-
-              <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-xl text-sm font-bold">
-                  <span>⚡ {tokens} টোকেন</span>
-                  <button onClick={() => setIsTokenModalOpen(true)} class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-md">+ ফ্রি</button>
+                <div id="mobile-auth-btn" class="md:hidden">
+                    <button id="btn-nav-login-mob" class="btn-gradient px-4 py-1.5 rounded-xl font-bold text-xs shadow-lg" onclick="showMainView('auth')">
+                        Login
+                    </button>
                 </div>
-                {user ? (
-                  <button onClick={() => setUser(null)} class="text-xs text-slate-600 border px-3 py-1.5 rounded-xl font-semibold">লগআউট</button>
-                ) : (
-                  <button onClick={() => setIsAuthOpen(true)} class="bg-slate-900 text-white text-xs px-3.5 py-1.5 rounded-xl font-semibold">লগইন</button>
-                )}
-              </div>
             </div>
-          </header>
 
-          <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-            {activeTab === 'tools' && (
-              <ToolsView 
-                activeTool={activeTool} setActiveTool={setActiveTool}
-                onPublishHtml={handlePublishHtml} onCreateShort={handleCreateShort}
-                onCreateMultiPage={handleCreateMultiPage} onCreateUnlock={handleCreateUnlock}
-                onShowQR={(url, title) => setQrModalData({ url, title })}
-              />
-            )}
-            {activeTab === 'mylinks' && (
-              <MyLinksView 
-                links={userLinks} onToggleActive={handleToggleActive} onDelete={handleDeleteLink}
-                onEdit={(link) => setEditingLink(link)} onShowQR={(url, title) => setQrModalData({ url, title })}
-                onViewAnalytics={(id) => { setAnalyticsSelectedLinkId(id); setActiveTab('analytics'); }}
-              />
-            )}
-            {activeTab === 'analytics' && (
-              <AnalyticsView 
-                links={userLinks} clickLogs={clickLogs}
-                selectedLinkId={analyticsSelectedLinkId} setSelectedLinkId={setAnalyticsSelectedLinkId}
-              />
-            )}
-          </main>
-
-          {isAuthOpen && <AuthModal onClose={() => setIsAuthOpen(false)} onLogin={(email) => { setUser({ uid: 'usr_' + Date.now(), email }); setIsAuthOpen(false); addToast('লগইন সফল!', 'success'); }} />}
-          {isTokenModalOpen && <TokenModal onClose={() => setIsTokenModalOpen(false)} onClaim={() => { setTokens(tokens + 50); saveLocalTokens(tokens + 50); setIsTokenModalOpen(false); addToast('৫০ ফ্রি টোকেন যোগ হয়েছে!', 'success'); }} />}
-          {qrModalData && <QrModal data={qrModalData} onClose={() => setQrModalData(null)} />}
-          {editingLink && <EditLinkModal link={editingLink} onClose={() => setEditingLink(null)} onSave={handleSaveEdit} />}
-        </div>
-      );
-    }
-
-    function ToolsView({ activeTool, setActiveTool, onPublishHtml, onCreateShort, onCreateMultiPage, onCreateUnlock, onShowQR }) {
-      const [generatedUrl, setGeneratedUrl] = useState('');
-      const [htmlCode, setHtmlCode] = useState('<h1>Welcome to My Live Page!</h1>');
-      const [htmlTitle, setHtmlTitle] = useState('');
-      const [shortUrl, setShortUrl] = useState('');
-      const [shortAlias, setShortAlias] = useState('');
-      const [multiUrl, setMultiUrl] = useState('');
-      const [unlockUrl, setUnlockUrl] = useState('');
-      const [unlockSteps, setUnlockSteps] = useState([{ id: '1', title: 'YouTube Subscribe', url: 'https://youtube.com' }]);
-
-      return (
-        <div class="space-y-6">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { id: 'html', icon: '💻', title: 'HTML হোস্টিং' },
-              { id: 'short', icon: '🔗', title: 'ইউআরএল শর্টনার' },
-              { id: 'multipage', icon: '💰', title: '৩-ধাপের মনিটাইজড লিঙ্ক' },
-              { id: 'unlock', icon: '🔒', title: 'সুব৪সুব আনলক গেট' }
-            ].map(t => (
-              <button key={t.id} onClick={() => { setActiveTool(t.id); setGeneratedUrl(''); }} class={`p-4 rounded-2xl border text-left font-bold ${activeTool === t.id ? 'bg-indigo-600 text-white' : 'bg-white text-slate-800'}`}>
-                <div>{t.icon}</div>
-                <div class="text-sm mt-1">{t.title}</div>
-              </button>
-            ))}
-          </div>
-
-          {generatedUrl && (
-            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between">
-              <span class="font-mono text-xs font-bold text-emerald-900 break-all">{generatedUrl}</span>
-              <button onClick={() => { navigator.clipboard.writeText(generatedUrl); alert('কপি করা হয়েছে!'); }} class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold">📋 কপি</button>
+            <!-- Central Tab Navigation -->
+            <div class="flex items-center space-x-1 sm:space-x-2 bg-slate-800/80 p-1 rounded-2xl border border-slate-700/60 text-xs font-bold overflow-x-auto w-full md:w-auto justify-center">
+                <button onclick="showMainView('home')" id="tab-btn-home" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                    <i class="fa-solid fa-cubes"></i> Tools
+                </button>
+                <button onclick="showMainView('management')" id="tab-btn-management" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-list-check"></i> My Links
+                </button>
+                <button onclick="showMainView('analytics')" id="tab-btn-analytics" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap text-slate-300 hover:text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-line"></i> Analytics <span class="bg-emerald-500/20 text-emerald-300 text-[9px] px-1.5 py-0.2 rounded-full border border-emerald-500/30">Live</span>
+                </button>
             </div>
-          )}
 
-          {activeTool === 'html' && (
-            <div class="bg-white p-6 rounded-2xl border space-y-3">
-              <h3 class="font-bold">💻 HTML হোস্টিং স্টুডিও</h3>
-              <textarea rows="6" value={htmlCode} onChange={e => setHtmlCode(e.target.value)} class="w-full p-3 font-mono text-xs border rounded-xl bg-slate-900 text-slate-100"></textarea>
-              <button onClick={async () => { const res = await onPublishHtml(htmlCode, htmlTitle); if (res) setGeneratedUrl(res); }} class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">🚀 পাবলিশ করুন (১ টোকেন)</button>
+            <!-- Desktop Auth / User Controls -->
+            <div class="hidden md:flex items-center space-x-3">
+                <div id="user-controls" class="hidden items-center space-x-3">
+                    <span class="text-xs text-slate-300 font-medium max-w-[120px] truncate" id="user-email-display"></span>
+                    <div class="bg-indigo-950 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-coins text-yellow-400"></i> <span id="token-count">0</span>
+                    </div>
+                    <a href="https://wa.me/message/J4AUILDV7ZVJD1" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> <span>Get Tokens</span>
+                    </a>
+                    <button id="btn-logout" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+                <button id="btn-nav-login" class="btn-gradient px-5 py-2 rounded-xl text-xs font-bold shadow-lg" onclick="showMainView('auth')">
+                    Login / Register
+                </button>
             </div>
-          )}
+        </div>
+    </nav>
 
-          {activeTool === 'short' && (
-            <div class="bg-white p-6 rounded-2xl border space-y-3">
-              <h3 class="font-bold">🔗 ইউআরএল শর্টনার</h3>
-              <input type="url" placeholder="https://..." value={shortUrl} onChange={e => setShortUrl(e.target.value)} class="w-full p-2.5 border rounded-xl text-sm" />
-              <button onClick={async () => { const res = await onCreateShort(shortUrl, '', shortAlias); if (res) setGeneratedUrl(res); }} class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">🔗 ছোট করুন (১ টোকেন)</button>
+    <!-- MAIN CONTAINER -->
+    <div id="app-wrapper" class="flex-grow flex flex-col w-full">
+        <main class="flex-grow p-4 sm:p-6 w-full max-w-7xl mx-auto" id="main-content">
+            
+            <!-- VIEW 1: HOME (TOOLS GRID) -->
+            <div id="view-home" class="w-full space-y-10 py-2">
+                <div class="text-center space-y-3 pt-4">
+                    <span class="bg-indigo-950/80 border border-indigo-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-indigo-300">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> Real-time Click Counters & Detailed Analytics
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
+                        All-In-One Web Tools & Analytics
+                    </h1>
+                    <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+                        Host HTML pages permanently, shorten links, create 3-page monetized links, and setup Follow-to-Unlock gates with real-time performance tracking.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- HTML Host -->
+                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('html')">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl text-blue-400 mx-auto mb-3"><i class="fa-brands fa-html5"></i></div>
+                            <h2 class="text-xl font-extrabold mb-1">HTML Hosting</h2>
+                            <p class="text-slate-400 text-xs mb-4">Write and host static HTML pages instantly for landing pages.</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-blue-300 bg-blue-950/60 px-3 py-1 rounded-full border border-blue-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
+                    </div>
+
+                    <!-- Link Shortener -->
+                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('shortener')">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl text-purple-400 mx-auto mb-3"><i class="fa-solid fa-link"></i></div>
+                            <h2 class="text-xl font-extrabold mb-1">URL Shortener</h2>
+                            <p class="text-slate-400 text-xs mb-4">Shrink long URLs into trackable and clean short links.</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-purple-300 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
+                    </div>
+
+                    <!-- 3-Page Link -->
+                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('multipage')">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-2xl text-pink-400 mx-auto mb-3"><i class="fa-solid fa-layer-group"></i></div>
+                            <h2 class="text-xl font-extrabold mb-1">3-Page Link</h2>
+                            <p class="text-slate-400 text-xs mb-4">Monetized link where users pass 3 ad-pages (10s timers).</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-pink-300 bg-pink-950/60 px-3 py-1 rounded-full border border-pink-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
+                    </div>
+
+                    <!-- Follow to Unlock -->
+                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('unlock')">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl text-emerald-400 mx-auto mb-3"><i class="fa-solid fa-lock-open"></i></div>
+                            <h2 class="text-xl font-extrabold mb-1">Sub4Sub Unlock</h2>
+                            <p class="text-slate-400 text-xs mb-4">Force users to complete steps (7s wait) to unlock file.</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-emerald-300 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
+                    </div>
+                </div>
+
+                <!-- Video Tutorial -->
+                <div class="w-full glass-card rounded-3xl p-6 border border-slate-800">
+                    <h2 class="text-xl font-bold mb-4 text-center flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-youtube text-red-500 text-2xl"></i> How To Use Link L BD Platform
+                    </h2>
+                    <div class="aspect-video max-w-3xl mx-auto overflow-hidden rounded-2xl bg-black border border-slate-800">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLiX777yX0oTqVuqUUYgwp6kccj8axc92_" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
             </div>
-          )}
 
-          {activeTool === 'multipage' && (
-            <div class="bg-white p-6 rounded-2xl border space-y-3">
-              <h3 class="font-bold">💰 ৩-ধাপের মনিটাইজড লিঙ্ক</h3>
-              <input type="url" placeholder="ফাইনাল লিঙ্ক..." value={multiUrl} onChange={e => setMultiUrl(e.target.value)} class="w-full p-2.5 border rounded-xl text-sm" />
-              <button onClick={async () => { const res = await onCreateMultiPage(multiUrl, ''); if (res) setGeneratedUrl(res); }} class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">✨ লিঙ্ক তৈরি করুন (১ টোকেন)</button>
+            <!-- VIEW 2: AUTHENTICATION -->
+            <div id="view-auth" class="hidden w-full max-w-md mx-auto pt-8">
+                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                    <h2 class="text-2xl font-black text-center mb-1">Welcome Back</h2>
+                    <p class="text-center text-slate-400 text-xs mb-6">Register now for <span class="text-yellow-400 font-bold">50 Free Tokens!</span></p>
+                    
+                    <div class="space-y-4">
+                        <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        <input type="password" id="auth-password" placeholder="Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <button id="btn-login-submit" class="w-full btn-gradient py-3 rounded-xl font-bold text-xs shadow-lg">Login</button>
+                            <button id="btn-register-submit" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold text-xs border border-slate-700">Register</button>
+                        </div>
+                        
+                        <div class="relative flex py-2 items-center">
+                            <div class="flex-grow border-t border-slate-800"></div>
+                            <span class="flex-shrink-0 mx-4 text-slate-500 text-xs font-semibold">OR</span>
+                            <div class="flex-grow border-t border-slate-800"></div>
+                        </div>
+                        
+                        <button id="btn-google-auth" class="w-full bg-white text-slate-900 hover:bg-slate-100 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg">
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google"> Continue with Google
+                        </button>
+                    </div>
+                </div>
             </div>
-          )}
 
-          {activeTool === 'unlock' && (
-            <div class="bg-white p-6 rounded-2xl border space-y-3">
-              <h3 class="font-bold">🔒 সুব৪সুব ফলো-টু-আনলক গেট</h3>
-              <input type="url" placeholder="ফাইনাল লিঙ্ক..." value={unlockUrl} onChange={e => setUnlockUrl(e.target.value)} class="w-full p-2.5 border rounded-xl text-sm" />
-              <button onClick={async () => { const res = await onCreateUnlock(unlockUrl, '', unlockSteps); if (res) setGeneratedUrl(res); }} class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">🔒 গেট তৈরি করুন (১ টোকেন)</button>
+            <!-- VIEW 3: HTML TOOL -->
+            <div id="view-html" class="hidden w-full space-y-4">
+                <div class="flex justify-between items-center bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                    <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="fa-brands fa-html5 text-blue-400"></i> HTML Studio</h2>
+                    <button id="btn-publish-html" class="btn-gradient px-5 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Publish (1 Token)
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[500px]">
+                    <textarea id="html-editor" class="w-full h-full bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs text-emerald-400 focus:outline-none resize-none" placeholder="<!-- Write HTML here -->"></textarea>
+                    <div class="w-full h-full bg-white rounded-2xl overflow-hidden border border-slate-800">
+                        <iframe id="html-preview" class="w-full h-full bg-white" frameborder="0"></iframe>
+                    </div>
+                </div>
             </div>
-          )}
-        </div>
-      );
-    }
 
-    function MyLinksView({ links, onToggleActive, onDelete, onEdit, onShowQR, onViewAnalytics }) {
-      return (
-        <div class="space-y-4">
-          <h2 class="text-lg font-bold">🔗 মাই লিঙ্কস ({links.length})</h2>
-          {links.map(link => (
-            <div key={link.id} class="p-4 bg-white border rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-              <div>
-                <span class="text-[10px] font-black uppercase px-2 py-0.5 bg-slate-100 rounded">{link.type}</span>
-                <h3 class="font-bold text-sm text-slate-900 mt-1">{link.title || 'Untitled'}</h3>
-                <p class="text-xs font-mono text-indigo-600">{link.id}</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button onClick={() => onViewAnalytics(link.id)} class="px-3 py-1.5 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg">📊 অ্যানালিটিক্স</button>
-                <button onClick={() => onDelete(link.id)} class="px-3 py-1.5 bg-rose-50 text-rose-700 font-bold text-xs rounded-lg">🗑️ মুছুন</button>
-              </div>
+            <!-- VIEW 4: URL SHORTENER -->
+            <div id="view-shortener" class="hidden w-full max-w-xl mx-auto pt-6">
+                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-link text-purple-400"></i> URL Shortener</h2>
+                    <p class="text-slate-400 text-center text-xs mb-6">Shrink long links instantly. Costs 1 Token.</p>
+                    
+                    <div class="space-y-4">
+                        <input type="url" id="short-url-input" placeholder="https://your-very-long-url.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500">
+                        <input type="text" id="short-title-input" placeholder="Campaign Title (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-purple-500">
+                        <button id="btn-create-short" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Shorten URL (1 Token)
+                        </button>
+                    </div>
+                    
+                    <div id="shortener-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
+                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Short Link Created!</p>
+                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                            <a href="#" id="shortened-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
+                            <button onclick="copyText('shortened-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          ))}
+
+            <!-- VIEW 5: 3-PAGE LINK -->
+            <div id="view-multipage" class="hidden w-full max-w-xl mx-auto pt-6">
+                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-pink-500 to-purple-500"></div>
+                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-layer-group text-pink-400"></i> 3-Page Monetized Link</h2>
+                    <p class="text-slate-400 text-center text-xs mb-6">Force visitors through 3 ad-pages (10s timers) before target.</p>
+                    
+                    <div class="space-y-4">
+                        <input type="url" id="multipage-url-input" placeholder="https://final-destination-link.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-pink-500">
+                        <input type="text" id="multipage-title-input" placeholder="Campaign Label (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-pink-500">
+                        <button id="btn-create-multipage" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-money-bill-wave"></i> Generate Monetized Link (1 Token)
+                        </button>
+                    </div>
+                    
+                    <div id="multipage-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
+                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Monetized Link Ready!</p>
+                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                            <a href="#" id="multipage-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
+                            <button onclick="copyText('multipage-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: FOLLOW TO UNLOCK GATE -->
+            <div id="view-unlock" class="hidden w-full max-w-xl mx-auto pt-6 space-y-6">
+                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-lock-open text-emerald-400"></i> Sub4Sub Creator</h2>
+                    <p class="text-slate-400 text-center text-xs mb-6">Require users to complete steps (7s wait) to unlock target link.</p>
+                    
+                    <div class="space-y-4 bg-slate-950 p-5 rounded-2xl border border-slate-800" id="unlock-steps-container">
+                        <h3 class="text-xs font-bold uppercase text-emerald-400 pb-2 border-b border-slate-800">Required Steps</h3>
+                        <div class="space-y-2">
+                            <input type="url" class="unlock-req-input w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-emerald-500" placeholder="Step 1 URL (e.g. YouTube Channel)">
+                        </div>
+                    </div>
+                    
+                    <button id="btn-add-step" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-950/40 px-3.5 py-2 rounded-xl border border-emerald-800/40">
+                        <i class="fa-solid fa-plus"></i> Add Another Step
+                    </button>
+
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                        <h3 class="text-xs font-bold uppercase text-blue-400 pb-2 border-b border-slate-800">Target Link to Unlock</h3>
+                        <input type="url" id="unlock-target-input" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-blue-500" placeholder="https://mega.nz/file/...">
+                    </div>
+
+                    <button id="btn-create-unlock" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock"></i> Generate Unlock Link (1 Token)
+                    </button>
+
+                    <div id="unlock-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
+                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Unlock Gate Created!</p>
+                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                            <a href="#" id="unlock-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
+                            <button onclick="copyText('unlock-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 7: LINK MANAGEMENT (লিঙ্ক ম্যানেজমেন্ট) -->
+            <div id="view-management" class="hidden w-full space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/80 p-6 rounded-3xl border border-slate-800">
+                    <div>
+                        <h2 class="text-2xl font-black flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-400"></i> Link Management (লিঙ্ক ম্যানেজমেন্ট)</h2>
+                        <p class="text-slate-400 text-xs mt-1">Manage created links, real-time click counters, pause status, or edit target URLs.</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+                        <div><span class="text-slate-400 text-[10px] block">Total Links</span><span id="mgmt-total-links" class="font-extrabold text-white text-base">0</span></div>
+                        <div class="w-px h-8 bg-slate-800"></div>
+                        <div><span class="text-slate-400 text-[10px] block">Total Clicks</span><span id="mgmt-total-clicks" class="font-extrabold text-emerald-400 text-base">0</span></div>
+                    </div>
+                </div>
+
+                <div id="management-list-container" class="space-y-4">
+                    <!-- Links list injected via JS -->
+                </div>
+            </div>
+
+            <!-- VIEW 8: REAL-TIME ANALYTICS DASHBOARD (অ্যানালিটিক্স ড্যাশবোর্ড) -->
+            <div id="view-analytics" class="hidden w-full space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/80 p-6 rounded-3xl border border-slate-800">
+                    <div>
+                        <h2 class="text-2xl font-black flex items-center gap-2"><i class="fa-solid fa-chart-line text-purple-400"></i> Analytics Dashboard (অ্যানালিটিক্স ড্যাশবোর্ড)</h2>
+                        <p class="text-slate-400 text-xs mt-1">Real-time click tracking, daily traffic charts, devices, referrers, and locations.</p>
+                    </div>
+                </div>
+
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold">Total Clicks</span>
+                        <div id="analytics-click-counter" class="text-3xl font-black text-emerald-400">0</div>
+                        <span class="text-[10px] text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/40"><i class="fa-solid fa-bolt"></i> Real-time</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold">Active Campaigns</span>
+                        <div id="analytics-active-links" class="text-3xl font-black text-white">0</div>
+                        <span class="text-[10px] text-slate-400">Live Active Links</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold">Top Traffic Source</span>
+                        <div class="text-2xl font-black text-purple-300">YouTube / Direct</div>
+                        <span class="text-[10px] text-slate-400">Primary Traffic</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold">Top Device</span>
+                        <div class="text-2xl font-black text-pink-300">Mobile</div>
+                        <span class="text-[10px] text-slate-400">Mobile Audience</span>
+                    </div>
+                </div>
+
+                <!-- Click Performance Chart -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
+                    <h3 class="text-base font-extrabold text-white mb-4">Click Performance Chart (Last 7 Days)</h3>
+                    <div class="h-64 w-full">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="w-full bg-slate-900/80 border-t border-slate-800 p-6 text-center text-slate-400 text-xs mt-auto">
+            <p>Developed by <a href="#" class="text-indigo-400 font-bold">Link L BD Platform</a> &copy; 2026. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- OVERLAY 1: HOSTED HTML -->
+    <div id="overlay-site" class="hidden fixed inset-0 bg-white z-[100] flex flex-col h-screen w-screen">
+        <div class="w-full bg-slate-900 text-white flex justify-between items-center px-4 py-2 text-xs shrink-0">
+            <span>Powered by Link L BD Platform</span>
+            <button onclick="window.location.href=window.location.pathname" class="bg-indigo-600 px-3 py-1 rounded font-bold">Create Your Page</button>
         </div>
-      );
-    }
+        <iframe id="hosted-iframe" class="flex-grow w-full border-none bg-white" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
 
-    function AnalyticsView({ links, clickLogs, selectedLinkId }) {
-      const totalClicks = links.reduce((a, b) => a + (b.clicks || 0), 0);
-      return (
-        <div class="space-y-4">
-          <h2 class="text-lg font-bold">📊 অ্যানালিটিক্স ওভারভিউ</h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-2xl border"><span class="text-xs text-slate-400 font-bold">মোট ক্লিক</span><p class="text-2xl font-black text-indigo-600">{totalClicks}</p></div>
-            <div class="bg-white p-4 rounded-2xl border"><span class="text-xs text-slate-400 font-bold">মোট লিঙ্ক</span><p class="text-2xl font-black text-emerald-600">{links.length}</p></div>
-          </div>
+    <!-- OVERLAY 2: 3-PAGE LINK -->
+    <div id="overlay-multipage" class="hidden fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-xl glass-card p-8 rounded-3xl text-center space-y-6">
+            <h2 class="text-3xl font-black text-white">Step <span id="mp-step-num" class="text-pink-400">1</span> of 3</h2>
+            <p class="text-slate-400 text-xs">Please wait 10 seconds to support the creator...</p>
+            <div class="text-5xl font-black text-pink-400 my-4" id="mp-countdown">10</div>
+            <button id="btn-mp-next" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-bold text-base cursor-not-allowed">Please Wait...</button>
         </div>
-      );
-    }
+    </div>
 
-    function PublicOverlay({ routeType, targetId, linkItem, onLogClick, onGoHome }) {
-      useEffect(() => { onLogClick(targetId, routeType); }, []);
-
-      if (routeType === 'site') {
-        return (
-          <div class="min-h-screen flex flex-col bg-slate-900">
-            <button onClick={onGoHome} class="p-2 text-white text-xs bg-slate-800 text-right">🏠 হোমে যান</button>
-            <iframe srcDoc={linkItem ? linkItem.htmlContent : ''} class="w-full flex-1 border-0" />
-          </div>
-        );
-      }
-
-      return (
-        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-          <h2 class="text-xl font-bold">রিডাইরেক্ট করা হচ্ছে...</h2>
-          <a href={linkItem?.originalUrl} class="mt-4 px-6 py-3 bg-indigo-600 rounded-2xl font-bold text-sm">সরাসরি যান 🚀</a>
+    <!-- OVERLAY 3: FOLLOW TO UNLOCK GATE -->
+    <div id="overlay-unlock" class="hidden fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-xl glass-card p-8 rounded-3xl text-center space-y-6">
+            <i class="fa-solid fa-lock text-4xl text-emerald-400"></i>
+            <h1 class="text-2xl font-black text-white">Complete Steps to Unlock</h1>
+            <div id="public-unlock-steps" class="space-y-3"></div>
+            <button id="btn-final-unlock" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-bold text-base cursor-not-allowed">Complete Steps Above</button>
         </div>
-      );
-    }
+    </div>
 
-    function AuthModal({ onClose, onLogin }) {
-      const [email, setEmail] = useState('');
-      return (
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <div class="bg-white p-6 rounded-2xl max-w-sm w-full space-y-3">
-            <h3 class="font-bold">লগইন</h3>
-            <input type="email" placeholder="ইমেইল..." value={email} onChange={e => setEmail(e.target.value)} class="w-full p-2 border rounded-xl text-sm" />
-            <button onClick={() => onLogin(email)} class="w-full py-2 bg-indigo-600 text-white font-bold rounded-xl text-sm">প্রবেশ করুন</button>
-          </div>
-        </div>
-      );
-    }
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[300] flex flex-col space-y-2"></div>
 
-    function TokenModal({ onClose, onClaim }) {
-      return (
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <div class="bg-white p-6 rounded-2xl max-w-sm w-full text-center space-y-3">
-            <h3 class="font-bold">🎁 ৫০ ফ্রি টোকেন</h3>
-            <button onClick={onClaim} class="w-full py-2 bg-indigo-600 text-white font-bold rounded-xl text-sm">সংগ্রহ করুন</button>
-          </div>
-        </div>
-      );
-    }
+    <!-- Firebase SDK & Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    function QrModal({ data, onClose }) {
-      return (
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <div class="bg-white p-6 rounded-2xl max-w-sm w-full text-center space-y-3">
-            <h3 class="font-bold">{data.title}</h3>
-            <p class="font-mono text-xs break-all">{data.url}</p>
-            <button onClick={onClose} class="w-full py-2 bg-slate-900 text-white text-xs font-bold rounded-xl">বন্ধ করুন</button>
-          </div>
-        </div>
-      );
-    }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhJLgi2pr2h0F_Mbbc4wlc90C0I_GEwWg",
+            authDomain: "linkl-bd.firebaseapp.com",
+            databaseURL: "https://linkl-bd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "linkl-bd",
+            storageBucket: "linkl-bd.firebasestorage.app",
+            messagingSenderId: "774469512116",
+            appId: "1:774469512116:web:2bee9a5783e467800ca0e1",
+            measurementId: "G-LQ160MB9F4"
+        };
 
-    function EditLinkModal({ link, onClose, onSave }) {
-      const [title, setTitle] = useState(link.title || '');
-      return (
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <div class="bg-white p-6 rounded-2xl max-w-sm w-full space-y-3">
-            <h3 class="font-bold">এডিট করুন</h3>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} class="w-full p-2 border rounded-xl text-sm" />
-            <button onClick={() => onSave({ ...link, title })} class="w-full py-2 bg-indigo-600 text-white font-bold rounded-xl text-sm">সেভ করুন</button>
-          </div>
-        </div>
-      );
-    }
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getDatabase(app);
+        } catch (e) { console.error("Firebase init error", e); }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+        let currentUser = null;
+        let currentTokens = 50;
+
+        // Local Storage Engine
+        const getLocalLinks = () => JSON.parse(localStorage.getItem('linklbd_user_links_v2') || '[]');
+        const saveLocalLinks = (links) => localStorage.setItem('linklbd_user_links_v2', JSON.stringify(links));
+
+        window.showToast = (msg, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl shadow-2xl text-white text-xs font-bold flex items-center gap-2 border border-white/10 ${type==='success'?'bg-emerald-600':type==='error'?'bg-red-600':'bg-indigo-600'}`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        };
+
+        window.copyText = (id) => {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!", "success"));
+        };
+
+        window.showMainView = (viewName) => {
+            ['home', 'auth', 'html', 'shortener', 'multipage', 'unlock', 'management', 'analytics'].forEach(v => {
+                document.getElementById(`view-${v}`)?.classList.add('hidden');
+            });
+            document.getElementById(`view-${viewName}`)?.classList.remove('hidden');
+
+            if (viewName === 'management') renderLinkManagement();
+            if (viewName === 'analytics') renderAnalyticsDashboard();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.openTool = (tool) => {
+            if (!currentUser && tool !== 'home') {
+                showToast("Please login to use tools.", "error");
+                showMainView('auth');
+                return;
+            }
+            showMainView(tool);
+        };
+
+        // Live HTML Editor Sync
+        const editor = document.getElementById('html-editor');
+        const preview = document.getElementById('html-preview');
+        editor?.addEventListener('input', () => { preview.srcdoc = editor.value; });
+
+        // Add Step
+        document.getElementById('btn-add-step')?.addEventListener('click', () => {
+            const container = document.getElementById('unlock-steps-container');
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.className = 'unlock-req-input w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-emerald-500 mt-2';
+            input.placeholder = `Step ${container.querySelectorAll('.unlock-req-input').length + 1} URL`;
+            container.appendChild(input);
+        });
+
+        // Auth Listener
+        if (auth) {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('btn-nav-login')?.classList.add('hidden');
+                    document.getElementById('user-controls')?.classList.remove('hidden');
+                    document.getElementById('user-controls')?.classList.add('flex');
+                    document.getElementById('user-email-display').innerText = user.email || 'User';
+
+                    try {
+                        const snap = await get(ref(db, 'users/' + user.uid));
+                        if (snap.exists()) {
+                            currentTokens = snap.val().tokens || 50;
+                        } else {
+                            await set(ref(db, 'users/' + user.uid), { email: user.email, tokens: 50 });
+                        }
+                    } catch (e) {}
+                    document.getElementById('token-count').innerText = currentTokens;
+                    if (!document.getElementById('view-auth').classList.contains('hidden')) showMainView('home');
+                } else {
+                    currentUser = null;
+                    document.getElementById('btn-nav-login')?.classList.remove('hidden');
+                    document.getElementById('user-controls')?.classList.add('hidden');
+                }
+            });
+        }
+
+        document.getElementById('btn-login-submit')?.addEventListener('click', async () => {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-password').value;
+            try { await signInWithEmailAndPassword(auth, e, p); showToast("Login successful!", "success"); } catch (err) { showToast(err.message, "error"); }
+        });
+
+        document.getElementById('btn-register-submit')?.addEventListener('click', async () => {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-password').value;
+            try { 
+                const cred = await createUserWithEmailAndPassword(auth, e, p); 
+                await set(ref(db, 'users/' + cred.user.uid), { email: e, tokens: 50 });
+                showToast("Registered! 50 Free Tokens Rewarded.", "success"); 
+            } catch (err) { showToast(err.message, "error"); }
+        });
+
+        document.getElementById('btn-google-auth')?.addEventListener('click', async () => {
+            try { await signInWithPopup(auth, new GoogleAuthProvider()); showToast("Login successful!", "success"); } catch (err) { showToast(err.message, "error"); }
+        });
+
+        document.getElementById('btn-logout')?.addEventListener('click', () => { signOut(auth); showToast("Logged out.", "info"); showMainView('home'); });
+
+        const deductToken = async () => {
+            if (currentTokens <= 0) { showToast("Not enough tokens!", "error"); return false; }
+            currentTokens -= 1;
+            document.getElementById('token-count').innerText = currentTokens;
+            if (currentUser) {
+                try { await update(ref(db, 'users/' + currentUser.uid), { tokens: increment(-1) }); } catch (e) {}
+            }
+            return true;
+        };
+
+        const generateID = () => Math.random().toString(36).substring(2, 8);
+        const getBaseURL = () => window.location.origin + window.location.pathname;
+
+        // Tool Creations
+        document.getElementById('btn-publish-html')?.addEventListener('click', async () => {
+            const code = editor.value.trim();
+            if (!code) return showToast("Enter HTML code", "error");
+            if (await deductToken()) {
+                const id = generateID();
+                const linkObj = { id, type: 'html', title: 'HTML Page', html: code, clicks: 0, createdAt: Date.now(), active: true };
+                const links = [linkObj, ...getLocalLinks()];
+                saveLocalLinks(links);
+                try { await set(ref(db, 'sites/' + id), { siteId: id, html: code, clicks: 0 }); } catch (e) {}
+                showToast("HTML Page Published!", "success");
+                prompt("Copy your hosted URL:", `${getBaseURL()}?site=${id}`);
+            }
+        });
+
+        document.getElementById('btn-create-short')?.addEventListener('click', async () => {
+            let target = document.getElementById('short-url-input').value.trim();
+            const title = document.getElementById('short-title-input').value.trim() || 'Short Link';
+            if (!target) return showToast("Enter URL", "error");
+            if (!target.startsWith('http')) target = 'https://' + target;
+
+            if (await deductToken()) {
+                const id = generateID();
+                const linkObj = { id, type: 'short', title, originalUrl: target, clicks: 0, createdAt: Date.now(), active: true };
+                saveLocalLinks([linkObj, ...getLocalLinks()]);
+                try { await set(ref(db, 'links/' + id), { id, original_url: target, clicks: 0 }); } catch (e) {}
+                
+                const shortUrl = `${getBaseURL()}?s=${id}`;
+                document.getElementById('shortener-result').classList.remove('hidden');
+                document.getElementById('shortened-link-display').href = shortUrl;
+                document.getElementById('shortened-link-display').innerText = shortUrl;
+                showToast("Short Link Created!", "success");
+            }
+        });
+
+        document.getElementById('btn-create-multipage')?.addEventListener('click', async () => {
+            let target = document.getElementById('multipage-url-input').value.trim();
+            const title = document.getElementById('multipage-title-input').value.trim() || '3-Page Link';
+            if (!target) return showToast("Enter URL", "error");
+            if (!target.startsWith('http')) target = 'https://' + target;
+
+            if (await deductToken()) {
+                const id = generateID();
+                const linkObj = { id, type: 'multipage', title, originalUrl: target, clicks: 0, createdAt: Date.now(), active: true };
+                saveLocalLinks([linkObj, ...getLocalLinks()]);
+                try { await set(ref(db, 'multipage_links/' + id), { id, original_url: target, clicks: 0 }); } catch (e) {}
+
+                const shortUrl = `${getBaseURL()}?m=${id}`;
+                document.getElementById('multipage-result').classList.remove('hidden');
+                document.getElementById('multipage-link-display').href = shortUrl;
+                document.getElementById('multipage-link-display').innerText = shortUrl;
+                showToast("Monetized Link Created!", "success");
+            }
+        });
+
+        document.getElementById('btn-create-unlock')?.addEventListener('click', async () => {
+            const reqInputs = document.querySelectorAll('.unlock-req-input');
+            let target = document.getElementById('unlock-target-input').value.trim();
+            let reqs = [];
+            reqInputs.forEach(i => { if (i.value.trim()) reqs.push(i.value.trim()); });
+
+            if (reqs.length === 0 || !target) return showToast("Fill required steps & target", "error");
+            if (!target.startsWith('http')) target = 'https://' + target;
+
+            if (await deductToken()) {
+                const id = generateID();
+                const linkObj = { id, type: 'unlock', title: 'Sub4Sub Unlock Gate', originalUrl: target, requiredSteps: reqs, clicks: 0, createdAt: Date.now(), active: true };
+                saveLocalLinks([linkObj, ...getLocalLinks()]);
+                try { await set(ref(db, 'unlock_links/' + id), { id, required_links: reqs, target_link: target, clicks: 0 }); } catch (e) {}
+
+                const shortUrl = `${getBaseURL()}?unlock=${id}`;
+                document.getElementById('unlock-result').classList.remove('hidden');
+                document.getElementById('unlock-link-display').href = shortUrl;
+                document.getElementById('unlock-link-display').innerText = shortUrl;
+                showToast("Unlock Gate Created!", "success");
+            }
+        });
+
+        // Link Management Render Engine
+        function renderLinkManagement() {
+            const container = document.getElementById('management-list-container');
+            const links = getLocalLinks();
+            document.getElementById('mgmt-total-links').innerText = links.length;
+            document.getElementById('mgmt-total-clicks').innerText = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
+
+            if (links.length === 0) {
+                container.innerHTML = `<div class="p-8 bg-slate-900 rounded-3xl text-center text-slate-400 text-xs">No created links found yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = links.map(l => {
+                const param = l.type === 'html' ? 'site' : l.type === 'short' ? 's' : l.type === 'multipage' ? 'm' : 'unlock';
+                const linkUrl = `${getBaseURL()}?${param}=${l.id}`;
+                return `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">${l.type}</span>
+                            <h3 class="font-bold text-white text-sm mt-1">${l.title || l.id}</h3>
+                            <a href="${linkUrl}" target="_blank" class="text-xs font-mono text-indigo-300 hover:underline">${linkUrl}</a>
+                        </div>
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center shrink-0 min-w-[70px]">
+                                <span class="text-[9px] uppercase font-bold text-slate-400 block">Click Counter</span>
+                                <span class="text-base font-black text-emerald-400">${l.clicks || 0}</span>
+                            </div>
+                            <button onclick="copyTextDirect('${linkUrl}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.copyTextDirect = (text) => {
+            navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!", "success"));
+        };
+
+        // Analytics Chart Engine
+        let chartInstance = null;
+        function renderAnalyticsDashboard() {
+            const links = getLocalLinks();
+            const totalClicks = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
+            document.getElementById('analytics-click-counter').innerText = totalClicks;
+            document.getElementById('analytics-active-links').innerText = links.length;
+
+            const ctx = document.getElementById('analyticsChart')?.getContext('2d');
+            if (!ctx) return;
+
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Clicks',
+                        data: [12, 19, 8, 25, 32, 20, totalClicks || 45],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                        y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
+                    }
+                }
+            });
+        }
+
+        // Public Redirect & Routing Handler
+        window.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.has('site')) {
+                document.getElementById('navbar').classList.add('hidden');
+                document.getElementById('app-wrapper').classList.add('hidden');
+                const id = params.get('site');
+                const snap = await get(ref(db, 'sites/' + id));
+                if (snap.exists()) {
+                    update(ref(db, 'sites/' + id), { clicks: increment(1) });
+                    document.getElementById('overlay-site').classList.remove('hidden');
+                    document.getElementById('hosted-iframe').srcdoc = snap.val().html;
+                }
+            } else if (params.has('s')) {
+                const id = params.get('s');
+                const snap = await get(ref(db, 'links/' + id));
+                if (snap.exists()) {
+                    await update(ref(db, 'links/' + id), { clicks: increment(1) });
+                    window.location.replace(snap.val().original_url);
+                }
+            } else if (params.has('m')) {
+                document.getElementById('navbar').classList.add('hidden');
+                document.getElementById('app-wrapper').classList.add('hidden');
+                const id = params.get('m');
+                const snap = await get(ref(db, 'multipage_links/' + id));
+                if (snap.exists()) {
+                    update(ref(db, 'multipage_links/' + id), { clicks: increment(1) });
+                    renderMultiPageStep(1, snap.val().original_url);
+                }
+            } else if (params.has('unlock')) {
+                document.getElementById('navbar').classList.add('hidden');
+                document.getElementById('app-wrapper').classList.add('hidden');
+                const id = params.get('unlock');
+                const snap = await get(ref(db, 'unlock_links/' + id));
+                if (snap.exists()) {
+                    update(ref(db, 'unlock_links/' + id), { clicks: increment(1) });
+                    renderUnlockGate(snap.val());
+                }
+            }
+        });
+
+        function renderMultiPageStep(step, target) {
+            document.getElementById('overlay-multipage').classList.remove('hidden');
+            document.getElementById('mp-step-num').innerText = step;
+            let time = 10;
+            const btn = document.getElementById('btn-mp-next');
+            const cd = document.getElementById('mp-countdown');
+            btn.disabled = true;
+            btn.innerText = "Please Wait...";
+
+            const timer = setInterval(() => {
+                time--;
+                cd.innerText = time;
+                if (time <= 0) {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.className = "w-full bg-pink-600 text-white py-4 rounded-2xl font-bold text-base cursor-pointer hover:bg-pink-500";
+                    if (step < 3) {
+                        btn.innerText = "Next Step";
+                        btn.onclick = () => renderMultiPageStep(step + 1, target);
+                    } else {
+                        btn.innerText = "Get Target Link";
+                        btn.onclick = () => { window.location.href = target; };
+                    }
+                }
+            }, 1000);
+        }
+
+        function renderUnlockGate(data) {
+            document.getElementById('overlay-unlock').classList.remove('hidden');
+            const container = document.getElementById('public-unlock-steps');
+            const reqs = data.required_links || [];
+            let clicks = new Array(reqs.length).fill(false);
+
+            container.innerHTML = '';
+            reqs.forEach((url, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs flex justify-between px-4";
+                btn.innerHTML = `<span>Step ${i+1}: Visit Link</span> <i class="fa-solid fa-arrow-right"></i>`;
+                btn.onclick = () => {
+                    window.open(url, '_blank');
+                    let time = 7;
+                    btn.className = "w-full bg-slate-800 text-yellow-400 py-3 rounded-xl font-bold text-xs";
+                    btn.innerText = `Waiting ${time}s...`;
+                    const t = setInterval(() => {
+                        time--;
+                        btn.innerText = `Waiting ${time}s...`;
+                        if (time <= 0) {
+                            clearInterval(t);
+                            clicks[i] = true;
+                            btn.className = "w-full bg-slate-800 text-emerald-400 py-3 rounded-xl font-bold text-xs border border-emerald-500";
+                            btn.innerHTML = `<span>Step ${i+1} Completed</span> <i class="fa-solid fa-check"></i>`;
+                            if (clicks.every(v => v === true)) {
+                                const finalBtn = document.getElementById('btn-final-unlock');
+                                finalBtn.disabled = false;
+                                finalBtn.className = "w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-base cursor-pointer hover:bg-emerald-500";
+                                finalBtn.innerText = "Access Destination Link";
+                                finalBtn.onclick = () => { window.location.href = data.target_link; };
+                            }
+                        }
+                    }, 1000);
+                };
+                container.appendChild(btn);
+            });
+        }
+    </script>
 </body>
 </html>
