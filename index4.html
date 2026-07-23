@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Shortener & Developer Web Tools Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+        <i class="fa-solid fa-cloud text-blue-500 text-2xl"></i>
+        <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 tracking-tight">Link Tools</span>
+      </div>
+
+      <!-- Right Side Controls -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Dashboard Button -->
+        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden px-3.5 py-1.5 rounded-lg text-sm font-bold items-center gap-2 transition-all bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+          <i class="fa-solid fa-table-cells-large"></i>
+          <span class="hidden sm:inline">Dashboard</span>
+        </button>
+
+        <!-- Tokens Count Pill -->
+        <!--div id="nav-tokens" class="hidden items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-sm font-bold shadow-inner">
+          <i class="fa-solid fa-coins text-yellow-400"></i>
+          <span><span id="user-tokens-count">0</span> Tokens</span>
+      </div-->
+        <!-- WhatsApp Buy Tokens -->
+        <a href="https://wa.me/qr/6VYJUNPUGY6QM1" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-1.5">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span class="hidden sm:inline">Get Tokens</span>
+        </a>
+
+        <!-- Auth Buttons -->
+        <button id="nav-login-btn" onclick="navigate('auth')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-95 text-white px-5 py-2 rounded-lg font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Login / Register</span>
+        </button>
+        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden text-slate-400 hover:text-red-400 p-2 rounded-lg hover:bg-slate-800 transition-colors">
+          <i class="fa-solid fa-right-from-bracket text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+      <span id="toast-msg" class="text-sm">Notification</span>
+    </div>
+
+    <!-- VIEW: HOME -->
+    <section id="view-home" class="space-y-8">
+      <div class="text-center space-y-3 py-6">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
+          Developer & Creator Tools Studio
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Host HTML pages, shorten links, build 3-page monetized links, create YouTube Sub4Sub gates & manage everything in your dashboard.
+        </p>
+      </div>
+
+      <!-- LINK MANAGEMENT DASHBOARD BANNER -->
+      <div onclick="navigate('dashboard')" class="bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:border-indigo-400 transition-all shadow-xl group">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">
+              Link Management Dashboard
+            </h2>
+            <p class="text-slate-300 text-sm mt-1">
+              View click stats, copy links, track tokens, and manage all your shortened links and hosted pages in one place.
+            </p>
+          </div>
+        </div>
+        <button class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shrink-0 shadow-lg">
+          Open Dashboard â†’
+        </button>
+      </div>
+
+      <!-- TOOLS GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- HTML Hosting -->
+        <div onclick="navigate('html')" class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 p-6 rounded-2xl cursor-pointer transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2">HTML Hosting</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Host raw HTML code with a unique custom web URL link. Costs 1 token.</p>
+        </div>
+
+        <!-- URL Shortener -->
+        <div onclick="navigate('shortener')" class="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-2xl cursor-pointer transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2">URL Shortener</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Create short branded links with optional custom aliases. Free & unlimited.</p>
+        </div>
+
+        <!-- 3-Page Monetized -->
+        <div onclick="navigate('multipage')" class="bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 p-6 rounded-2xl cursor-pointer transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2">3-Page Monetized</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Multi-step links with countdown timers & ad space to maximize earnings.</p>
+        </div>
+
+        <!-- Follow to Unlock -->
+        <div onclick="navigate('unlock')" class="bg-slate-900/80 border border-slate-800 hover:border-red-500/50 p-6 rounded-2xl cursor-pointer transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-xl mb-4 group-hover:bg-red-600 group-hover:text-white transition">
+            <i class="fa-brands fa-youtube"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2">Follow-to-Unlock</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Require YouTube subscribe or Instagram follow before unlocking target link.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: AUTH -->
+    <section id="view-auth" class="hidden max-w-md mx-auto py-12">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 shadow-2xl">
+        <div class="text-center space-y-2">
+          <h2 class="text-2xl font-bold text-white">Sign In to WebTools</h2>
+          <p class="text-xs text-slate-400">Access your Link Management Dashboard and 100 Free Signup Tokens</p>
+        </div>
+
+        <div class="space-y-4">
+          <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-3 transition">
+            <i class="fa-brands fa-google text-red-400 text-lg"></i>
+            Continue with Google
+          </button>
+
+          <div class="relative flex items-center py-2">
+            <div class="flex-grow border-t border-slate-800"></div>
+            <span class="flex-shrink mx-4 text-xs text-slate-500">OR EMAIL</span>
+            <div class="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <form onsubmit="handleEmailAuth(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Email Address</label>
+              <input type="email" id="auth-email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Password</label>
+              <input type="password" id="auth-password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition">
+              Sign In / Register
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: LINK MANAGEMENT DASHBOARD -->
+    <section id="view-dashboard" class="hidden space-y-8 animate-fade-in pb-12">
+      <!-- Dashboard Top Header Card -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/80 backdrop-blur-md p-6 rounded-3xl border border-slate-700/80 shadow-xl">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <i class="fa-solid fa-table-cells-large text-indigo-400 text-2xl sm:text-3xl"></i>
+            <span>Link Management Dashboard</span>
+          </h1>
+          <p class="text-slate-400 text-sm mt-1">
+            Manage, track performance, copy, and organize all your created short links & hosted pages.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="loadDashboardLinks()" class="bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl transition-colors border border-slate-600" title="Refresh Data">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <div class="bg-gradient-to-r from-indigo-900/60 to-purple-900/60 border border-indigo-500/40 px-5 py-2.5 rounded-2xl flex items-center gap-3">
+            <i class="fa-solid fa-coins text-yellow-400 text-2xl"></i>
+            <div>
+              <div class="text-xs text-indigo-300 font-medium">Available Tokens</div>
+              <div class="text-lg font-black text-white" id="stat-token-balance">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Summary Cards (4 Columns) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
+            <i class="fa-solid fa-link text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-short-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Short Links</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-blue-500/20 text-blue-400 rounded-xl">
+            <i class="fa-solid fa-code text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-html-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Hosted HTML</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-pink-500/20 text-pink-400 rounded-xl">
+            <i class="fa-solid fa-layer-group text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-multi-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Monetized 3-Page</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+          <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <i class="fa-solid fa-arrow-pointer text-xl"></i>
+          </div>
+          <div>
+            <div id="stat-total-clicks" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-semibold text-slate-400">Total Clicks/Views</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Filter Bar -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none">
+        <button onclick="filterDashboard('all')" id="tab-all" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+          All Items (<span id="count-tab-all">0</span>)
+        </button>
+        <button onclick="filterDashboard('short')" id="tab-short" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          URL Shortener (<span id="count-tab-short">0</span>)
+        </button>
+        <button onclick="filterDashboard('html')" id="tab-html" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          HTML Sites (<span id="count-tab-html">0</span>)
+        </button>
+        <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          3-Page Monetized (<span id="count-tab-multi">0</span>)
+        </button>
+        <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+          Sub4Sub Gates (<span id="count-tab-unlock">0</span>)
+        </button>
+      </div>
+
+      <!-- Main Items Listing Container -->
+      <div id="dashboard-links-list" class="space-y-6 min-h-[200px]">
+        <div class="p-8 text-center text-slate-500 text-sm">Loading links...</div>
+      </div>
+    </section>
+
+    <!-- VIEW: HTML HOST -->
+    <section id="view-html" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-code text-blue-400"></i> HTML Page Hosting
+        </h2>
+        <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full font-medium">Cost: 1 Token</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Page Title</label>
+          <input type="text" id="html-title" placeholder="My Landing Page" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">HTML Code</label>
+          <textarea id="html-code" rows="10" placeholder="<!DOCTYPE html><html><body><h1>Hello World</h1></body></html>" class="w-full bg-slate-900 font-mono border border-slate-800 rounded-xl p-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+        <button onclick="generateHtmlHost()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition">
+          Publish & Generate Link (1 Token)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: SHORTENER -->
+    <section id="view-shortener" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <h2 class="text-2xl font-bold text-white text-center">URL Shortener</h2>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Target Long URL</label>
+          <input type="url" id="short-url" placeholder="https://example.com/very-long-link" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Custom Alias (Optional)</label>
+          <input type="text" id="short-alias" placeholder="my-custom-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <button onclick="generateShortUrl()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition">
+          Create Short Link (Free)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: 3-PAGE MONETIZED -->
+    <section id="view-multipage" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <h2 class="text-2xl font-bold text-white text-center">3-Page Monetized Link</h2>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Target Final Link</label>
+          <input type="url" id="multi-url" placeholder="https://drive.google.com/file/d/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Timer Duration (Seconds per page)</label>
+          <input type="number" id="multi-timer" value="10" min="5" max="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+        </div>
+        <button onclick="generateMultipageLink()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-xl transition">
+          Create 3-Page Link (Free)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: UNLOCK GATE -->
+    <section id="view-unlock" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <h2 class="text-2xl font-bold text-white text-center">Sub4Sub Follow-to-Unlock Gate</h2>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Target Destination Link (Download/Secret)</label>
+          <input type="url" id="unlock-target" placeholder="https://mega.nz/file/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">YouTube Channel URL to Subscribe</label>
+          <input type="url" id="unlock-yt" placeholder="https://youtube.com/@channel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Instagram Profile URL (Optional)</label>
+          <input type="url" id="unlock-ig" placeholder="https://instagram.com/profile" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <button onclick="generateUnlockGate()" class="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-3 rounded-xl transition">
+          Create Unlock Gate Link
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    // Firebase Modular SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, update, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // ==========================================
+        // 1. FIREBASE CONFIGURATION
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzrJEtCzXP2N7lms1JwlGElcZSQzgasms",
+            authDomain: "sky-tools-aa38e.firebaseapp.com",
+            projectId: "sky-tools-aa38e",
+            storageBucket: "sky-tools-aa38e.firebasestorage.app",
+            messagingSenderId: "433524203749",
+            appId: "1:433524203749:web:f88d7901e6cd12b0a8f40c",
+            measurementId: "G-7LR4NG8J6W"
+        };
+    
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
+    let userTokens = 0;
+    let userLinks = [];
+    let activeFilter = 'all';
+
+    // ROUTER / LINK RESOLVER ON PAGE LOAD
+    async function checkQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      const shortId = params.get('s');
+      const siteId = params.get('site');
+      const multiId = params.get('m');
+      const unlockId = params.get('unlock');
+
+      if (shortId) {
+        // Short URL Redirect
+        const snapshot = await get(ref(db, `links/${shortId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await update(ref(db, `links/${shortId}`), { clicks: (item.clicks || 0) + 1 });
+          window.location.href = item.targetUrl;
+        } else {
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl">404: Short link not found!</div>`;
+        }
+      } else if (siteId) {
+        // Hosted HTML Render
+        const snapshot = await get(ref(db, `links/${siteId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await update(ref(db, `links/${siteId}`), { clicks: (item.clicks || 0) + 1 });
+          document.open();
+          document.write(item.html);
+          document.close();
+        } else {
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl">404: Hosted HTML page not found!</div>`;
+        }
+      } else if (multiId) {
+        // 3-Page Monetized Link Flow
+        const snapshot = await get(ref(db, `links/${multiId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await update(ref(db, `links/${multiId}`), { clicks: (item.clicks || 0) + 1 });
+          renderMultiStepPage(item);
+        }
+      } else if (unlockId) {
+        // Sub4Sub Gate Flow
+        const snapshot = await get(ref(db, `links/${unlockId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await update(ref(db, `links/${unlockId}`), { clicks: (item.clicks || 0) + 1 });
+          renderUnlockGatePage(item);
+        }
+      }
+    }
+
+    function renderMultiStepPage(item) {
+      let currentStep = 1;
+      const totalSteps = 3;
+
+      function renderStep(step) {
+        let sec = item.timer || 10;
+
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center shadow-2xl border border-slate-800 space-y-6">
+              
+              <!-- Top Icon -->
+              <div class="inline-flex p-3 rounded-2xl bg-pink-500/10 text-pink-400 border border-pink-500/20 mb-1">
+                <i class="fa-solid fa-layer-group text-3xl"></i>
+              </div>
+
+              <!-- Header -->
+              <div>
+                <h2 class="text-3xl font-extrabold text-white">
+                  Step <span class="text-pink-400">${step}</span> of 3
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">
+                  Please wait a moment to reach your target destination...
+                </p>
+              </div>
+
+              <!-- Sponsored Ad Box -->
+              <div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-inner flex flex-col items-center justify-center min-h-[140px] text-slate-500 text-xs">
+                <div class="text-slate-400 font-bold mb-1">Sponsored Advertisement</div>
+                <p class="text-slate-600 max-w-xs text-[11px]">
+                  Supporting our creator link platform. Link unlocks automatically when the timer finishes.
+                </p>
+              </div>
+
+              <!-- Countdown Timer -->
+              <div id="countdown" class="text-6xl font-black text-pink-400 my-4 drop-shadow-md font-mono">
+                ${sec}
+              </div>
+
+              <!-- Next Button -->
+              <button id="next-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-spinner fa-spin text-pink-400"></i>
+                <span>Please Wait... (<span id="btn-sec">${sec}</span>s)</span>
+              </button>
+
+              <p class="text-xs text-slate-500 mt-2">
+                <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                  Monetize your links with Link Tools
+                </a>
+              </p>
+
+            </div>
+          </div>
+        `;
+
+        const timer = setInterval(() => {
+          sec--;
+          const cnt = document.getElementById('countdown');
+          const btnSec = document.getElementById('btn-sec');
+          const btn = document.getElementById('next-btn');
+
+          if (cnt) cnt.innerText = sec;
+          if (btnSec) btnSec.innerText = sec;
+
+          if (sec <= 0) {
+            clearInterval(timer);
+            if (btn) {
+              btn.disabled = false;
+              btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 cursor-pointer shadow-pink-500/25 animate-bounce";
+              btn.innerHTML = step < totalSteps 
+                ? `<span>Next Page</span> <i class="fa-solid fa-arrow-right"></i>`
+                : `<span>Get Target Link</span> <i class="fa-solid fa-up-right-from-square"></i>`;
+
+              btn.onclick = () => {
+                if (step < totalSteps) {
+                  renderStep(step + 1);
+                } else {
+                  window.location.href = item.targetUrl;
+                }
+              };
+            }
+          }
+        }, 1000);
+      }
+
+      renderStep(1);
+    }
+
+    function renderUnlockGatePage(item) {
+      let ytCompleted = false;
+      let igCompleted = !item.igProfile;
+
+      function checkAllCompleted() {
+        if (ytCompleted && igCompleted) {
+          const iconBox = document.getElementById('unlock-icon-box');
+          if (iconBox) {
+            iconBox.innerHTML = `<i class="fa-solid fa-lock-open text-3xl"></i>`;
+          }
+          const btn = document.getElementById('unlock-final-btn');
+          if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 cursor-pointer animate-bounce shadow-emerald-500/25";
+            btn.innerHTML = `<i class="fa-solid fa-unlock"></i> <span>Unlock Target Destination</span>`;
+            btn.onclick = () => window.location.href = item.targetUrl;
+          }
+        }
+      }
+
+      document.body.innerHTML = `
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 py-12">
+          <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl border border-slate-800">
+            
+            <div id="unlock-icon-box" class="inline-flex p-4 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
+              <i class="fa-solid fa-lock text-3xl"></i>
+            </div>
+
+            <div>
+              <h1 class="text-3xl font-extrabold text-white">Complete Steps to Unlock</h1>
+              <p class="text-slate-400 text-sm mt-1">
+                Click each step below, wait 7 seconds on the page, and the final link will unlock automatically!
+              </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <button id="yt-btn" onclick="startYtStep('${item.ytChannel}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                <span>Step 1: Subscribe on YouTube</span>
+                <i class="fa-solid fa-up-right-from-square"></i>
+              </button>
+
+              ${item.igProfile ? `
+                <button id="ig-btn" onclick="startIgStep('${item.igProfile}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                  <span>Step 2: Follow on Instagram</span>
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </button>
+              ` : ''}
+            </div>
+
+            <div class="pt-4 border-t border-slate-800">
+              <button id="unlock-final-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-lock"></i>
+                <span>Locked (Complete Steps Above)</span>
+              </button>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-2">
+              <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                Create your own Unlock Gate with Link Tools
+              </a>
+            </p>
+
+          </div>
+        </div>
+      `;
+
+      window.startYtStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('yt-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            ytCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 1 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
+      };
+
+      window.startIgStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('ig-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            igCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 2 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
+      };
+    }
+
+    // Run router check on start
+    checkQueryParams();
+    window.navigate = function(view) {
+      const views = ['home', 'auth', 'dashboard', 'html', 'shortener', 'multipage', 'unlock'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if(el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(`view-${view}`);
+      if(target) target.classList.remove('hidden');
+
+      if(view === 'dashboard') {
+        loadDashboardLinks();
+      }
+    };
+
+    window.showToast = function(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const toastIcon = document.getElementById('toast-icon');
+      
+      toastMsg.innerText = msg;
+      toastIcon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 text-lg" : "fa-solid fa-circle-check text-emerald-400 text-lg";
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    };
+
+    // AUTH OBSERVER
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('nav-login-btn').classList.add('hidden');
+        document.getElementById('nav-logout-btn').classList.remove('hidden');
+        document.getElementById('nav-tokens').classList.remove('hidden');
+        document.getElementById('nav-tokens').classList.add('flex');
+        document.getElementById('nav-dashboard-btn').classList.remove('hidden');
+        document.getElementById('nav-dashboard-btn').classList.add('flex');
+
+        // Fetch User Tokens & Init Data
+        const userRef = ref(db, `users/${user.uid}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          userTokens = snapshot.val().tokens || 0;
+        } else {
+          // Grant 100 Signup Tokens
+          userTokens = 100;
+          await set(userRef, { tokens: 100, email: user.email });
+        }
+        document.getElementById('user-tokens-count').innerText = userTokens;
+        document.getElementById('stat-token-balance').innerText = userTokens;
+      } else {
+        currentUser = null;
+        document.getElementById('nav-login-btn').classList.remove('hidden');
+        document.getElementById('nav-logout-btn').classList.add('hidden');
+        document.getElementById('nav-tokens').classList.add('hidden');
+        document.getElementById('nav-tokens').classList.remove('flex');
+        document.getElementById('nav-dashboard-btn').classList.add('hidden');
+        document.getElementById('nav-dashboard-btn').classList.remove('flex');
+      }
+    });
+
+    window.loginWithGoogle = async function() {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        showToast("Signed in successfully!");
+        navigate('home');
+      } catch(e) {
+        showToast(e.message, true);
+      }
+    };
+
+    window.handleEmailAuth = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast("Signed in!");
+        navigate('home');
+      } catch(err) {
+        try {
+          await createUserWithEmailAndPassword(auth, email, pass);
+          showToast("Account created!");
+          navigate('home');
+        } catch(e2) {
+          showToast(e2.message, true);
+        }
+      }
+    };
+
+    window.handleLogout = function() {
+      signOut(auth);
+      showToast("Logged out");
+      navigate('home');
+    };
+
+    // DASHBOARD FUNCTIONS
+    window.loadDashboardLinks = async function() {
+      const container = document.getElementById('dashboard-links-list');
+      if (!currentUser) {
+        container.innerHTML = `
+          <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-8 text-center text-slate-400 space-y-3">
+            <p class="text-base font-semibold">Please Sign In to view your Link Management Dashboard.</p>
+            <button onclick="navigate('auth')" class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-lg transition">Sign In / Register</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `<div class="p-8 text-center text-slate-500 text-sm">Loading your links...</div>`;
+
+      try {
+        const linksRef = ref(db, `links`);
+        const snapshot = await get(linksRef);
+        userLinks = [];
+        let totalClicks = 0;
+        let shortCount = 0;
+        let htmlCount = 0;
+        let multiCount = 0;
+        let unlockCount = 0;
+
+        if (snapshot.exists()) {
+          const allData = snapshot.val();
+          Object.keys(allData).forEach(key => {
+            const item = allData[key];
+            if (item.userId === currentUser.uid) {
+              item.id = key;
+              userLinks.push(item);
+              totalClicks += (item.clicks || item.views || item.unlocks || 0);
+              if (item.type === 'short') shortCount++;
+              else if (item.type === 'html') htmlCount++;
+              else if (item.type === 'multipage') multiCount++;
+              else if (item.type === 'unlock') unlockCount++;
+            }
+          });
+        }
+
+        if (document.getElementById('stat-short-count')) document.getElementById('stat-short-count').innerText = shortCount;
+        if (document.getElementById('stat-html-count')) document.getElementById('stat-html-count').innerText = htmlCount;
+        if (document.getElementById('stat-multi-count')) document.getElementById('stat-multi-count').innerText = multiCount;
+        if (document.getElementById('stat-total-clicks')) document.getElementById('stat-total-clicks').innerText = totalClicks;
+
+        if (document.getElementById('count-tab-all')) document.getElementById('count-tab-all').innerText = userLinks.length;
+        if (document.getElementById('count-tab-short')) document.getElementById('count-tab-short').innerText = shortCount;
+        if (document.getElementById('count-tab-html')) document.getElementById('count-tab-html').innerText = htmlCount;
+        if (document.getElementById('count-tab-multi')) document.getElementById('count-tab-multi').innerText = multiCount;
+        if (document.getElementById('count-tab-unlock')) document.getElementById('count-tab-unlock').innerText = unlockCount;
+
+        renderFilteredDashboard();
+      } catch(err) {
+        container.innerHTML = `<div class="p-8 text-center text-red-400 text-sm">Failed to load links: ${err.message}</div>`;
+      }
+    };
+
+    window.filterDashboard = function(type) {
+      activeFilter = type;
+      ['all', 'short', 'html', 'multipage', 'unlock'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+          } else {
+            btn.className = "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800";
+          }
+        }
+      });
+      renderFilteredDashboard();
+    };
+
+    function renderFilteredDashboard() {
+      const container = document.getElementById('dashboard-links-list');
+      let filtered = userLinks;
+      if (activeFilter !== 'all') {
+        filtered = userLinks.filter(l => l.type === activeFilter);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-12 text-center text-slate-500 text-sm">
+            <i class="fa-solid fa-folder-open text-4xl mb-3 block text-slate-600"></i>
+            No links found in this category. Create a new link to get started!
+          </div>
+        `;
+        return;
+      }
+
+      const baseUrl = window.location.origin + window.location.pathname;
+
+      container.innerHTML = filtered.map(item => {
+        let fullLink = "";
+        let borderHover = "hover:border-purple-500/40";
+        let badgeBg = "bg-purple-500/20 text-purple-300 border-purple-500/30";
+        let iconHtml = `<i class="fa-solid fa-link text-purple-400 text-lg"></i>`;
+        let typeLabel = "Short URL";
+
+        if (item.type === 'html') {
+          fullLink = `${baseUrl}?site=${item.id}`;
+          typeLabel = "HTML Site";
+          borderHover = "hover:border-blue-500/40";
+          badgeBg = "bg-blue-500/20 text-blue-300 border-blue-500/30";
+          iconHtml = `<i class="fa-solid fa-code text-blue-400 text-lg"></i>`;
+        } else if (item.type === 'multipage') {
+          fullLink = `${baseUrl}?m=${item.id}`;
+          typeLabel = "Monetized 3-Page";
+          borderHover = "hover:border-pink-500/40";
+          badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30";
+          iconHtml = `<i class="fa-solid fa-layer-group text-pink-400 text-lg"></i>`;
+        } else if (item.type === 'unlock') {
+          fullLink = `${baseUrl}?unlock=${item.id}`;
+          typeLabel = "Sub4Sub Gate";
+          borderHover = "hover:border-emerald-500/40";
+          badgeBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+          iconHtml = `<i class="fa-solid fa-unlock text-emerald-400 text-lg"></i>`;
+        } else {
+          fullLink = `${baseUrl}?s=${item.id}`;
+        }
+
+        return `
+          <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 ${borderHover} transition-colors shadow-md">
+            <div class="min-w-0 flex-1 space-y-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0">
+                  ${iconHtml}
+                </div>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeBg}">${typeLabel}</span>
+                <span class="text-xs text-slate-400 font-mono font-medium">${item.title || item.alias || item.id}</span>
+              </div>
+              <div class="text-sm font-semibold text-white truncate max-w-xl">
+                <a href="${fullLink}" target="_blank" class="hover:underline text-indigo-300">${fullLink}</a>
+              </div>
+              <div class="text-xs text-slate-500 truncate">
+                Destination: ${item.targetUrl || item.target || 'Hosted Page Content'}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 shrink-0 justify-between md:justify-end border-t md:border-t-0 border-slate-700/60 pt-3 md:pt-0">
+              <div class="text-left md:text-right">
+                <div class="text-xs text-slate-400">Clicks / Views</div>
+                <div class="text-sm font-black text-emerald-400 flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-pointer text-xs"></i>
+                  ${item.clicks || item.views || item.unlocks || 0}
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="copyToClipboard('${fullLink}')" class="p-2.5 bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 transition-colors" title="Copy Link">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+                <a href="${fullLink}" target="_blank" class="p-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors" title="Open Link">
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+                <button onclick="deleteLink('${item.id}')" class="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl border border-red-500/20 transition-colors" title="Delete Link">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text);
+      showToast("Link copied to clipboard!");
+    };
+
+    window.deleteLink = async function(id) {
+      if (!confirm("Are you sure you want to delete this link?")) return;
+      try {
+        await remove(ref(db, `links/${id}`));
+        showToast("Link deleted successfully");
+        loadDashboardLinks();
+      } catch(e) {
+        showToast(e.message, true);
+      }
+    };
+
+    // LINK CREATION HANDLERS
+    window.generateHtmlHost = async function() {
+      if(!currentUser) return navigate('auth');
+      if(userTokens < 1) return showToast("Not enough tokens!", true);
+
+      const title = document.getElementById('html-title').value || "Hosted HTML";
+      const code = document.getElementById('html-code').value;
+      if(!code) return showToast("Please enter HTML code", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'html',
+        title: title,
+        html: code,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      // Deduct 1 Token
+      userTokens -= 1;
+      await update(ref(db, `users/${currentUser.uid}`), { tokens: userTokens });
+      document.getElementById('user-tokens-count').innerText = userTokens;
+
+      showToast("HTML Page Published!");
+      navigate('dashboard');
+    };
+
+    window.generateShortUrl = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('short-url').value;
+      const alias = document.getElementById('short-alias').value;
+      if(!target) return showToast("Enter a URL", true);
+
+      const id = alias ? alias : Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'short',
+        targetUrl: target,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("Short Link Created!");
+      navigate('dashboard');
+    };
+
+    window.generateMultipageLink = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('multi-url').value;
+      const timer = parseInt(document.getElementById('multi-timer').value) || 10;
+      if(!target) return showToast("Enter target URL", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'multipage',
+        targetUrl: target,
+        timer: timer,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("3-Page Link Created!");
+      navigate('dashboard');
+    };
+
+    window.generateUnlockGate = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('unlock-target').value;
+      const yt = document.getElementById('unlock-yt').value;
+      const ig = document.getElementById('unlock-ig').value;
+      if(!target || !yt) return showToast("Target URL and YouTube URL required", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'unlock',
+        targetUrl: target,
+        ytChannel: yt,
+        igProfile: ig,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("Unlock Gate Created!");
+      navigate('dashboard');
+    };
+  </script>
+</body>
+</html>
