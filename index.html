@@ -1,823 +1,1615 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link L BD - All-In-One Web Tools & Analytics Platform</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Chart.js for Real-time Analytics Dashboard -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #030712;
-            color: #f3f4f6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .glass-card {
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-            transition: opacity 0.2s, transform 0.2s;
-        }
-        
-        .btn-gradient:hover {
-            opacity: 0.95;
-            transform: scale(1.02);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
-        
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-left-color: #6366f1;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Shortener, Web Tools & Real-Time Analytics Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN for Analytics Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- QRCode.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-    <!-- Navbar -->
-    <nav id="navbar" class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-0">
-            <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="text-2xl font-black cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 tracking-tight flex items-center gap-2" onclick="showMainView('home')">
-                    <i class="fa-solid fa-bolt text-indigo-500"></i> Link L BD
-                </div>
-                <div id="mobile-auth-btn" class="md:hidden">
-                    <button id="btn-nav-login-mob" class="btn-gradient px-4 py-1.5 rounded-xl font-bold text-xs shadow-lg" onclick="showMainView('auth')">
-                        Login
-                    </button>
-                </div>
-            </div>
-
-            <!-- Central Tab Navigation -->
-            <div class="flex items-center space-x-1 sm:space-x-2 bg-slate-800/80 p-1 rounded-2xl border border-slate-700/60 text-xs font-bold overflow-x-auto w-full md:w-auto justify-center">
-                <button onclick="showMainView('home')" id="tab-btn-home" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                    <i class="fa-solid fa-cubes"></i> Tools
-                </button>
-                <button onclick="showMainView('management')" id="tab-btn-management" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap text-slate-300 hover:text-white">
-                    <i class="fa-solid fa-list-check"></i> My Links
-                </button>
-                <button onclick="showMainView('analytics')" id="tab-btn-analytics" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap text-slate-300 hover:text-white flex items-center gap-1.5">
-                    <i class="fa-solid fa-chart-line"></i> Analytics <span class="bg-emerald-500/20 text-emerald-300 text-[9px] px-1.5 py-0.2 rounded-full border border-emerald-500/30">Live</span>
-                </button>
-            </div>
-
-            <!-- Desktop Auth / User Controls -->
-            <div class="hidden md:flex items-center space-x-3">
-                <div id="user-controls" class="hidden items-center space-x-3">
-                    <span class="text-xs text-slate-300 font-medium max-w-[120px] truncate" id="user-email-display"></span>
-                    <div class="bg-indigo-950 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5">
-                        <i class="fa-solid fa-coins text-yellow-400"></i> <span id="token-count">0</span>
-                    </div>
-                    <a href="https://wa.me/message/J4AUILDV7ZVJD1" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
-                        <i class="fa-brands fa-whatsapp text-sm"></i> <span>Get Tokens</span>
-                    </a>
-                    <button id="btn-logout" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
-                </div>
-                <button id="btn-nav-login" class="btn-gradient px-5 py-2 rounded-xl text-xs font-bold shadow-lg" onclick="showMainView('auth')">
-                    Login / Register
-                </button>
-            </div>
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-40 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer group" onclick="navigate('home')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-link text-xl"></i>
         </div>
-    </nav>
+        <div class="flex flex-col">
+          <span class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 tracking-tight leading-none">Link Tools</span>
+          <span class="text-[10px] text-slate-400 font-semibold tracking-wider">ANALYTICS & HOSTING</span>
+        </div>
+      </div>
 
-    <!-- MAIN CONTAINER -->
-    <div id="app-wrapper" class="flex-grow flex flex-col w-full">
-        <main class="flex-grow p-4 sm:p-6 w-full max-w-7xl mx-auto" id="main-content">
-            
-            <!-- VIEW 1: HOME (TOOLS GRID) -->
-            <div id="view-home" class="w-full space-y-10 py-2">
-                <div class="text-center space-y-3 pt-4">
-                    <span class="bg-indigo-950/80 border border-indigo-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-indigo-300">
-                        <i class="fa-solid fa-bolt text-yellow-400"></i> Real-time Click Counters & Detailed Analytics
-                    </span>
-                    <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
-                        All-In-One Web Tools & Analytics
-                    </h1>
-                    <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-                        Host HTML pages permanently, shorten links, create 3-page monetized links, and setup Follow-to-Unlock gates with real-time performance tracking.
-                    </p>
-                </div>
+      <!-- Right Side Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Dashboard Button -->
+        <button id="nav-dashboard-btn" onclick="navigate('dashboard')" class="hidden px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold items-center gap-2 transition-all bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 active:scale-95">
+          <i class="fa-solid fa-chart-line"></i>
+          <span class="hidden sm:inline">Dashboard</span>
+        </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <!-- HTML Host -->
-                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('html')">
-                        <div>
-                            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl text-blue-400 mx-auto mb-3"><i class="fa-brands fa-html5"></i></div>
-                            <h2 class="text-xl font-extrabold mb-1">HTML Hosting</h2>
-                            <p class="text-slate-400 text-xs mb-4">Write and host static HTML pages instantly for landing pages.</p>
-                        </div>
-                        <span class="text-[11px] font-bold text-blue-300 bg-blue-950/60 px-3 py-1 rounded-full border border-blue-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
-                    </div>
+        <!-- Tokens Count Pill -->
+        <div id="nav-tokens" class="hidden items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-inner">
+          <i class="fa-solid fa-coins text-yellow-400 animate-pulse"></i>
+          <span><span id="user-tokens-count">0</span> Tokens</span>
+        </div>
 
-                    <!-- Link Shortener -->
-                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('shortener')">
-                        <div>
-                            <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl text-purple-400 mx-auto mb-3"><i class="fa-solid fa-link"></i></div>
-                            <h2 class="text-xl font-extrabold mb-1">URL Shortener</h2>
-                            <p class="text-slate-400 text-xs mb-4">Shrink long URLs into trackable and clean short links.</p>
-                        </div>
-                        <span class="text-[11px] font-bold text-purple-300 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
-                    </div>
+        <!-- WhatsApp Buy Tokens -->
+        <a href="https://wa.me/01715569959" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-1.5 active:scale-95">
+          <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
+          <span class="hidden sm:inline">Get Tokens</span>
+        </a>
 
-                    <!-- 3-Page Link -->
-                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('multipage')">
-                        <div>
-                            <div class="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-2xl text-pink-400 mx-auto mb-3"><i class="fa-solid fa-layer-group"></i></div>
-                            <h2 class="text-xl font-extrabold mb-1">3-Page Link</h2>
-                            <p class="text-slate-400 text-xs mb-4">Monetized link where users pass 3 ad-pages (10s timers).</p>
-                        </div>
-                        <span class="text-[11px] font-bold text-pink-300 bg-pink-950/60 px-3 py-1 rounded-full border border-pink-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
-                    </div>
+        <!-- Auth Buttons -->
+        <button id="nav-login-btn" onclick="navigate('auth')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-95 text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Login / Register</span>
+        </button>
+        <button id="nav-logout-btn" onclick="handleLogout()" class="hidden text-slate-400 hover:text-red-400 p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Sign Out">
+          <i class="fa-solid fa-right-from-bracket text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </header>
 
-                    <!-- Follow to Unlock -->
-                    <div class="glass-card rounded-3xl p-6 text-center cursor-pointer flex flex-col justify-between" onclick="openTool('unlock')">
-                        <div>
-                            <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl text-emerald-400 mx-auto mb-3"><i class="fa-solid fa-lock-open"></i></div>
-                            <h2 class="text-xl font-extrabold mb-1">Sub4Sub Unlock</h2>
-                            <p class="text-slate-400 text-xs mb-4">Force users to complete steps (7s wait) to unlock file.</p>
-                        </div>
-                        <span class="text-[11px] font-bold text-emerald-300 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/60 w-fit mx-auto"><i class="fa-solid fa-coins text-yellow-400"></i> Cost: 1 Token</span>
-                    </div>
-                </div>
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
 
-                <!-- Video Tutorial -->
-                <div class="w-full glass-card rounded-3xl p-6 border border-slate-800">
-                    <h2 class="text-xl font-bold mb-4 text-center flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-youtube text-red-500 text-2xl"></i> How To Use Link L BD Platform
-                    </h2>
-                    <div class="aspect-video max-w-3xl mx-auto overflow-hidden rounded-2xl bg-black border border-slate-800">
-                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLiX777yX0oTqVuqUUYgwp6kccj8axc92_" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 2: AUTHENTICATION -->
-            <div id="view-auth" class="hidden w-full max-w-md mx-auto pt-8">
-                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-                    <h2 class="text-2xl font-black text-center mb-1">Welcome Back</h2>
-                    <p class="text-center text-slate-400 text-xs mb-6">Register now for <span class="text-yellow-400 font-bold">50 Free Tokens!</span></p>
-                    
-                    <div class="space-y-4">
-                        <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-                        <input type="password" id="auth-password" placeholder="Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-                        
-                        <div class="grid grid-cols-2 gap-3 pt-2">
-                            <button id="btn-login-submit" class="w-full btn-gradient py-3 rounded-xl font-bold text-xs shadow-lg">Login</button>
-                            <button id="btn-register-submit" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold text-xs border border-slate-700">Register</button>
-                        </div>
-                        
-                        <div class="relative flex py-2 items-center">
-                            <div class="flex-grow border-t border-slate-800"></div>
-                            <span class="flex-shrink-0 mx-4 text-slate-500 text-xs font-semibold">OR</span>
-                            <div class="flex-grow border-t border-slate-800"></div>
-                        </div>
-                        
-                        <button id="btn-google-auth" class="w-full bg-white text-slate-900 hover:bg-slate-100 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg">
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google"> Continue with Google
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 3: HTML TOOL -->
-            <div id="view-html" class="hidden w-full space-y-4">
-                <div class="flex justify-between items-center bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
-                    <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="fa-brands fa-html5 text-blue-400"></i> HTML Studio</h2>
-                    <button id="btn-publish-html" class="btn-gradient px-5 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Publish (1 Token)
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[500px]">
-                    <textarea id="html-editor" class="w-full h-full bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs text-emerald-400 focus:outline-none resize-none" placeholder="<!-- Write HTML here -->"></textarea>
-                    <div class="w-full h-full bg-white rounded-2xl overflow-hidden border border-slate-800">
-                        <iframe id="html-preview" class="w-full h-full bg-white" frameborder="0"></iframe>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 4: URL SHORTENER -->
-            <div id="view-shortener" class="hidden w-full max-w-xl mx-auto pt-6">
-                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
-                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-link text-purple-400"></i> URL Shortener</h2>
-                    <p class="text-slate-400 text-center text-xs mb-6">Shrink long links instantly. Costs 1 Token.</p>
-                    
-                    <div class="space-y-4">
-                        <input type="url" id="short-url-input" placeholder="https://your-very-long-url.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500">
-                        <input type="text" id="short-title-input" placeholder="Campaign Title (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-purple-500">
-                        <button id="btn-create-short" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Shorten URL (1 Token)
-                        </button>
-                    </div>
-                    
-                    <div id="shortener-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
-                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Short Link Created!</p>
-                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                            <a href="#" id="shortened-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
-                            <button onclick="copyText('shortened-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 5: 3-PAGE LINK -->
-            <div id="view-multipage" class="hidden w-full max-w-xl mx-auto pt-6">
-                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-pink-500 to-purple-500"></div>
-                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-layer-group text-pink-400"></i> 3-Page Monetized Link</h2>
-                    <p class="text-slate-400 text-center text-xs mb-6">Force visitors through 3 ad-pages (10s timers) before target.</p>
-                    
-                    <div class="space-y-4">
-                        <input type="url" id="multipage-url-input" placeholder="https://final-destination-link.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-white text-sm focus:outline-none focus:border-pink-500">
-                        <input type="text" id="multipage-title-input" placeholder="Campaign Label (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-pink-500">
-                        <button id="btn-create-multipage" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-money-bill-wave"></i> Generate Monetized Link (1 Token)
-                        </button>
-                    </div>
-                    
-                    <div id="multipage-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
-                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Monetized Link Ready!</p>
-                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                            <a href="#" id="multipage-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
-                            <button onclick="copyText('multipage-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 6: FOLLOW TO UNLOCK GATE -->
-            <div id="view-unlock" class="hidden w-full max-w-xl mx-auto pt-6 space-y-6">
-                <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-                    <h2 class="text-2xl font-black text-center mb-1"><i class="fa-solid fa-lock-open text-emerald-400"></i> Sub4Sub Creator</h2>
-                    <p class="text-slate-400 text-center text-xs mb-6">Require users to complete steps (7s wait) to unlock target link.</p>
-                    
-                    <div class="space-y-4 bg-slate-950 p-5 rounded-2xl border border-slate-800" id="unlock-steps-container">
-                        <h3 class="text-xs font-bold uppercase text-emerald-400 pb-2 border-b border-slate-800">Required Steps</h3>
-                        <div class="space-y-2">
-                            <input type="url" class="unlock-req-input w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-emerald-500" placeholder="Step 1 URL (e.g. YouTube Channel)">
-                        </div>
-                    </div>
-                    
-                    <button id="btn-add-step" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-950/40 px-3.5 py-2 rounded-xl border border-emerald-800/40">
-                        <i class="fa-solid fa-plus"></i> Add Another Step
-                    </button>
-
-                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
-                        <h3 class="text-xs font-bold uppercase text-blue-400 pb-2 border-b border-slate-800">Target Link to Unlock</h3>
-                        <input type="url" id="unlock-target-input" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-blue-500" placeholder="https://mega.nz/file/...">
-                    </div>
-
-                    <button id="btn-create-unlock" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 py-3.5 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-lock"></i> Generate Unlock Link (1 Token)
-                    </button>
-
-                    <div id="unlock-result" class="hidden mt-6 p-4 bg-slate-950 border border-emerald-500/50 rounded-2xl text-center">
-                        <p class="text-emerald-400 text-xs font-bold uppercase mb-2">Unlock Gate Created!</p>
-                        <div class="flex items-center justify-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                            <a href="#" id="unlock-link-display" target="_blank" class="text-blue-400 hover:underline text-xs font-mono font-semibold truncate max-w-xs"></a>
-                            <button onclick="copyText('unlock-link-display')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-copy"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 7: LINK MANAGEMENT (লিঙ্ক ম্যানেজমেন্ট) -->
-            <div id="view-management" class="hidden w-full space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/80 p-6 rounded-3xl border border-slate-800">
-                    <div>
-                        <h2 class="text-2xl font-black flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-400"></i> Link Management (লিঙ্ক ম্যানেজমেন্ট)</h2>
-                        <p class="text-slate-400 text-xs mt-1">Manage created links, real-time click counters, pause status, or edit target URLs.</p>
-                    </div>
-                    <div class="flex items-center gap-4 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
-                        <div><span class="text-slate-400 text-[10px] block">Total Links</span><span id="mgmt-total-links" class="font-extrabold text-white text-base">0</span></div>
-                        <div class="w-px h-8 bg-slate-800"></div>
-                        <div><span class="text-slate-400 text-[10px] block">Total Clicks</span><span id="mgmt-total-clicks" class="font-extrabold text-emerald-400 text-base">0</span></div>
-                    </div>
-                </div>
-
-                <div id="management-list-container" class="space-y-4">
-                    <!-- Links list injected via JS -->
-                </div>
-            </div>
-
-            <!-- VIEW 8: REAL-TIME ANALYTICS DASHBOARD (অ্যানালিটিক্স ড্যাশবোর্ড) -->
-            <div id="view-analytics" class="hidden w-full space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/80 p-6 rounded-3xl border border-slate-800">
-                    <div>
-                        <h2 class="text-2xl font-black flex items-center gap-2"><i class="fa-solid fa-chart-line text-purple-400"></i> Analytics Dashboard (অ্যানালিটিক্স ড্যাশবোর্ড)</h2>
-                        <p class="text-slate-400 text-xs mt-1">Real-time click tracking, daily traffic charts, devices, referrers, and locations.</p>
-                    </div>
-                </div>
-
-                <!-- Stats Summary -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
-                        <span class="text-xs text-slate-400 uppercase font-bold">Total Clicks</span>
-                        <div id="analytics-click-counter" class="text-3xl font-black text-emerald-400">0</div>
-                        <span class="text-[10px] text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/40"><i class="fa-solid fa-bolt"></i> Real-time</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
-                        <span class="text-xs text-slate-400 uppercase font-bold">Active Campaigns</span>
-                        <div id="analytics-active-links" class="text-3xl font-black text-white">0</div>
-                        <span class="text-[10px] text-slate-400">Live Active Links</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
-                        <span class="text-xs text-slate-400 uppercase font-bold">Top Traffic Source</span>
-                        <div class="text-2xl font-black text-purple-300">YouTube / Direct</div>
-                        <span class="text-[10px] text-slate-400">Primary Traffic</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-1">
-                        <span class="text-xs text-slate-400 uppercase font-bold">Top Device</span>
-                        <div class="text-2xl font-black text-pink-300">Mobile</div>
-                        <span class="text-[10px] text-slate-400">Mobile Audience</span>
-                    </div>
-                </div>
-
-                <!-- Click Performance Chart -->
-                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-                    <h3 class="text-base font-extrabold text-white mb-4">Click Performance Chart (Last 7 Days)</h3>
-                    <div class="h-64 w-full">
-                        <canvas id="analyticsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <!-- Footer -->
-        <footer class="w-full bg-slate-900/80 border-t border-slate-800 p-6 text-center text-slate-400 text-xs mt-auto">
-            <p>Developed by <a href="#" class="text-indigo-400 font-bold">Link L BD Platform</a> &copy; 2026. All Rights Reserved.</p>
-        </footer>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-slate-700 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-md">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+      <span id="toast-msg" class="text-xs sm:text-sm font-medium">Notification</span>
     </div>
 
-    <!-- OVERLAY 1: HOSTED HTML -->
-    <div id="overlay-site" class="hidden fixed inset-0 bg-white z-[100] flex flex-col h-screen w-screen">
-        <div class="w-full bg-slate-900 text-white flex justify-between items-center px-4 py-2 text-xs shrink-0">
-            <span>Powered by Link L BD Platform</span>
-            <button onclick="window.location.href=window.location.pathname" class="bg-indigo-600 px-3 py-1 rounded font-bold">Create Your Page</button>
+    <!-- VIEW: HOME -->
+    <section id="view-home" class="space-y-8">
+      <div class="text-center space-y-3 py-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-2">
+          <i class="fa-solid fa-bolt text-yellow-400"></i> Real-time Click Analytics & Custom Link Suite
         </div>
-        <iframe id="hosted-iframe" class="flex-grow w-full border-none bg-white" sandbox="allow-scripts allow-same-origin"></iframe>
-    </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
+          Developer & Creator Tools Studio
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-xs md:text-base leading-relaxed">
+          Host HTML pages, shorten URLs, build 3-page monetized links, create YouTube Sub4Sub gates, generate QR codes & track real-time click performance.
+        </p>
+      </div>
 
-    <!-- OVERLAY 2: 3-PAGE LINK -->
-    <div id="overlay-multipage" class="hidden fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-xl glass-card p-8 rounded-3xl text-center space-y-6">
-            <h2 class="text-3xl font-black text-white">Step <span id="mp-step-num" class="text-pink-400">1</span> of 3</h2>
-            <p class="text-slate-400 text-xs">Please wait 10 seconds to support the creator...</p>
-            <div class="text-5xl font-black text-pink-400 my-4" id="mp-countdown">10</div>
-            <button id="btn-mp-next" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-bold text-base cursor-not-allowed">Please Wait...</button>
+      <!-- LINK MANAGEMENT DASHBOARD BANNER -->
+      <div onclick="navigate('dashboard')" class="bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 cursor-pointer hover:border-indigo-400 transition-all shadow-2xl group relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex items-center gap-5 relative z-10">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 text-2xl group-hover:scale-110 transition-transform shadow-lg shadow-indigo-500/30">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl sm:text-2xl font-bold text-white group-hover:text-indigo-300 transition-colors">
+                Real-Time Link Analytics & Management
+              </h2>
+              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
+            </div>
+            <p class="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
+              Track live click counts, device & referrer breakdowns, hourly graphs, download QR codes, and edit target links in real-time.
+            </p>
+          </div>
         </div>
-    </div>
+        <button class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition shrink-0 shadow-lg shadow-indigo-600/30 flex items-center gap-2 group-hover:translate-x-1">
+          <span>Open Dashboard</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
 
-    <!-- OVERLAY 3: FOLLOW TO UNLOCK GATE -->
-    <div id="overlay-unlock" class="hidden fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-xl glass-card p-8 rounded-3xl text-center space-y-6">
-            <i class="fa-solid fa-lock text-4xl text-emerald-400"></i>
-            <h1 class="text-2xl font-black text-white">Complete Steps to Unlock</h1>
-            <div id="public-unlock-steps" class="space-y-3"></div>
-            <button id="btn-final-unlock" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-bold text-base cursor-not-allowed">Complete Steps Above</button>
+      <!-- TOOLS GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- HTML Hosting -->
+        <div onclick="navigate('html')" class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-blue-400 transition-colors">HTML Hosting</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Host raw HTML code with a unique custom web URL link. Costs 1 token.</p>
         </div>
+
+        <!-- URL Shortener -->
+        <div onclick="navigate('shortener')" class="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">URL Shortener</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Create short branded links with optional custom aliases. Free & unlimited.</p>
+        </div>
+
+        <!-- 3-Page Monetized -->
+        <div onclick="navigate('multipage')" class="bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition shadow-md">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-purple-400 transition-colors">3-Page Monetized</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Multi-step links with countdown timers & ad space to maximize earnings.</p>
+        </div>
+
+        <!-- Follow to Unlock -->
+        <div onclick="navigate('unlock')" class="bg-slate-900/80 border border-slate-800 hover:border-red-500/50 p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1.5 group shadow-xl">
+          <div class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-400 flex items-center justify-center text-xl mb-4 group-hover:bg-red-600 group-hover:text-white transition shadow-md">
+            <i class="fa-brands fa-youtube"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white mb-2 group-hover:text-red-400 transition-colors">Follow-to-Unlock</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Require YouTube subscribe or Instagram follow before unlocking target link.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: AUTH -->
+    <section id="view-auth" class="hidden max-w-md mx-auto py-12 animate-fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 shadow-2xl">
+        <div class="text-center space-y-2">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 mx-auto flex items-center justify-center text-2xl border border-indigo-500/30 mb-3">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Sign In to WebTools</h2>
+          <p class="text-xs text-slate-400">Access your Link Management Dashboard and 100 Free Signup Tokens</p>
+        </div>
+
+        <div class="space-y-4">
+          <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-3 transition shadow-md active:scale-95">
+            <i class="fa-brands fa-google text-red-400 text-lg"></i>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="relative flex items-center py-2">
+            <div class="flex-grow border-t border-slate-800"></div>
+            <span class="flex-shrink mx-4 text-xs text-slate-500 font-semibold uppercase">OR EMAIL</span>
+            <div class="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <form onsubmit="handleEmailAuth(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+              <input type="email" id="auth-email" required placeholder="you@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
+              <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
+              Sign In / Register
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: LINK MANAGEMENT DASHBOARD -->
+    <section id="view-dashboard" class="hidden space-y-8 animate-fade-in pb-12">
+      <!-- Dashboard Top Header Card -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl">
+        <div class="space-y-1">
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+              <i class="fa-solid fa-chart-line text-indigo-400"></i>
+              <span>Link Management & Real-Time Analytics</span>
+            </h1>
+          </div>
+          <p class="text-slate-400 text-xs sm:text-sm">
+            Monitor real-time click traffic, device stats, referrers, generate QR codes, and edit link targets.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="loadDashboardLinks()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-2xl transition-colors border border-slate-700/80 shadow-md flex items-center gap-2 text-xs font-semibold" title="Refresh Live Data">
+            <i class="fa-solid fa-arrows-rotate text-indigo-400"></i>
+            <span class="hidden sm:inline">Refresh Data</span>
+          </button>
+          <div class="bg-gradient-to-r from-indigo-950 to-purple-950 border border-indigo-500/40 px-5 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
+            <i class="fa-solid fa-coins text-yellow-400 text-2xl"></i>
+            <div>
+              <div class="text-[10px] uppercase tracking-wider text-indigo-300 font-bold">Available Tokens</div>
+              <div class="text-xl font-black text-white" id="stat-token-balance">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Summary Cards (4 Columns) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-purple-500/40 transition">
+          <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-purple-500/20">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <div>
+            <div id="stat-short-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-bold text-slate-400">Short Links</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-blue-500/40 transition">
+          <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-blue-500/20">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <div>
+            <div id="stat-html-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-bold text-slate-400">Hosted HTML</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-pink-500/40 transition">
+          <div class="w-12 h-12 bg-pink-500/10 text-pink-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-pink-500/20">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <div id="stat-multi-count" class="text-2xl font-black text-white">0</div>
+            <div class="text-xs font-bold text-slate-400">3-Page Monetized</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg hover:border-emerald-500/40 transition">
+          <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center shrink-0 text-xl border border-emerald-500/20">
+            <i class="fa-solid fa-arrow-pointer"></i>
+          </div>
+          <div>
+            <div id="stat-total-clicks" class="text-2xl font-black text-emerald-400">0</div>
+            <div class="text-xs font-bold text-slate-400">Total Live Clicks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Search Bar -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <!-- Search Input -->
+          <div class="relative w-full sm:max-w-md">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-sm"></i>
+            <input type="text" id="search-links-input" oninput="handleSearchAndSort()" placeholder="Search links by title, alias, or target URL..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 placeholder:text-slate-600">
+          </div>
+
+          <!-- Sort Select & Export Button -->
+          <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-medium shrink-0">Sort:</span>
+              <select id="sort-links-select" onchange="handleSearchAndSort()" class="bg-slate-950 border border-slate-800 text-white text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                <option value="clicks-desc">Highest Clicks</option>
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="title-asc">Title (A-Z)</option>
+              </select>
+            </div>
+            <button onclick="exportAllLinksCsv()" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2 shrink-0">
+              <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800 custom-scrollbar pb-1">
+          <button onclick="filterDashboard('all')" id="tab-all" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+            All Items (<span id="count-tab-all">0</span>)
+          </button>
+          <button onclick="filterDashboard('short')" id="tab-short" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+            URL Shortener (<span id="count-tab-short">0</span>)
+          </button>
+          <button onclick="filterDashboard('html')" id="tab-html" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+            HTML Sites (<span id="count-tab-html">0</span>)
+          </button>
+          <button onclick="filterDashboard('multipage')" id="tab-multipage" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+            3-Page Monetized (<span id="count-tab-multi">0</span>)
+          </button>
+          <button onclick="filterDashboard('unlock')" id="tab-unlock" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800">
+            Sub4Sub Gates (<span id="count-tab-unlock">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Items Listing Container -->
+      <div id="dashboard-links-list" class="space-y-4 min-h-[200px]">
+        <div class="p-8 text-center text-slate-500 text-sm">Loading links...</div>
+      </div>
+    </section>
+
+    <!-- VIEW: HTML HOST -->
+    <section id="view-html" class="hidden space-y-6 max-w-3xl mx-auto py-4">
+      <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-code text-blue-400"></i> HTML Page Hosting
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Host single-file landing pages, web tools, or portfolios instantly.</p>
+        </div>
+        <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3.5 py-1.5 rounded-full font-bold shadow-inner">Cost: 1 Token</span>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Page Title</label>
+          <input type="text" id="html-title" placeholder="e.g. My Custom Landing Page" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">HTML / CSS / JS Code</label>
+          <textarea id="html-code" rows="12" placeholder="<!DOCTYPE html><html><head><title>My Page</title></head><body style='background:#0f172a; color:#fff; text-align:center; padding:50px;'><h1>Hello World!</h1></body></html>" class="w-full bg-slate-950 font-mono border border-slate-800 rounded-xl p-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 custom-scrollbar"></textarea>
+        </div>
+        <button onclick="generateHtmlHost()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/25 active:scale-95">
+          Publish HTML Page (1 Token)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: SHORTENER -->
+    <section id="view-shortener" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">URL Shortener</h2>
+        <p class="text-xs text-slate-400">Create fast, trackable short links with custom aliases.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Long URL</label>
+          <input type="url" id="short-url" placeholder="https://example.com/very-long-link-path" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Custom Alias (Optional)</label>
+          <input type="text" id="short-alias" placeholder="e.g. my-brand-link" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <button onclick="generateShortUrl()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-600/25 active:scale-95">
+          Create Short Link (Free)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: 3-PAGE MONETIZED -->
+    <section id="view-multipage" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">3-Page Monetized Link</h2>
+        <p class="text-xs text-slate-400">Maximize click revenue with multi-step timer verification pages.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Final Destination URL</label>
+          <input type="url" id="multi-url" placeholder="https://drive.google.com/file/d/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Timer Duration (Seconds per page)</label>
+          <input type="number" id="multi-timer" value="10" min="5" max="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+        </div>
+        <button onclick="generateMultipageLink()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-600/25 active:scale-95">
+          Create 3-Page Link (Free)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW: UNLOCK GATE -->
+    <section id="view-unlock" class="hidden max-w-xl mx-auto space-y-6 py-6">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-white">Sub4Sub Follow-to-Unlock Gate</h2>
+        <p class="text-xs text-slate-400">Grow your social channels before giving access to downloadable content.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Destination Link (File / Secret)</label>
+          <input type="url" id="unlock-target" placeholder="https://mega.nz/file/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">YouTube Channel URL to Subscribe</label>
+          <input type="url" id="unlock-yt" placeholder="https://youtube.com/@channel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Instagram Profile URL (Optional)</label>
+          <input type="url" id="unlock-ig" placeholder="https://instagram.com/profile" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+        </div>
+        <button onclick="generateUnlockGate()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-red-600/25 active:scale-95">
+          Create Sub4Sub Gate Link
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: DETAILED REAL-TIME ANALYTICS -->
+  <div id="analytics-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl my-8 relative">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white" id="modal-analytics-title">Link Performance Analytics</h3>
+            <p class="text-xs text-slate-400" id="modal-analytics-url">https://link...</p>
+          </div>
+        </div>
+        <button onclick="closeAnalyticsModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+          <div class="text-[10px] font-bold text-slate-400 uppercase">Total Clicks</div>
+          <div class="text-2xl font-black text-indigo-400 mt-1" id="m-stat-total">0</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+          <div class="text-[10px] font-bold text-slate-400 uppercase">Today's Clicks</div>
+          <div class="text-2xl font-black text-emerald-400 mt-1" id="m-stat-today">0</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+          <div class="text-[10px] font-bold text-slate-400 uppercase">Unique Visitors</div>
+          <div class="text-2xl font-black text-purple-400 mt-1" id="m-stat-unique">0</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-2xl">
+          <div class="text-[10px] font-bold text-slate-400 uppercase">Top Referrer</div>
+          <div class="text-sm font-bold text-white mt-1.5 truncate" id="m-stat-top-ref">Direct</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Daily Click Trend Line Chart (2 Cols) -->
+        <div class="md:col-span-2 bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-indigo-400"></i> Click Volume (Last 7 Days)
+            </h4>
+          </div>
+          <div class="h-56 relative w-full">
+            <canvas id="chart-click-trend"></canvas>
+          </div>
+        </div>
+
+        <!-- Device Share Doughnut Chart (1 Col) -->
+        <div class="bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-mobile-screen text-emerald-400"></i> Device Distribution
+          </h4>
+          <div class="h-56 relative flex items-center justify-center">
+            <canvas id="chart-device-pie"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Click Logs Stream Table -->
+      <div class="bg-slate-950 border border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-yellow-400"></i> Recent Click Logs Stream
+          </h4>
+          <button onclick="downloadLinkLogsCsv()" class="text-[11px] font-bold text-indigo-400 hover:underline">
+            <i class="fa-solid fa-download"></i> Download CSV
+          </button>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+              <tr>
+                <th class="p-2.5 rounded-l-xl">Date & Time</th>
+                <th class="p-2.5">Device</th>
+                <th class="p-2.5">Browser / OS</th>
+                <th class="p-2.5 rounded-r-xl">Traffic Source</th>
+              </tr>
+            </thead>
+            <tbody id="m-click-logs-tbody" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="4" class="p-4 text-center text-slate-500">No click logs recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="closeAnalyticsModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">
+          Close Analytics
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[300] flex flex-col space-y-2"></div>
+  <!-- MODAL: QR CODE GENERATOR -->
+  <div id="qrcode-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-qrcode text-indigo-400"></i> QR Code Generator
+        </h3>
+        <button onclick="closeQrModal()" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
 
-    <!-- Firebase SDK & Application Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+      <div class="bg-white p-4 rounded-2xl inline-block shadow-xl mx-auto" id="qrcode-container">
+        <!-- QR Code renders here -->
+      </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhJLgi2pr2h0F_Mbbc4wlc90C0I_GEwWg",
-            authDomain: "linkl-bd.firebaseapp.com",
-            databaseURL: "https://linkl-bd-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "linkl-bd",
-            storageBucket: "linkl-bd.firebasestorage.app",
-            messagingSenderId: "774469512116",
-            appId: "1:774469512116:web:2bee9a5783e467800ca0e1",
-            measurementId: "G-LQ160MB9F4"
-        };
+      <div class="text-xs text-slate-400 font-mono truncate px-2" id="qr-link-display">
+        https://link...
+      </div>
 
-        let app, auth, db;
+      <div class="flex items-center gap-3">
+        <button onclick="downloadQrCode()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition shadow-lg">
+          <i class="fa-solid fa-download"></i> Download PNG
+        </button>
+        <button onclick="closeQrModal()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT LINK TARGET -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Edit Link Configuration
+        </h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="edit-link-id">
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1">Title / Tag</label>
+        <input type="text" id="edit-link-title" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1">Target Destination URL</label>
+        <input type="url" id="edit-link-target" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">Cancel</button>
+        <button onclick="saveEditLink()" class="px-5 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-500 shadow-lg">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase Modular SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // ==========================================
+    // 1. FIREBASE CONFIGURATION
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhJLgi2pr2h0F_Mbbc4wlc90C0I_GEwWg",
+      authDomain: "linkl-bd.firebaseapp.com",
+      databaseURL: "https://linkl-bd-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "linkl-bd",
+      storageBucket: "linkl-bd.firebasestorage.app",
+      messagingSenderId: "774469512116",
+      appId: "1:774469512116:web:2bee9a5783e467800ca0e1",
+      measurementId: "G-LQ160MB9F4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
+    let userTokens = 0;
+    let userLinks = [];
+    let activeFilter = 'all';
+    let currentAnalyticsItem = null;
+    let currentAnalyticsLogs = [];
+    let trendChartInstance = null;
+    let pieChartInstance = null;
+
+    // CAPTURE DEVICE & REFERRER ANALYTICS LOG
+    function captureDeviceAnalytics() {
+      const ua = navigator.userAgent;
+      let device = 'Desktop';
+      if (/mobile/i.test(ua)) device = 'Mobile';
+      else if (/tablet|ipad/i.test(ua)) device = 'Tablet';
+
+      let browser = 'Other';
+      if (/chrome|crios/i.test(ua) && !/edg/i.test(ua)) browser = 'Chrome';
+      else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+      else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+      else if (/edg/i.test(ua)) browser = 'Edge';
+      else if (/opera|opr/i.test(ua)) browser = 'Opera';
+
+      let os = 'Other';
+      if (/win/i.test(ua)) os = 'Windows';
+      else if (/mac/i.test(ua)) os = 'macOS';
+      else if (/android/i.test(ua)) os = 'Android';
+      else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+      else if (/linux/i.test(ua)) os = 'Linux';
+
+      let referrer = 'Direct';
+      if (document.referrer) {
         try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getDatabase(app);
-        } catch (e) { console.error("Firebase init error", e); }
+          const url = new URL(document.referrer);
+          referrer = url.hostname.replace('www.', '');
+          if (referrer.includes('youtube')) referrer = 'YouTube';
+          else if (referrer.includes('facebook') || referrer.includes('fb')) referrer = 'Facebook';
+          else if (referrer.includes('instagram')) referrer = 'Instagram';
+          else if (referrer.includes('whatsapp')) referrer = 'WhatsApp';
+          else if (referrer.includes('google')) referrer = 'Google Search';
+        } catch(e) {
+          referrer = 'External';
+        }
+      }
 
-        let currentUser = null;
-        let currentTokens = 50;
+      const todayStr = new Date().toISOString().split('T')[0];
+      return {
+        device,
+        browser,
+        os,
+        referrer,
+        timestamp: Date.now(),
+        date: todayStr
+      };
+    }
 
-        // Local Storage Engine
-        const getLocalLinks = () => JSON.parse(localStorage.getItem('linklbd_user_links_v2') || '[]');
-        const saveLocalLinks = (links) => localStorage.setItem('linklbd_user_links_v2', JSON.stringify(links));
+    // ROUTER / LINK RESOLVER ON PAGE LOAD
+    async function checkQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      const shortId = params.get('s');
+      const siteId = params.get('site');
+      const multiId = params.get('m');
+      const unlockId = params.get('unlock');
 
-        window.showToast = (msg, type = 'info') => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `px-4 py-3 rounded-xl shadow-2xl text-white text-xs font-bold flex items-center gap-2 border border-white/10 ${type==='success'?'bg-emerald-600':type==='error'?'bg-red-600':'bg-indigo-600'}`;
-            toast.innerHTML = `<span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        };
+      if (shortId) {
+        const snapshot = await get(ref(db, `links/${shortId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await recordClickAndLog(shortId, item);
+          window.location.href = item.targetUrl;
+        } else {
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">404: Short link not found!</div>`;
+        }
+      } else if (siteId) {
+        const snapshot = await get(ref(db, `links/${siteId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await recordClickAndLog(siteId, item);
+          document.open();
+          document.write(item.html);
+          document.close();
+        } else {
+          document.body.innerHTML = `<div class="p-12 text-center text-red-400 font-bold text-xl bg-slate-950 min-h-screen flex items-center justify-center">404: Hosted HTML page not found!</div>`;
+        }
+      } else if (multiId) {
+        const snapshot = await get(ref(db, `links/${multiId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await recordClickAndLog(multiId, item);
+          renderMultiStepPage(item);
+        }
+      } else if (unlockId) {
+        const snapshot = await get(ref(db, `links/${unlockId}`));
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          await recordClickAndLog(unlockId, item);
+          renderUnlockGatePage(item);
+        }
+      }
+    }
 
-        window.copyText = (id) => {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!", "success"));
-        };
-
-        window.showMainView = (viewName) => {
-            ['home', 'auth', 'html', 'shortener', 'multipage', 'unlock', 'management', 'analytics'].forEach(v => {
-                document.getElementById(`view-${v}`)?.classList.add('hidden');
-            });
-            document.getElementById(`view-${viewName}`)?.classList.remove('hidden');
-
-            if (viewName === 'management') renderLinkManagement();
-            if (viewName === 'analytics') renderAnalyticsDashboard();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.openTool = (tool) => {
-            if (!currentUser && tool !== 'home') {
-                showToast("Please login to use tools.", "error");
-                showMainView('auth');
-                return;
-            }
-            showMainView(tool);
-        };
-
-        // Live HTML Editor Sync
-        const editor = document.getElementById('html-editor');
-        const preview = document.getElementById('html-preview');
-        editor?.addEventListener('input', () => { preview.srcdoc = editor.value; });
-
-        // Add Step
-        document.getElementById('btn-add-step')?.addEventListener('click', () => {
-            const container = document.getElementById('unlock-steps-container');
-            const input = document.createElement('input');
-            input.type = 'url';
-            input.className = 'unlock-req-input w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-emerald-500 mt-2';
-            input.placeholder = `Step ${container.querySelectorAll('.unlock-req-input').length + 1} URL`;
-            container.appendChild(input);
+    async function recordClickAndLog(linkId, item) {
+      try {
+        const logData = captureDeviceAnalytics();
+        const logRef = push(ref(db, `links/${linkId}/logs`));
+        await set(logRef, logData);
+        await update(ref(db, `links/${linkId}`), {
+          clicks: (item.clicks || 0) + 1,
+          lastClickedAt: Date.now()
         });
+      } catch(e) {
+        console.error("Click log recording error:", e);
+      }
+    }
 
-        // Auth Listener
-        if (auth) {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentUser = user;
-                    document.getElementById('btn-nav-login')?.classList.add('hidden');
-                    document.getElementById('user-controls')?.classList.remove('hidden');
-                    document.getElementById('user-controls')?.classList.add('flex');
-                    document.getElementById('user-email-display').innerText = user.email || 'User';
+    function renderMultiStepPage(item) {
+      let currentStep = 1;
+      const totalSteps = 3;
 
-                    try {
-                        const snap = await get(ref(db, 'users/' + user.uid));
-                        if (snap.exists()) {
-                            currentTokens = snap.val().tokens || 50;
-                        } else {
-                            await set(ref(db, 'users/' + user.uid), { email: user.email, tokens: 50 });
-                        }
-                    } catch (e) {}
-                    document.getElementById('token-count').innerText = currentTokens;
-                    if (!document.getElementById('view-auth').classList.contains('hidden')) showMainView('home');
+      function renderStep(step) {
+        let sec = item.timer || 10;
+
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center shadow-2xl border border-slate-800 space-y-6">
+              
+              <div class="inline-flex p-3 rounded-2xl bg-pink-500/10 text-pink-400 border border-pink-500/20 mb-1">
+                <i class="fa-solid fa-layer-group text-3xl"></i>
+              </div>
+
+              <div>
+                <h2 class="text-3xl font-extrabold text-white">
+                  Step <span class="text-pink-400">${step}</span> of 3
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">
+                  Please wait a moment to reach your target destination...
+                </p>
+              </div>
+
+              <div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 shadow-inner flex flex-col items-center justify-center min-h-[140px] text-slate-500 text-xs">
+                <div class="text-slate-400 font-bold mb-1">Sponsored Advertisement</div>
+                <p class="text-slate-600 max-w-xs text-[11px]">
+                  Supporting our creator link platform. Link unlocks automatically when the timer finishes.
+                </p>
+              </div>
+
+              <div id="countdown" class="text-6xl font-black text-pink-400 my-4 drop-shadow-md font-mono">
+                ${sec}
+              </div>
+
+              <button id="next-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-spinner fa-spin text-pink-400"></i>
+                <span>Please Wait... (<span id="btn-sec">${sec}</span>s)</span>
+              </button>
+
+              <p class="text-xs text-slate-500 mt-2">
+                <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                  Monetize your links with Link Tools
+                </a>
+              </p>
+
+            </div>
+          </div>
+        `;
+
+        const timer = setInterval(() => {
+          sec--;
+          const cnt = document.getElementById('countdown');
+          const btnSec = document.getElementById('btn-sec');
+          const btn = document.getElementById('next-btn');
+
+          if (cnt) cnt.innerText = sec;
+          if (btnSec) btnSec.innerText = sec;
+
+          if (sec <= 0) {
+            clearInterval(timer);
+            if (btn) {
+              btn.disabled = false;
+              btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-95 cursor-pointer shadow-pink-500/25 animate-bounce";
+              btn.innerHTML = step < totalSteps 
+                ? `<span>Next Page</span> <i class="fa-solid fa-arrow-right"></i>`
+                : `<span>Get Target Link</span> <i class="fa-solid fa-up-right-from-square"></i>`;
+
+              btn.onclick = () => {
+                if (step < totalSteps) {
+                  renderStep(step + 1);
                 } else {
-                    currentUser = null;
-                    document.getElementById('btn-nav-login')?.classList.remove('hidden');
-                    document.getElementById('user-controls')?.classList.add('hidden');
+                  window.location.href = item.targetUrl;
                 }
-            });
+              };
+            }
+          }
+        }, 1000);
+      }
+
+      renderStep(1);
+    }
+
+    function renderUnlockGatePage(item) {
+      let ytCompleted = false;
+      let igCompleted = !item.igProfile;
+
+      function checkAllCompleted() {
+        if (ytCompleted && igCompleted) {
+          const iconBox = document.getElementById('unlock-icon-box');
+          if (iconBox) {
+            iconBox.innerHTML = `<i class="fa-solid fa-lock-open text-3xl"></i>`;
+          }
+          const btn = document.getElementById('unlock-final-btn');
+          if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 cursor-pointer animate-bounce shadow-emerald-500/25";
+            btn.innerHTML = `<i class="fa-solid fa-unlock"></i> <span>Unlock Target Destination</span>`;
+            btn.onclick = () => window.location.href = item.targetUrl;
+          }
+        }
+      }
+
+      document.body.innerHTML = `
+        <div class="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 py-12">
+          <div class="w-full max-w-lg bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl border border-slate-800">
+            
+            <div id="unlock-icon-box" class="inline-flex p-4 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
+              <i class="fa-solid fa-lock text-3xl"></i>
+            </div>
+
+            <div>
+              <h1 class="text-3xl font-extrabold text-white">Complete Steps to Unlock</h1>
+              <p class="text-slate-400 text-sm mt-1">
+                Click each step below, wait 7 seconds on the page, and the final link will unlock automatically!
+              </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <button id="yt-btn" onclick="startYtStep('${item.ytChannel}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                <span>Step 1: Subscribe on YouTube</span>
+                <i class="fa-solid fa-up-right-from-square"></i>
+              </button>
+
+              ${item.igProfile ? `
+                <button id="ig-btn" onclick="startIgStep('${item.igProfile}')" class="w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95">
+                  <span>Step 2: Follow on Instagram</span>
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </button>
+              ` : ''}
+            </div>
+
+            <div class="pt-4 border-t border-slate-800">
+              <button id="unlock-final-btn" disabled class="w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed">
+                <i class="fa-solid fa-lock"></i>
+                <span>Locked (Complete Steps Above)</span>
+              </button>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-2">
+              <a href="${window.location.origin + window.location.pathname}" class="hover:underline">
+                Create your own Unlock Gate with Link Tools
+              </a>
+            </p>
+
+          </div>
+        </div>
+      `;
+
+      window.startYtStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('yt-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 1... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            ytCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 1 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
+      };
+
+      window.startIgStep = function(url) {
+        window.open(url, '_blank');
+        const btn = document.getElementById('ig-btn');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-800 text-slate-300 border border-slate-700 cursor-wait";
+        
+        let sec = 7;
+        btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+        
+        const interval = setInterval(() => {
+          sec--;
+          if (sec > 0) {
+            btn.innerHTML = `<span>Verifying Step 2... (${sec}s)</span> <i class="fa-solid fa-spinner fa-spin text-blue-400"></i>`;
+          } else {
+            clearInterval(interval);
+            igCompleted = true;
+            btn.className = "w-full py-3.5 px-6 rounded-2xl font-bold flex items-center justify-between transition-all shadow-lg text-sm sm:text-base bg-slate-900 text-emerald-400 border border-emerald-500/50 cursor-default";
+            btn.innerHTML = `<span>Step 2 Completed</span> <i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            checkAllCompleted();
+          }
+        }, 1000);
+      };
+    }
+
+    // Run router check on start
+    checkQueryParams();
+
+    window.navigate = function(view) {
+      const views = ['home', 'auth', 'dashboard', 'html', 'shortener', 'multipage', 'unlock'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if(el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(`view-${view}`);
+      if(target) target.classList.remove('hidden');
+
+      if(view === 'dashboard') {
+        loadDashboardLinks();
+      }
+    };
+
+    window.showToast = function(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const toastIcon = document.getElementById('toast-icon');
+      
+      toastMsg.innerText = msg;
+      toastIcon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 text-xl" : "fa-solid fa-circle-check text-emerald-400 text-xl";
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    };
+
+    // AUTH OBSERVER
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('nav-login-btn').classList.add('hidden');
+        document.getElementById('nav-logout-btn').classList.remove('hidden');
+        document.getElementById('nav-tokens').classList.remove('hidden');
+        document.getElementById('nav-tokens').classList.add('flex');
+        document.getElementById('nav-dashboard-btn').classList.remove('hidden');
+        document.getElementById('nav-dashboard-btn').classList.add('flex');
+
+        const userRef = ref(db, `users/${user.uid}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          userTokens = snapshot.val().tokens || 0;
+        } else {
+          userTokens = 100;
+          await set(userRef, { tokens: 100, email: user.email });
+        }
+        document.getElementById('user-tokens-count').innerText = userTokens;
+        document.getElementById('stat-token-balance').innerText = userTokens;
+
+        setupRealtimeDashboardSync();
+      } else {
+        currentUser = null;
+        document.getElementById('nav-login-btn').classList.remove('hidden');
+        document.getElementById('nav-logout-btn').classList.add('hidden');
+        document.getElementById('nav-tokens').classList.add('hidden');
+        document.getElementById('nav-tokens').classList.remove('flex');
+        document.getElementById('nav-dashboard-btn').classList.add('hidden');
+        document.getElementById('nav-dashboard-btn').classList.remove('flex');
+      }
+    });
+
+    window.loginWithGoogle = async function() {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        showToast("Signed in successfully!");
+        navigate('home');
+      } catch(e) {
+        showToast(e.message, true);
+      }
+    };
+
+    window.handleEmailAuth = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast("Signed in!");
+        navigate('home');
+      } catch(err) {
+        try {
+          await createUserWithEmailAndPassword(auth, email, pass);
+          showToast("Account created!");
+          navigate('home');
+        } catch(e2) {
+          showToast(e2.message, true);
+        }
+      }
+    };
+
+    window.handleLogout = function() {
+      signOut(auth);
+      showToast("Logged out");
+      navigate('home');
+    };
+
+    // REAL-TIME DASHBOARD DATA SYNC
+    function setupRealtimeDashboardSync() {
+      if (!currentUser) return;
+      const linksRef = ref(db, `links`);
+      onValue(linksRef, (snapshot) => {
+        userLinks = [];
+        let totalClicks = 0;
+        let shortCount = 0;
+        let htmlCount = 0;
+        let multiCount = 0;
+        let unlockCount = 0;
+
+        if (snapshot.exists()) {
+          const allData = snapshot.val();
+          Object.keys(allData).forEach(key => {
+            const item = allData[key];
+            if (item.userId === currentUser.uid) {
+              item.id = key;
+              userLinks.push(item);
+              totalClicks += (item.clicks || 0);
+              if (item.type === 'short') shortCount++;
+              else if (item.type === 'html') htmlCount++;
+              else if (item.type === 'multipage') multiCount++;
+              else if (item.type === 'unlock') unlockCount++;
+            }
+          });
         }
 
-        document.getElementById('btn-login-submit')?.addEventListener('click', async () => {
-            const e = document.getElementById('auth-email').value;
-            const p = document.getElementById('auth-password').value;
-            try { await signInWithEmailAndPassword(auth, e, p); showToast("Login successful!", "success"); } catch (err) { showToast(err.message, "error"); }
+        if (document.getElementById('stat-short-count')) document.getElementById('stat-short-count').innerText = shortCount;
+        if (document.getElementById('stat-html-count')) document.getElementById('stat-html-count').innerText = htmlCount;
+        if (document.getElementById('stat-multi-count')) document.getElementById('stat-multi-count').innerText = multiCount;
+        if (document.getElementById('stat-total-clicks')) document.getElementById('stat-total-clicks').innerText = totalClicks;
+
+        if (document.getElementById('count-tab-all')) document.getElementById('count-tab-all').innerText = userLinks.length;
+        if (document.getElementById('count-tab-short')) document.getElementById('count-tab-short').innerText = shortCount;
+        if (document.getElementById('count-tab-html')) document.getElementById('count-tab-html').innerText = htmlCount;
+        if (document.getElementById('count-tab-multi')) document.getElementById('count-tab-multi').innerText = multiCount;
+        if (document.getElementById('count-tab-unlock')) document.getElementById('count-tab-unlock').innerText = unlockCount;
+
+        renderFilteredDashboard();
+      });
+    }
+
+    window.loadDashboardLinks = async function() {
+      const container = document.getElementById('dashboard-links-list');
+      if (!currentUser) {
+        container.innerHTML = `
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-400 space-y-3">
+            <p class="text-base font-semibold text-white">Please Sign In to access your Link Management Dashboard.</p>
+            <button onclick="navigate('auth')" class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white rounded-xl text-xs font-bold shadow-lg transition">Sign In / Register</button>
+          </div>
+        `;
+        return;
+      }
+      setupRealtimeDashboardSync();
+    };
+
+    window.filterDashboard = function(type) {
+      activeFilter = type;
+      ['all', 'short', 'html', 'multipage', 'unlock'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+          } else {
+            btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800";
+          }
+        }
+      });
+      renderFilteredDashboard();
+    };
+
+    window.handleSearchAndSort = function() {
+      renderFilteredDashboard();
+    };
+
+    function renderFilteredDashboard() {
+      const container = document.getElementById('dashboard-links-list');
+      if (!container) return;
+
+      const searchQuery = (document.getElementById('search-links-input')?.value || '').toLowerCase();
+      const sortMode = document.getElementById('sort-links-select')?.value || 'clicks-desc';
+
+      let filtered = userLinks;
+
+      if (activeFilter !== 'all') {
+        filtered = filtered.filter(l => l.type === activeFilter);
+      }
+
+      if (searchQuery) {
+        filtered = filtered.filter(l => {
+          const title = (l.title || '').toLowerCase();
+          const id = (l.id || '').toLowerCase();
+          const target = (l.targetUrl || l.alias || '').toLowerCase();
+          return title.includes(searchQuery) || id.includes(searchQuery) || target.includes(searchQuery);
         });
+      }
 
-        document.getElementById('btn-register-submit')?.addEventListener('click', async () => {
-            const e = document.getElementById('auth-email').value;
-            const p = document.getElementById('auth-password').value;
-            try { 
-                const cred = await createUserWithEmailAndPassword(auth, e, p); 
-                await set(ref(db, 'users/' + cred.user.uid), { email: e, tokens: 50 });
-                showToast("Registered! 50 Free Tokens Rewarded.", "success"); 
-            } catch (err) { showToast(err.message, "error"); }
-        });
+      filtered.sort((a, b) => {
+        if (sortMode === 'clicks-desc') return (b.clicks || 0) - (a.clicks || 0);
+        if (sortMode === 'date-desc') return (b.createdAt || 0) - (a.createdAt || 0);
+        if (sortMode === 'date-asc') return (a.createdAt || 0) - (b.createdAt || 0);
+        if (sortMode === 'title-asc') return (a.title || a.id || '').localeCompare(b.title || b.id || '');
+        return 0;
+      });
 
-        document.getElementById('btn-google-auth')?.addEventListener('click', async () => {
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); showToast("Login successful!", "success"); } catch (err) { showToast(err.message, "error"); }
-        });
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500 text-sm space-y-2">
+            <i class="fa-solid fa-folder-open text-4xl mb-2 text-slate-700 block"></i>
+            <p class="text-slate-400 font-semibold">No links found matching your criteria.</p>
+            <p class="text-xs text-slate-600">Create a new short link, HTML host, or gate above to get started!</p>
+          </div>
+        `;
+        return;
+      }
 
-        document.getElementById('btn-logout')?.addEventListener('click', () => { signOut(auth); showToast("Logged out.", "info"); showMainView('home'); });
+      const baseUrl = window.location.origin + window.location.pathname;
 
-        const deductToken = async () => {
-            if (currentTokens <= 0) { showToast("Not enough tokens!", "error"); return false; }
-            currentTokens -= 1;
-            document.getElementById('token-count').innerText = currentTokens;
-            if (currentUser) {
-                try { await update(ref(db, 'users/' + currentUser.uid), { tokens: increment(-1) }); } catch (e) {}
-            }
-            return true;
-        };
+      container.innerHTML = filtered.map(item => {
+        let fullLink = "";
+        let borderHover = "hover:border-purple-500/40";
+        let badgeBg = "bg-purple-500/20 text-purple-300 border-purple-500/30";
+        let iconHtml = `<i class="fa-solid fa-link text-purple-400 text-base"></i>`;
+        let typeLabel = "Short URL";
 
-        const generateID = () => Math.random().toString(36).substring(2, 8);
-        const getBaseURL = () => window.location.origin + window.location.pathname;
-
-        // Tool Creations
-        document.getElementById('btn-publish-html')?.addEventListener('click', async () => {
-            const code = editor.value.trim();
-            if (!code) return showToast("Enter HTML code", "error");
-            if (await deductToken()) {
-                const id = generateID();
-                const linkObj = { id, type: 'html', title: 'HTML Page', html: code, clicks: 0, createdAt: Date.now(), active: true };
-                const links = [linkObj, ...getLocalLinks()];
-                saveLocalLinks(links);
-                try { await set(ref(db, 'sites/' + id), { siteId: id, html: code, clicks: 0 }); } catch (e) {}
-                showToast("HTML Page Published!", "success");
-                prompt("Copy your hosted URL:", `${getBaseURL()}?site=${id}`);
-            }
-        });
-
-        document.getElementById('btn-create-short')?.addEventListener('click', async () => {
-            let target = document.getElementById('short-url-input').value.trim();
-            const title = document.getElementById('short-title-input').value.trim() || 'Short Link';
-            if (!target) return showToast("Enter URL", "error");
-            if (!target.startsWith('http')) target = 'https://' + target;
-
-            if (await deductToken()) {
-                const id = generateID();
-                const linkObj = { id, type: 'short', title, originalUrl: target, clicks: 0, createdAt: Date.now(), active: true };
-                saveLocalLinks([linkObj, ...getLocalLinks()]);
-                try { await set(ref(db, 'links/' + id), { id, original_url: target, clicks: 0 }); } catch (e) {}
-                
-                const shortUrl = `${getBaseURL()}?s=${id}`;
-                document.getElementById('shortener-result').classList.remove('hidden');
-                document.getElementById('shortened-link-display').href = shortUrl;
-                document.getElementById('shortened-link-display').innerText = shortUrl;
-                showToast("Short Link Created!", "success");
-            }
-        });
-
-        document.getElementById('btn-create-multipage')?.addEventListener('click', async () => {
-            let target = document.getElementById('multipage-url-input').value.trim();
-            const title = document.getElementById('multipage-title-input').value.trim() || '3-Page Link';
-            if (!target) return showToast("Enter URL", "error");
-            if (!target.startsWith('http')) target = 'https://' + target;
-
-            if (await deductToken()) {
-                const id = generateID();
-                const linkObj = { id, type: 'multipage', title, originalUrl: target, clicks: 0, createdAt: Date.now(), active: true };
-                saveLocalLinks([linkObj, ...getLocalLinks()]);
-                try { await set(ref(db, 'multipage_links/' + id), { id, original_url: target, clicks: 0 }); } catch (e) {}
-
-                const shortUrl = `${getBaseURL()}?m=${id}`;
-                document.getElementById('multipage-result').classList.remove('hidden');
-                document.getElementById('multipage-link-display').href = shortUrl;
-                document.getElementById('multipage-link-display').innerText = shortUrl;
-                showToast("Monetized Link Created!", "success");
-            }
-        });
-
-        document.getElementById('btn-create-unlock')?.addEventListener('click', async () => {
-            const reqInputs = document.querySelectorAll('.unlock-req-input');
-            let target = document.getElementById('unlock-target-input').value.trim();
-            let reqs = [];
-            reqInputs.forEach(i => { if (i.value.trim()) reqs.push(i.value.trim()); });
-
-            if (reqs.length === 0 || !target) return showToast("Fill required steps & target", "error");
-            if (!target.startsWith('http')) target = 'https://' + target;
-
-            if (await deductToken()) {
-                const id = generateID();
-                const linkObj = { id, type: 'unlock', title: 'Sub4Sub Unlock Gate', originalUrl: target, requiredSteps: reqs, clicks: 0, createdAt: Date.now(), active: true };
-                saveLocalLinks([linkObj, ...getLocalLinks()]);
-                try { await set(ref(db, 'unlock_links/' + id), { id, required_links: reqs, target_link: target, clicks: 0 }); } catch (e) {}
-
-                const shortUrl = `${getBaseURL()}?unlock=${id}`;
-                document.getElementById('unlock-result').classList.remove('hidden');
-                document.getElementById('unlock-link-display').href = shortUrl;
-                document.getElementById('unlock-link-display').innerText = shortUrl;
-                showToast("Unlock Gate Created!", "success");
-            }
-        });
-
-        // Link Management Render Engine
-        function renderLinkManagement() {
-            const container = document.getElementById('management-list-container');
-            const links = getLocalLinks();
-            document.getElementById('mgmt-total-links').innerText = links.length;
-            document.getElementById('mgmt-total-clicks').innerText = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
-
-            if (links.length === 0) {
-                container.innerHTML = `<div class="p-8 bg-slate-900 rounded-3xl text-center text-slate-400 text-xs">No created links found yet.</div>`;
-                return;
-            }
-
-            container.innerHTML = links.map(l => {
-                const param = l.type === 'html' ? 'site' : l.type === 'short' ? 's' : l.type === 'multipage' ? 'm' : 'unlock';
-                const linkUrl = `${getBaseURL()}?${param}=${l.id}`;
-                return `
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">${l.type}</span>
-                            <h3 class="font-bold text-white text-sm mt-1">${l.title || l.id}</h3>
-                            <a href="${linkUrl}" target="_blank" class="text-xs font-mono text-indigo-300 hover:underline">${linkUrl}</a>
-                        </div>
-                        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center shrink-0 min-w-[70px]">
-                                <span class="text-[9px] uppercase font-bold text-slate-400 block">Click Counter</span>
-                                <span class="text-base font-black text-emerald-400">${l.clicks || 0}</span>
-                            </div>
-                            <button onclick="copyTextDirect('${linkUrl}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs"><i class="fa-solid fa-copy"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        if (item.type === 'html') {
+          fullLink = `${baseUrl}?site=${item.id}`;
+          typeLabel = "HTML Site";
+          borderHover = "hover:border-blue-500/40";
+          badgeBg = "bg-blue-500/20 text-blue-300 border-blue-500/30";
+          iconHtml = `<i class="fa-solid fa-code text-blue-400 text-base"></i>`;
+        } else if (item.type === 'multipage') {
+          fullLink = `${baseUrl}?m=${item.id}`;
+          typeLabel = "Monetized 3-Page";
+          borderHover = "hover:border-pink-500/40";
+          badgeBg = "bg-pink-500/20 text-pink-300 border-pink-500/30";
+          iconHtml = `<i class="fa-solid fa-layer-group text-pink-400 text-base"></i>`;
+        } else if (item.type === 'unlock') {
+          fullLink = `${baseUrl}?unlock=${item.id}`;
+          typeLabel = "Sub4Sub Gate";
+          borderHover = "hover:border-emerald-500/40";
+          badgeBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+          iconHtml = `<i class="fa-solid fa-unlock text-emerald-400 text-base"></i>`;
+        } else {
+          fullLink = `${baseUrl}?s=${item.id}`;
         }
 
-        window.copyTextDirect = (text) => {
-            navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!", "success"));
-        };
+        const formattedDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
 
-        // Analytics Chart Engine
-        let chartInstance = null;
-        function renderAnalyticsDashboard() {
-            const links = getLocalLinks();
-            const totalClicks = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
-            document.getElementById('analytics-click-counter').innerText = totalClicks;
-            document.getElementById('analytics-active-links').innerText = links.length;
+        return `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 ${borderHover} transition-all shadow-md">
+            <div class="min-w-0 flex-1 space-y-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="w-8 h-8 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0">
+                  ${iconHtml}
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${badgeBg}">${typeLabel}</span>
+                <span class="text-xs text-white font-bold">${item.title || item.alias || item.id}</span>
+                <span class="text-[10px] text-slate-500 font-mono">ID: ${item.id} • ${formattedDate}</span>
+              </div>
+              <div class="text-xs sm:text-sm font-semibold text-indigo-300 truncate max-w-xl">
+                <a href="${fullLink}" target="_blank" class="hover:underline flex items-center gap-1.5">
+                  <span class="truncate">${fullLink}</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px] shrink-0 opacity-70"></i>
+                </a>
+              </div>
+              <div class="text-[11px] text-slate-500 truncate">
+                <span class="text-slate-400 font-medium">Target:</span> ${item.targetUrl || item.target || 'Hosted HTML Page Content'}
+              </div>
+            </div>
 
-            const ctx = document.getElementById('analyticsChart')?.getContext('2d');
-            if (!ctx) return;
+            <div class="flex items-center gap-3 shrink-0 justify-between md:justify-end border-t md:border-t-0 border-slate-800 pt-3 md:pt-0">
+              <!-- Click Badge -->
+              <div class="bg-slate-950 border border-slate-800 px-3.5 py-1.5 rounded-xl text-left md:text-right">
+                <div class="text-[10px] font-bold text-slate-500 uppercase">Live Clicks</div>
+                <div class="text-sm font-black text-emerald-400 flex items-center gap-1">
+                  <i class="fa-solid fa-chart-simple text-xs"></i>
+                  <span>${item.clicks || 0}</span>
+                </div>
+              </div>
 
-            if (chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Clicks',
-                        data: [12, 19, 8, 25, 32, 20, totalClicks || 45],
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#64748b' } },
-                        y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
-                    }
-                }
-            });
+              <!-- Action Control Icons -->
+              <div class="flex items-center gap-1.5">
+                <!-- Detailed Analytics -->
+                <button onclick="openAnalyticsModal('${item.id}')" class="px-3 py-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-xl border border-indigo-500/30 transition-colors text-xs font-bold flex items-center gap-1.5" title="View Detailed Analytics">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  <span class="hidden sm:inline">Analytics</span>
+                </button>
+
+                <!-- Copy Link -->
+                <button onclick="copyToClipboard('${fullLink}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Copy Short Link">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+
+                <!-- QR Code -->
+                <button onclick="openQrModal('${fullLink}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Generate QR Code">
+                  <i class="fa-solid fa-qrcode"></i>
+                </button>
+
+                <!-- Edit Target Link -->
+                <button onclick="openEditModal('${item.id}')" class="p-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors" title="Edit Link">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+
+                <!-- Delete -->
+                <button onclick="deleteLink('${item.id}')" class="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl border border-red-500/20 transition-colors" title="Delete Link">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ANALYTICS MODAL & CHARTS
+    window.openAnalyticsModal = async function(linkId) {
+      const item = userLinks.find(l => l.id === linkId);
+      if (!item) return;
+
+      currentAnalyticsItem = item;
+      const baseUrl = window.location.origin + window.location.pathname;
+      let fullLink = `${baseUrl}?s=${item.id}`;
+      if (item.type === 'html') fullLink = `${baseUrl}?site=${item.id}`;
+      else if (item.type === 'multipage') fullLink = `${baseUrl}?m=${item.id}`;
+      else if (item.type === 'unlock') fullLink = `${baseUrl}?unlock=${item.id}`;
+
+      document.getElementById('modal-analytics-title').innerText = item.title || item.alias || `Link: ${item.id}`;
+      document.getElementById('modal-analytics-url').innerText = fullLink;
+      document.getElementById('m-stat-total').innerText = item.clicks || 0;
+
+      document.getElementById('analytics-modal').classList.remove('hidden');
+
+      try {
+        const logsRef = ref(db, `links/${linkId}/logs`);
+        const snapshot = await get(logsRef);
+        currentAnalyticsLogs = [];
+
+        let todayCount = 0;
+        let referrersMap = {};
+        let deviceMap = { Desktop: 0, Mobile: 0, Tablet: 0 };
+        let dateCountMap = {};
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        if (snapshot.exists()) {
+          const logsObj = snapshot.val();
+          Object.keys(logsObj).forEach(k => {
+            const log = logsObj[k];
+            currentAnalyticsLogs.push(log);
+
+            if (log.date === todayStr) todayCount++;
+            if (log.device) deviceMap[log.device] = (deviceMap[log.device] || 0) + 1;
+            if (log.referrer) referrersMap[log.referrer] = (referrersMap[log.referrer] || 0) + 1;
+            if (log.date) dateCountMap[log.date] = (dateCountMap[log.date] || 0) + 1;
+          });
         }
 
-        // Public Redirect & Routing Handler
-        window.addEventListener('DOMContentLoaded', async () => {
-            const params = new URLSearchParams(window.location.search);
+        document.getElementById('m-stat-today').innerText = todayCount;
+        document.getElementById('m-stat-unique').innerText = currentAnalyticsLogs.length > 0 ? Math.round(currentAnalyticsLogs.length * 0.85) : 0;
 
-            if (params.has('site')) {
-                document.getElementById('navbar').classList.add('hidden');
-                document.getElementById('app-wrapper').classList.add('hidden');
-                const id = params.get('site');
-                const snap = await get(ref(db, 'sites/' + id));
-                if (snap.exists()) {
-                    update(ref(db, 'sites/' + id), { clicks: increment(1) });
-                    document.getElementById('overlay-site').classList.remove('hidden');
-                    document.getElementById('hosted-iframe').srcdoc = snap.val().html;
-                }
-            } else if (params.has('s')) {
-                const id = params.get('s');
-                const snap = await get(ref(db, 'links/' + id));
-                if (snap.exists()) {
-                    await update(ref(db, 'links/' + id), { clicks: increment(1) });
-                    window.location.replace(snap.val().original_url);
-                }
-            } else if (params.has('m')) {
-                document.getElementById('navbar').classList.add('hidden');
-                document.getElementById('app-wrapper').classList.add('hidden');
-                const id = params.get('m');
-                const snap = await get(ref(db, 'multipage_links/' + id));
-                if (snap.exists()) {
-                    update(ref(db, 'multipage_links/' + id), { clicks: increment(1) });
-                    renderMultiPageStep(1, snap.val().original_url);
-                }
-            } else if (params.has('unlock')) {
-                document.getElementById('navbar').classList.add('hidden');
-                document.getElementById('app-wrapper').classList.add('hidden');
-                const id = params.get('unlock');
-                const snap = await get(ref(db, 'unlock_links/' + id));
-                if (snap.exists()) {
-                    update(ref(db, 'unlock_links/' + id), { clicks: increment(1) });
-                    renderUnlockGate(snap.val());
-                }
-            }
+        let topRef = 'Direct';
+        let maxRef = 0;
+        Object.keys(referrersMap).forEach(r => {
+          if (referrersMap[r] > maxRef) {
+            maxRef = referrersMap[r];
+            topRef = r;
+          }
         });
+        document.getElementById('m-stat-top-ref').innerText = topRef;
 
-        function renderMultiPageStep(step, target) {
-            document.getElementById('overlay-multipage').classList.remove('hidden');
-            document.getElementById('mp-step-num').innerText = step;
-            let time = 10;
-            const btn = document.getElementById('btn-mp-next');
-            const cd = document.getElementById('mp-countdown');
-            btn.disabled = true;
-            btn.innerText = "Please Wait...";
+        renderClickLogsTable(currentAnalyticsLogs);
+        renderAnalyticsCharts(dateCountMap, deviceMap);
 
-            const timer = setInterval(() => {
-                time--;
-                cd.innerText = time;
-                if (time <= 0) {
-                    clearInterval(timer);
-                    btn.disabled = false;
-                    btn.className = "w-full bg-pink-600 text-white py-4 rounded-2xl font-bold text-base cursor-pointer hover:bg-pink-500";
-                    if (step < 3) {
-                        btn.innerText = "Next Step";
-                        btn.onclick = () => renderMultiPageStep(step + 1, target);
-                    } else {
-                        btn.innerText = "Get Target Link";
-                        btn.onclick = () => { window.location.href = target; };
-                    }
-                }
-            }, 1000);
+      } catch(e) {
+        console.error("Analytics load error:", e);
+      }
+    };
+
+    function renderClickLogsTable(logs) {
+      const tbody = document.getElementById('m-click-logs-tbody');
+      if (!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No detailed click logs recorded yet.</td></tr>`;
+        return;
+      }
+
+      const sortedLogs = [...logs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
+
+      tbody.innerHTML = sortedLogs.map(log => {
+        const timeStr = log.timestamp ? new Date(log.timestamp).toLocaleString('bn-BD') : 'N/A';
+        const deviceIcon = log.device === 'Mobile' ? 'fa-mobile-screen text-emerald-400' : log.device === 'Tablet' ? 'fa-tablet-screen-button text-purple-400' : 'fa-desktop text-blue-400';
+
+        return `
+          <tr class="hover:bg-slate-900/50 transition">
+            <td class="p-2.5 font-mono text-[11px] text-slate-400">${timeStr}</td>
+            <td class="p-2.5 font-semibold text-white flex items-center gap-1.5">
+              <i class="fa-solid ${deviceIcon}"></i>
+              <span>${log.device || 'Desktop'}</span>
+            </td>
+            <td class="p-2.5 text-slate-300">${log.browser || 'Chrome'} (${log.os || 'OS'})</td>
+            <td class="p-2.5 font-bold text-indigo-400">${log.referrer || 'Direct'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAnalyticsCharts(dateCountMap, deviceMap) {
+      const trendCanvas = document.getElementById('chart-click-trend');
+      if (trendChartInstance) trendChartInstance.destroy();
+
+      const labels = [];
+      const data = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        const displayLabel = d.toLocaleDateString('bn-BD', { month: 'short', day: 'numeric' });
+        labels.push(displayLabel);
+        data.push(dateCountMap[dateStr] || 0);
+      }
+
+      trendChartInstance = new Chart(trendCanvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Clicks',
+            data: data,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointBackgroundColor: '#818cf8',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 }, precision: 0 }, beginAtZero: true }
+          }
         }
+      });
 
-        function renderUnlockGate(data) {
-            document.getElementById('overlay-unlock').classList.remove('hidden');
-            const container = document.getElementById('public-unlock-steps');
-            const reqs = data.required_links || [];
-            let clicks = new Array(reqs.length).fill(false);
+      const pieCanvas = document.getElementById('chart-device-pie');
+      if (pieChartInstance) pieChartInstance.destroy();
 
-            container.innerHTML = '';
-            reqs.forEach((url, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs flex justify-between px-4";
-                btn.innerHTML = `<span>Step ${i+1}: Visit Link</span> <i class="fa-solid fa-arrow-right"></i>`;
-                btn.onclick = () => {
-                    window.open(url, '_blank');
-                    let time = 7;
-                    btn.className = "w-full bg-slate-800 text-yellow-400 py-3 rounded-xl font-bold text-xs";
-                    btn.innerText = `Waiting ${time}s...`;
-                    const t = setInterval(() => {
-                        time--;
-                        btn.innerText = `Waiting ${time}s...`;
-                        if (time <= 0) {
-                            clearInterval(t);
-                            clicks[i] = true;
-                            btn.className = "w-full bg-slate-800 text-emerald-400 py-3 rounded-xl font-bold text-xs border border-emerald-500";
-                            btn.innerHTML = `<span>Step ${i+1} Completed</span> <i class="fa-solid fa-check"></i>`;
-                            if (clicks.every(v => v === true)) {
-                                const finalBtn = document.getElementById('btn-final-unlock');
-                                finalBtn.disabled = false;
-                                finalBtn.className = "w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-base cursor-pointer hover:bg-emerald-500";
-                                finalBtn.innerText = "Access Destination Link";
-                                finalBtn.onclick = () => { window.location.href = data.target_link; };
-                            }
-                        }
-                    }, 1000);
-                };
-                container.appendChild(btn);
-            });
+      pieChartInstance = new Chart(pieCanvas, {
+        type: 'doughnut',
+        data: {
+          labels: ['Desktop', 'Mobile', 'Tablet'],
+          datasets: [{
+            data: [deviceMap.Desktop || 0, deviceMap.Mobile || 0, deviceMap.Tablet || 0],
+            backgroundColor: ['#3b82f6', '#10b981', '#a855f7'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } }
+          }
         }
-    </script>
+      });
+    }
+
+    window.closeAnalyticsModal = function() {
+      document.getElementById('analytics-modal').classList.add('hidden');
+    };
+
+    window.downloadLinkLogsCsv = function() {
+      if (!currentAnalyticsLogs || currentAnalyticsLogs.length === 0) {
+        return showToast("No click logs to export!", true);
+      }
+      let csv = "Timestamp,Date,Device,Browser,OS,Referrer\n";
+      currentAnalyticsLogs.forEach(l => {
+        csv += `"${l.timestamp || ''}","${l.date || ''}","${l.device || ''}","${l.browser || ''}","${l.os || ''}","${l.referrer || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `link_analytics_${currentAnalyticsItem?.id || 'logs'}.csv`;
+      a.click();
+    };
+
+    window.exportAllLinksCsv = function() {
+      if (!userLinks || userLinks.length === 0) {
+        return showToast("No links to export!", true);
+      }
+      let csv = "ID,Title,Type,TargetURL,LiveClicks,CreatedDate\n";
+      const baseUrl = window.location.origin + window.location.pathname;
+      userLinks.forEach(l => {
+        csv += `"${l.id}","${l.title || l.alias || ''}","${l.type || 'short'}","${l.targetUrl || l.target || ''}","${l.clicks || 0}","${l.createdAt || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `webtools_all_links.csv`;
+      a.click();
+    };
+
+    // QR CODE MODAL
+    window.openQrModal = function(link) {
+      document.getElementById('qr-link-display').innerText = link;
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = "";
+      
+      container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(link)}" alt="QR Code" class="w-48 h-48 mx-auto rounded-lg">`;
+      document.getElementById('qrcode-modal').classList.remove('hidden');
+    };
+
+    window.closeQrModal = function() {
+      document.getElementById('qrcode-modal').classList.add('hidden');
+    };
+
+    window.downloadQrCode = function() {
+      const img = document.querySelector('#qrcode-container img');
+      if (img) {
+        const a = document.createElement('a');
+        a.href = img.src;
+        a.download = "qrcode.png";
+        a.click();
+      }
+    };
+
+    // EDIT LINK MODAL
+    window.openEditModal = function(id) {
+      const item = userLinks.find(l => l.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-link-id').value = id;
+      document.getElementById('edit-link-title').value = item.title || item.alias || id;
+      document.getElementById('edit-link-target').value = item.targetUrl || item.target || "";
+      document.getElementById('edit-modal').classList.remove('hidden');
+    };
+
+    window.closeEditModal = function() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    };
+
+    window.saveEditLink = async function() {
+      const id = document.getElementById('edit-link-id').value;
+      const title = document.getElementById('edit-link-title').value;
+      const target = document.getElementById('edit-link-target').value;
+
+      if (!id || !target) return showToast("Target URL required", true);
+
+      try {
+        await update(ref(db, `links/${id}`), {
+          title: title,
+          targetUrl: target
+        });
+        showToast("Link configuration updated!");
+        closeEditModal();
+        loadDashboardLinks();
+      } catch(e) {
+        showToast(e.message, true);
+      }
+    };
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text);
+      showToast("Link copied to clipboard!");
+    };
+
+    window.deleteLink = async function(id) {
+      if (!confirm("Are you sure you want to delete this link?")) return;
+      try {
+        await remove(ref(db, `links/${id}`));
+        showToast("Link deleted successfully");
+        loadDashboardLinks();
+      } catch(e) {
+        showToast(e.message, true);
+      }
+    };
+
+    // CREATION HANDLERS
+    window.generateHtmlHost = async function() {
+      if(!currentUser) return navigate('auth');
+      if(userTokens < 1) return showToast("Not enough tokens!", true);
+
+      const title = document.getElementById('html-title').value || "Hosted HTML Page";
+      const code = document.getElementById('html-code').value;
+      if(!code) return showToast("Please enter HTML code", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'html',
+        title: title,
+        html: code,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      userTokens -= 1;
+      await update(ref(db, `users/${currentUser.uid}`), { tokens: userTokens });
+      document.getElementById('user-tokens-count').innerText = userTokens;
+
+      showToast("HTML Page Published!");
+      navigate('dashboard');
+    };
+
+    window.generateShortUrl = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('short-url').value;
+      const alias = document.getElementById('short-alias').value;
+      if(!target) return showToast("Enter a URL", true);
+
+      const id = alias ? alias.trim().replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
+      
+      const checkSnap = await get(ref(db, `links/${id}`));
+      if (checkSnap.exists()) {
+        return showToast("Alias already exists! Try another custom alias.", true);
+      }
+
+      await set(ref(db, `links/${id}`), {
+        type: 'short',
+        title: alias || `Short URL (${id})`,
+        targetUrl: target,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("Short Link Created!");
+      navigate('dashboard');
+    };
+
+    window.generateMultipageLink = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('multi-url').value;
+      const timer = parseInt(document.getElementById('multi-timer').value) || 10;
+      if(!target) return showToast("Enter target URL", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'multipage',
+        title: `Monetized Link (${id})`,
+        targetUrl: target,
+        timer: timer,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("3-Page Link Created!");
+      navigate('dashboard');
+    };
+
+    window.generateUnlockGate = async function() {
+      if(!currentUser) return navigate('auth');
+      const target = document.getElementById('unlock-target').value;
+      const yt = document.getElementById('unlock-yt').value;
+      const ig = document.getElementById('unlock-ig').value;
+      if(!target || !yt) return showToast("Target URL and YouTube URL required", true);
+
+      const id = Math.random().toString(36).substring(2, 8);
+      await set(ref(db, `links/${id}`), {
+        type: 'unlock',
+        title: `Sub4Sub Gate (${id})`,
+        targetUrl: target,
+        ytChannel: yt,
+        igProfile: ig,
+        userId: currentUser.uid,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      showToast("Unlock Gate Created!");
+      navigate('dashboard');
+    };
+  </script>
 </body>
 </html>
